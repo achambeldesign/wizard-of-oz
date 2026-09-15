@@ -2,4 +2,11 @@
 Digital Transmediation of Literary and Cinematic Works <i>The Wizard of Oz</i> 👠🌪️
 
 
-![Preview do Projeto](caminho/para/imagem.png)
+![Preview Project](caminho/para/imagem.png)
+
+## How to Explore the Story
+- key N
+- key W
+- key S
+- key E
+
