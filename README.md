@@ -1,22 +1,19 @@
-# 👠 The Wizard of Oz — Digital Transmediation 🌪️
+# The Wizard of Oz — Digital Transmediation 👠 🌪️
 
 > A digital transmediation experience exploring the narrative and visual evolution between L. Frank Baum's literary work (1900) and its cinematic adaptation by Victor Fleming (1939).
 
+> demo aqui:
 ![Preview do Projeto](./assets/preview.gif)
 
----
+----------------------------------------------------------------------------------------------------
+## About:
 
-## 📖 About 
+Project developed as part of the Master's Degree in Design and Multimedia, entitled <i>Digital Transmediation of the Literary and Cinematic Classic The Wizard of Oz</i>, written by L. Frank Baum and directed by Victor Fleming, presented to the **Department of Computer Engineering of the Faculty of Science and Technology of the University of Coimbra**.
 
-This project presents an interactive web experience that bridges the gap between literature and cinema. Through custom 3D visuals, sound design, and generative typography, users can navigate and contrast key scenes from *The Wizard of Oz*.
+----------------------------------------------------------------------------------------------------
+## How to Explore the Story: 
 
-Developed as part of the **Design and Multimedia** program at the **Faculty of Sciences and Technology, University of Coimbra (FCTUC)**.
-
----
-
-## 🎮 How to Explore the Story
-
-Use the following keyboard controls to navigate through the interactive experience:
+Use the directional keys to find your way through Oz. Switch between the book and the movie, and let the Yellow Brick Road guide you. Remember, you always have a way back home. 👠 
 
 | Key | Action |
 | :---: | :--- |
@@ -27,26 +24,11 @@ Use the following keyboard controls to navigate through the interactive experien
 
 > 💡 **Tip:** You can also interact with 3D elements on the screen using the mouse.
 
----
+----------------------------------------------------------------------------------------------------
+## Built With:
 
-## ✨ Main Features
-
-- 🎭 **Dual Mode Experience:** Contrast literary excerpts with cinematic representations.
-- 🎨 **3D Interactive Scene:** Real-time WebGL rendering and interactive elements.
-- 🔊 **Audio & Narration:** Immersive sound design and narrated passages.
-
----
-
-## 🛠️ Built With
-
-- **Frontend:** HTML5, CSS & JavaScript 
+- **Front-end:** HTML5, CSS & JavaScript 
 - **3D & Interactive Graphics:** Three.js / WebGL, p5.js
 - **Assets & Modeling:** Blender
 
----
 
-## 🚀 How to Run Locally
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/teu-utilizador/wizard-of-oz.git](https://github.com/teu-utilizador/wizard-of-oz.git)
