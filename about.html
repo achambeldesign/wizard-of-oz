@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>The Wizard of Oz</title>
+     <!-- Link: https://discourse.threejs.org/t/flying-through-clouds-2-0/57859/3-->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+            }
+        }
+    </script>
+    <!--Css-->
+    <link rel="stylesheet" href="css/style_cbarras.css" />
+    <!--Javascript-->
+    <script type="module" src="js/clouds.js"></script>
+    <script type="module" src="js/dorothy_shoes.js"></script>
+    <script type="module" src="js/about.js"></script> 
+</head>
+
+<body>
+
+<!------------------Folha About do modelo 3D------------------>
+    <canvas id="folha"></canvas>
+
+<!------------------Sapatos Dorothy------------------>
+    <video id="sapatosRuby" muted playsinline style="cursor: pointer; display: block;">
+        <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
+        <source src="video/Shoes/shoes.webm" type="video/webm">
+    </video>
+
+<!------------------Nuvens------------------>  
+    <div class="nuvens"></div>
+
+</body>
+</html>

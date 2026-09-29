@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>The Wizard of Oz</title>
+    <!-- Link: https://discourse.threejs.org/t/flying-through-clouds-2-0/57859/3-->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+            }
+        }
+    </script>
+    <!--Css-->
+    <link rel="stylesheet" href="css/style_cbarras.css" />
+    <!--Javascript-->
+    <script type="module" src="js/clouds_credits.js"></script>
+    <script type="module" src="js/dorothy_shoes.js"></script>
+</head>
+
+<body>
+
+<div class="container-creditos">
+    <h1>Credits</h1>
+
+    <div class="creditos">
+
+    <!------------------Baseado em------------------>
+        <div class="baseado-em">
+            <h2>Based on . . . .</h2>
+                <p>. . . . . THE WONDERFUL WIZARD OF OZ, <span>by</span> L. FRANK BAUM (1900)</p>
+                <p>. . . . . THE WIZARD OF OZ, <span>by</span> VICTOR FLEMING (1939)</p>
+        </div>
+
+    <!------------------Feito por------------------>
+        <div class="feito-por">
+            <h2>Directed, Animated & Sound Design</h2>
+            <span class="feito-por-by">by</span>
+            <p>ALEXANDRA SOFIA CHAMBEL FERNANDES</p>
+        </div>
+
+    <!------------------Ilustrações Originais------------------>
+        <div class="ilustracoes-originais">
+            <h2>Original Illustrations . . .</h2>
+            <p><span>by</span> W. W. DENSLOW</p>
+        </div>
+
+    <!------------------Narração------------------>
+        <div class="narracao">
+            <h2>Narration . . . .</h2>
+            <p><span>by</span> LIAM (ELEVENLABS AI)</p>
+        </div>
+
+    <!------------------Tipografia------------------>
+        <div class="tipografia">
+            <h2>Typography</h2>
+            <div class="nome-tipografia">
+                <p>OZ'S WIZARD <span>by</span> MARIO ARTURO</p>
+                <p><span>and</span> OLDSTYLE <span>by</span> HPLHS PROP FONTS</p>
+            </div>
+        </div>
+
+    <!------------------Sons adicionais------------------>
+        <div class="sons-adicionais">
+            <h2>Additional Sound Effects . . . .</h2>
+            <div class="sons">
+                <p>. . . FREESOUND,</p>
+                <p>PIXABAY</p>
+                <p><span>and</span> MIXKIT</p>
+            </div>
+        </div>
+    <!------------------Orientação------------------>
+        <div class="orientacao">
+            <h2>Under the Guidance of . . . .</h2>
+            <div class="nomes-orientadores">
+            <p>ANA BOAVIDA</p>
+            <p><span>and</span> PEDRO MARTINS</p>
+            </div>
+        </div>
+
+   <!------------------Formação------------------>
+        <div class="formacao">
+            <div class="linha-credito">
+                <span class="palavra">Institution</span>
+                <span class="pontos"></span>
+                <span class="palavra">UNIVERSITY<span> of </span>COIMBRA</span>
+            </div>
+            
+            <div class="linha-credito">
+                <span class="palavra">Faculty</span>
+                <span class="pontos"></span>
+                <span class="palavra">FACULTY<span> of </span>SCIENCES<span> and </span>TECHNOLOGY</span>
+            </div>
+            
+            <div class="linha-credito">
+                <span class="palavra">Program</span>
+                <span class="pontos"></span>
+                <span class="palavra">MASTER'S<span> in </span>DESIGN<span> and </span> MULTIMEDIA</span>
+            </div>
+            
+            <div class="linha-credito">
+                <span class="palavra">Year</span>
+                <span class="pontos"></span>
+                <span class="palavra">2027</span>
+            </div>
+            </div>
+            
+<!------------------Imagens dos logos da UC e do DEI------------------>
+        <div class="logos-creditos">
+            <div class="UC-DEI">
+                <img src="img/UC_logo.png" alt="UC" />
+                <img src="img/DEI_logo.png" alt="DEI" />
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!------------------Sapatos Dorothy------------------>
+    <video id="sapatosRuby" muted playsinline style="cursor: pointer; display: block;">
+        <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
+        <source src="video/Shoes/shoes.webm" type="video/webm">
+    </video>
+
+<!------------------Nuvens------------------>  
+<div class="nuvens"></div>
+
+</body>
+</html>

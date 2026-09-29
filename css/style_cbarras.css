@@ -1,0 +1,738 @@
+/*------------------ Variáveis ------------------*/
+:root {
+    --gradienteBackground: linear-gradient(#482417, #532E1F, #71412F, #986853);  /*gradiente background nuvens*/
+    --bar-width: clamp(80px, 10vw, 120px); /*barras amarelas story.html*/
+    --bar-height: clamp(20px, 0.8vw, 40px);
+    --gap: clamp(8px, 0.2vw, 15px);
+    --shift: clamp(8px, 2vw, 15px);
+    --bar-bg: rgba(255, 255, 255, 0.25);
+    --bar-fill: #ffe100;
+    --bar-radius: 3px; /* arredondamento yellow brick road */
+    --cor-texto-creditos: #E4C5B4;
+    --cor-sombra-creditos: #1d0d07cc;
+    /*Indicador Estado atual na experiência*/
+    --sombra-barras: rgba(0, 0, 0, 0.2);
+    --background-estado-atual: rgba(0, 0, 0, 0.7);
+    --cor-tipografia-estado-atual: rgb(228, 197, 180);
+}
+/*------------------ Tipografias------------------*/
+/* 
+  Fonte (títulos / inicio de frases): Oz's Wizard  (OzsWizard-Scarecrow.ttf)
+  Autor: Mario Arturo
+  Link: https://www.dafont.com/pt/ozswizard.font
+  Licença: grátis (uso pessoal e académico).
+*/
+@font-face {
+    font-family: "Wizard";
+    src: url("../font/Oz.woff2") format("woff2"),
+        url('font/Oz.ttf') format('truetype');
+}
+/* 
+  Fonte (texto corrido): OldStyle (OLDSH___.TTF)
+  Autor: HPLHS Prop Fonts
+  Link: https://www.dafont.com/oldstyle-hplhs.font
+  Licença: grátis
+*/
+@font-face {
+    font-family: "Texto";
+    src: url("../font/livro_texto.woff2") format("woff2"),
+        url('font/livro_texto.ttf') format('truetype');
+}
+/*------------------ Evita que crie um fake bold principalmente nos créditos------------------*/
+h1,h2,h3 {
+  font-weight: normal;
+}
+
+* {
+    box-sizing: border-box;
+}
+/*------------------ geral dos html's ------------------*/
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--gradienteBackground);
+    opacity: 1;
+    transition: opacity 1.5s ease-in-out; 
+}
+body.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out; 
+}
+/*------------------ Nuvens de Fundo ------------------*/
+.nuvens {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+}
+/*------------------ Menu dos Sapatos ------------------*/
+#sapatosRuby {
+    position: fixed;
+    top: 15px;
+    right: 5px;
+    width: clamp(90px, 10vw, 150px);
+    height: auto;
+    z-index: 50;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  #sapatosRuby {
+    top: 12px;
+    right: 3px;
+    width: clamp(80px, 8vw, 100px); 
+  }
+}
+#sapatosRuby:hover {
+    transform: scale(1.05);
+}
+/*------------------ Menu index.html ------------------*/
+#about,#credits, #story {
+    position: fixed;
+    z-index: 10;
+}
+
+#story {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#credits {
+    left: -90px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+}
+
+#about {
+    right: -90px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+}
+/*------------------ about.html ------------------*/
+#folha {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100; 
+    pointer-events: none; 
+}
+/*------------------ credits.html ------------------*/
+.container-creditos {
+    position: absolute; 
+    top: 100vh;
+    width: 100%;
+    min-height: 100vh;
+    color: var(--cor-texto-creditos);
+    font-family: 'Texto', serif;
+    padding: 6rem 1rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-x: hidden;
+    z-index: 10;
+    animation: scrollCredits 30s linear forwards; 
+}
+/*Título - "Credits"*/
+.container-creditos h1 {
+    font-family: 'Wizard', serif;
+    font-size: 8rem;
+    margin-bottom: 6rem; 
+    letter-spacing: 0.02em;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+.creditos {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+/*---span que são iguais---*/
+.baseado-em span, .ilustracoes-originais span, .narracao span, .nome-tipografia span, .sons span, .nomes-orientadores span, .valor span, .palavra span {
+    font-size: 1rem;
+    text-transform: lowercase;
+    text-shadow: 2px 3px 3px var(--cor-sombra-creditos);
+} 
+
+/*----------Baseado em----------*/
+.baseado-em {
+    margin-bottom: 12rem;
+}
+
+.baseado-em h2 {
+    font-size: 3rem;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+.baseado-em p {
+    font-size: 1.2rem;
+    letter-spacing: 0.10rem;
+    text-align:right;
+    text-shadow: 2px 3px 3px var(--cor-sombra-creditos);
+}
+
+/*----------Feito por----------*/
+.feito-por {
+    text-align: center;
+    margin-bottom: 12rem;
+}
+.feito-por h2 {
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 0.03rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+.feito-por span {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 2rem;
+    text-transform: lowercase;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+.feito-por p {
+    font-size: 1.8rem;
+    letter-spacing: 0.12rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+/*----------Ilustracoes-originais----------*/
+.ilustracoes-originais {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5rem;
+}
+
+.ilustracoes-originais h2 {
+    font-size:  3rem;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+.ilustracoes-originais p{
+    font-size:1.2rem;
+    letter-spacing: 0.10rem;
+    text-align:right;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+/*----------Narração----------*/
+.narracao {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5rem;
+}
+
+.narracao h2 {
+    font-size:  3rem;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+.narracao p {
+    font-size:1.2rem;
+    letter-spacing: 0.10rem;
+    text-align:center;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+
+/*----------Tipografia----------*/
+.tipografia {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5rem;
+}
+
+.tipografia h2 {
+    font-size:  3rem;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+/* Nomes dos orientadores */
+.nome-tipografia p {
+    font-size:1.2rem;
+    letter-spacing: 0.10rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+.nome-tipografia p:nth-child(1) {
+    text-align: right;
+}
+
+.nome-tipografia p:nth-child(2) {
+    padding-left: 40%;
+}
+
+ /*----------Sons----------*/
+ .sons-adicionais {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12rem;
+ }
+ .sons-adicionais h2 {
+    font-size:  3rem;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+.sons p {
+   font-size:1.2rem;
+   letter-spacing: 0.10rem;
+   text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+.sons p:nth-child(1) {
+   text-align: left;
+}
+
+.sons p:nth-child(2) {
+    padding-left: 12%;
+}
+.sons p:nth-child(3){
+    padding-left: 5%;
+}
+
+/*----------Orientação----------*/
+.orientacao {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10rem;
+}
+
+/* "Under the Guidance of . . ." */
+.orientacao h2 {
+    font-size:  3rem;
+    text-align: right;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+/* Nomes dos orientadores */
+.nomes-orientadores {
+    font-size:1.2rem;
+    letter-spacing: 0.10rem;
+    text-align:left;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+.nomes-orientadores p:nth-child(1) {
+    margin: 0 0 1.2rem 0;
+}
+
+.nomes-orientadores p:nth-child(2) {
+    padding-left: 16%;
+}
+
+/*-----Formação-----*/
+.formacao {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 10rem;
+}
+
+.linha-credito {
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+}
+
+.palavra {
+    font-size: 1.2rem;
+    letter-spacing: 0.10rem;
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+    white-space: nowrap;
+}
+
+.pontos {
+    flex-grow: 1;
+    margin: 0 15px; 
+    opacity: 1; 
+    height: 20px; 
+    border: none; 
+    background-image: radial-gradient(circle, var(--cor-texto-creditos) 1.5px, transparent 1.5px);
+    background-size: 18px 10px; 
+    background-repeat: repeat-x;
+    background-position: center bottom; 
+    filter: drop-shadow(4px 6px 3px var(--cor-sombra-creditos));
+}
+
+/*-----Imagens dos logos da UC e do DEI-----*/
+.logos-creditos {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.UC-DEI {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-end;       
+    width: 100%;
+}
+
+.UC-DEI img {
+    height: clamp(35px, 5.5vw, 55px); 
+    width: auto;                      
+    object-fit: contain;             
+    opacity: 0.9;                   
+}
+
+/* Movimento de baixo para cima (créditos) */
+@keyframes scrollCredits {
+    0% {
+        top: 100vh;
+        transform: translateY(0);
+    }
+    100% {
+        top: 0;
+        transform: translateY(-100%);
+    }
+}
+
+/* ------------------ Responsividade credits.html ------------------ */
+@media (max-width: 1024px) {
+  .container-creditos {
+        padding: 5rem 5.5rem; /* Adicionado padding à direita para proteger o ícone */
+    }
+    .container-creditos h1 { 
+        font-size: 4.5rem; 
+        margin-bottom: 4rem; 
+    }
+    .baseado-em h2, .feito-por h2, .ilustracoes-originais h2, .narracao h2, .tipografia h2, .sons-adicionais h2, .orientacao h2 { 
+        font-size: 2.3rem; 
+    }
+     .baseado-em p, .feito-por p, .nomes-orientadores p, .ilustracoes-originais p, .narracao p, .nome-tipografia p, .sons p, .palavra { 
+        font-size: 1.2rem; 
+    }
+    .baseado-em span, .ilustracoes-originais span, .narracao span, .nome-tipografia span, .sons span, .nomes-orientadores span, .valor span, .palavra span {
+        font-size: 1rem;
+    }
+    .feito-por h2 {
+        margin-bottom: 0rem;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .container-creditos { 
+        padding: 4rem 4.5rem; 
+    }
+    .container-creditos h1 { 
+        font-size: 3.5rem; 
+        margin-bottom: 3rem; 
+    }
+    .baseado-em h2, .feito-por h2, .ilustracoes-originais h2, .narracao h2, .tipografia h2, .sons-adicionais h2, .orientacao h2 { 
+        font-size: 1.8rem; 
+        margin-bottom: 2rem; 
+        text-align: center; 
+    }
+    .feito-por span { 
+        font-size: 1.2rem; 
+    }
+        .feito-por h2 {
+        margin-bottom: 0.5rem;
+    }
+    .baseado-em p, .feito-por p, .nomes-orientadores p, .ilustracoes-originais p, .narracao p, .nome-tipografia p, .sons p, .palavra { 
+        font-size: 0.9rem; 
+    }
+      .baseado-em span, .ilustracoes-originais span, .narracao span, .nome-tipografia span, .sons span, .nomes-orientadores span, .valor span, .palavra span {
+        font-size: 0.6rem;
+    }
+    .baseado-em p { 
+        text-align: center; 
+    }
+    .nomes-orientadores p:nth-child(2) { 
+        padding-left: 0; 
+        text-align: center; 
+    }
+    .orientacao h2 { 
+        text-align: center; 
+    }
+    .linha-credito {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .pontos {
+        display: none; 
+    }
+}
+/* ------------------ story.html ------------------ */
+.container-historia {
+    width: 100vw;
+    height: 100vh;
+}
+
+.historia {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.historia-item video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    position: absolute;
+    transition: opacity 3s ease-in-out; 
+}
+
+.historia-item.active {
+    opacity: 1;
+}
+
+
+/*Pop-up Instruções*/
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color:rgba(29, 13, 7, 0.78); 
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
+}
+
+/* O canvas mantém-se a ocupar o ecrã todo sem alterações */
+#instructions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+/* Contentor invisível centrado no ecrã com as dimensões aproximadas do modelo 3D */
+.popup-ui-container {
+    position: relative;
+    width: 640px;  
+    height: 440px; 
+    pointer-events: none; 
+    z-index: 10000;
+    opacity: 0; /* Começa invisível */
+    transition: opacity 0.6s ease; /* Transição suave de aparecimento */
+    }
+
+/* Classe adicionada em javascript quando a folha 3d estabiliza */
+.popup-ui-container.visivel {
+    opacity: 1;
+    pointer-events: auto; 
+}
+
+/* Cruz posicionada no canto superior direito exatamente junto ao modelo */
+.popup-close {
+    position: absolute;
+    top: -10px;  
+    width: 32px;
+    height: 32px;
+    right: -25px; 
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    transition: transform 0.2s ease;
+}
+
+/* Media queries */
+@media (max-width: 1024px) {
+    .popup-close {
+        top: -10px;
+        right: -55px;
+    }
+}
+
+@media (max-width: 768px) {
+    .popup-close {
+        top: -10px;
+        right: -10px; 
+    }
+}
+
+.circle-container {
+    width: 32px;
+    height: 32px;
+    border: 0.8px solid var(--cor-texto-creditos); 
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--cor-texto-creditos);
+    font-size: 16px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.back-text {
+    color: var(--cor-texto-creditos);
+    font-size: 11px;
+    font-family: 'Texto', serif;
+    margin: 0;
+}
+
+/* Efeito de hover no círculo e na cruz */
+.popup-close:hover .circle-container {
+    background-color: rgba(255, 255, 255, 0.15); 
+}
+
+.popup-close:hover {
+    transform: scale(1.05);
+}
+
+/* ------------------ Barras ------------------ */
+.barras {
+    position: absolute;
+    top: 50%;
+    right: clamp(10px, 2vw, 30px);
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    width: calc(var(--bar-width) + (var(--shift) * 2));
+    align-items: center;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.bar {
+    position: relative;
+    width: var(--bar-width);
+    height: var(--bar-height);
+    background: var(--bar-bg);
+    border-radius: var(--bar-radius);
+    overflow: hidden;
+    transition: transform 0.4s ease;
+    box-shadow: 4px -6px 3px var(--sombra-barras); /* Sombra para dar profundidade */
+}
+
+.bar__fill {
+    position: relative;
+    width: 0%;
+    height: 100%;
+    background: var(--bar-fill);
+    border-radius: var(--bar-radius);
+}
+
+/* Textura por cima do amarelo acompanhando o progresso */
+.bar__fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.85;
+}
+
+/* ------------------ Texturas das barras ------------------ */
+.bar--textura-1 .bar__fill::after { background-image: url("../img/t_1.png"); }
+.bar--textura-2 .bar__fill::after { background-image: url("../img/t_2.png"); }
+.bar--textura-3 .bar__fill::after { background-image: url("../img/t_3.png"); }
+.bar--textura-4 .bar__fill::after { background-image: url("../img/t_4.png"); }
+.bar--textura-5 .bar__fill::after { background-image: url("../img/t_5.png"); }
+.bar--textura-6 .bar__fill::after { background-image: url("../img/t_6.png"); }
+
+/* Animações das Barras (estrada amarela) */
+.bar.active.shift-right, .bar.completed.shift-right {
+    transform: translateX(var(--shift));
+}
+
+.bar.active.shift-left, .bar.completed.shift-left {
+    transform: translateX(calc(var(--shift) * -1));
+}
+
+/*Estado Atual para situar o utilizador*/
+.estado-atual {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--background-estado-atual);
+    color: var(--cor-tipografia-estado-atual);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: 'Texto', serif;
+    font-size: 14px;
+    z-index: 1000;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+}
+
+
+/*---------______________------------*/
+/* Overlay de Play/Pause transparente por cima dos vídeos */
+.play-pause-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 10; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+.btn-play-pause {
+    position: absolute;               
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);   
+    width: 80px; height: 80px;
+    background: var(--background-estado-atual);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    object-fit: contain;                
+    transition: opacity 0.4s ease;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+
+.btn-play-pause.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
