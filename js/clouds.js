@@ -1,9 +1,8 @@
 /* ------------------ Nuvens e Casa ------------------ */
 import * as THREE from 'three';
-import * as BufferGeometryUtils from 'addons/utils/BufferGeometryUtils.js';
 import { GLTFLoader } from 'addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'addons/loaders/DRACOLoader.js';
-import { KTX2Loader } from 'addons/loaders/KTX2Loader.js'; //por causa das texturas ETC1s
+import { KTX2Loader } from 'addons/loaders/KTX2Loader.js';
 
 //Variáveis globais  
 let camera, scene, renderer;
@@ -15,7 +14,11 @@ const cloudShader = {
     varying vec2 vUv;
     void main() {
       vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vec4 transformedPosition = vec4(position, 1.0);
+      #ifdef USE_INSTANCING
+        transformedPosition = instanceMatrix * transformedPosition;
+      #endif
+      gl_Position = projectionMatrix * modelViewMatrix * transformedPosition;
     }
   `,
   fragmentShader: `
@@ -60,7 +63,7 @@ function init() {
   camera.position.z = 1200;
 
   renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -77,8 +80,8 @@ function init() {
   const keyLight = new THREE.DirectionalLight(0x986853, 1);
   keyLight.position.set(0, 5, 15);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.width  = 2048;
-  keyLight.shadow.mapSize.height = 2048;
+  keyLight.shadow.mapSize.width  = 1024;
+  keyLight.shadow.mapSize.height = 1024;
   keyLight.shadow.camera.near = 0.9;
   keyLight.shadow.camera.far  = 1000;
   keyLight.shadow.bias = -0.001;
@@ -103,9 +106,11 @@ function init() {
     'https://mrdoob.com/lab/javascript/webgl/clouds/cloud10.png',
     (tex) => {
       createCloudLayers(tex);
-      if (window._loadHouse) loadHouse();
-    }
+    },
+    undefined,
+    (error) => console.error('Erro ao carregar textura das nuvens:', error)
   );
+  loadHouse();
 }
 
 // ------------------ CLOUD LAYER FACTORY ------------------
@@ -128,7 +133,7 @@ function buildCloudMesh(texture, count, yOffset, zStart, zRange, scale) {
   });
 
   const plane = new THREE.PlaneGeometry(64, 64);
-  const geometries = [];
+  const mesh = new THREE.InstancedMesh(plane, mat, count);
   const obj = new THREE.Object3D();
 
   for (let i = 0; i < count; i++) {
@@ -140,14 +145,12 @@ function buildCloudMesh(texture, count, yOffset, zStart, zRange, scale) {
     obj.rotation.z = Math.random() * Math.PI;
     obj.scale.setScalar(Math.random() * scale + scale * 0.4);
     obj.updateMatrix();
-
-    const g = plane.clone();
-    g.applyMatrix4(obj.matrix);
-    geometries.push(g);
+    mesh.setMatrixAt(i, obj.matrix);
   }
 
-  const merged = BufferGeometryUtils.mergeGeometries(geometries);
-  return new THREE.Mesh(merged, mat);
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.computeBoundingSphere();
+  return mesh;
 }
 
 const cloudLayers = [];
@@ -193,9 +196,6 @@ window.addEventListener('mousemove', (e) => {
   mouse.y = ny;
 });
 
-// Não te esqueças de importar o KTX2Loader no topo do teu ficheiro juntamente com os outros loaders:
-// import { KTX2Loader } from 'addons/loaders/KTX2Loader.js';
-
 function loadHouse() {
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath(
@@ -216,6 +216,8 @@ function loadHouse() {
   gltfLoader.load(
     './model/House.glb',
     (gltf) => {
+      ktx2Loader.dispose();
+      dracoLoader.dispose();
       houseModel = gltf.scene;
 
       houseModel.traverse((node) => {
@@ -247,8 +249,12 @@ function loadHouse() {
 
       modelLoaded = true;
     },
-    (xhr) => console.log((xhr.loaded / xhr.total * 100).toFixed(1) + '% carregado'),
-    (err) => console.error('Erro ao carregar casa:', err)
+    undefined,
+    (err) => {
+      ktx2Loader.dispose();
+      dracoLoader.dispose();
+      console.error('Erro ao carregar casa:', err);
+    }
   );
 }
 
@@ -264,11 +270,11 @@ const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
 
-  const delta = clock.getDelta();
+  const delta = Math.min(clock.getDelta(), 0.05);
 
   // Movimento contínuo e limpo das nuvens
   for (const layer of cloudLayers) {
-    layer.mesh.position.x -= layer.speed;
+    layer.mesh.position.x -= layer.speed * 60 * delta;
     if (layer.mesh.position.x < -layer.limit) {
       layer.mesh.position.x = layer.limit;
     }
@@ -288,8 +294,10 @@ function animate() {
     const targetX = mouse.x * halfW;
     const targetY = mouse.y * halfH;
 
-    current.x += (targetX - current.x) * lp;
-    current.y += (targetY - current.y) * lp;
+    const positionLerp = 1 - Math.exp(-lp * 60 * delta);
+    const rotationLerp = 1 - Math.exp(-lr * 60 * delta);
+    current.x += (targetX - current.x) * positionLerp;
+    current.y += (targetY - current.y) * positionLerp;
 
     houseModel.position.x = current.x;
     houseModel.position.y = current.y;
@@ -297,8 +305,8 @@ function animate() {
     const targetRotY = mouse.x * Math.PI * 0.18;
     const targetRotX = mouse.y * Math.PI * -0.08;
 
-    current.rotY += (targetRotY - current.rotY) * lr;
-    current.rotX += (targetRotX - current.rotX) * lr;
+    current.rotY += (targetRotY - current.rotY) * rotationLerp;
+    current.rotX += (targetRotX - current.rotX) * rotationLerp;
     current.rotX  = Math.max(-0.25, Math.min(0.25, current.rotX));
 
     houseModel.rotation.y = current.rotY;
