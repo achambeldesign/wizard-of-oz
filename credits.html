@@ -4,21 +4,29 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Wizard of Oz</title>
-    <!-- Link: https://discourse.threejs.org/t/flying-through-clouds-2-0/57859/3-->
-    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
-                "addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
             }
         }
     </script>
     <!--Css-->
     <link rel="stylesheet" href="css/style.css" />
-    <!--Javascript-->
-    <script type="module" src="js/clouds_credits.js"></script>
-    <script type="module" src="js/dorothy_shoes.js"></script>
+    <script type="module">
+        const loadCloudScene = () => {
+            import('./js/clouds_credits.js').catch((error) => {
+                console.error('Failed to load credits cloud scene:', error);
+            });
+        };
+
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(loadCloudScene, { timeout: 1500 });
+        } else {
+            window.setTimeout(loadCloudScene, 0);
+        }
+    </script>
+    <script defer src="js/dorothy_shoes.js"></script>
 </head>
 
 <body>
@@ -111,8 +119,8 @@
 <!------------------Imagens dos logos da UC e do DEI------------------>
         <div class="logos-creditos">
             <div class="UC-DEI">
-                <img src="img/UC_logo.png" alt="UC" />
-                <img src="img/DEI_logo.png" alt="DEI" />
+                <img src="img/UC_logo.png" alt="UC" width="248" height="56" loading="lazy" decoding="async" />
+                <img src="img/DEI_logo.png" alt="DEI" width="382" height="66" loading="lazy" decoding="async" />
             </div>
         </div>
 
@@ -121,8 +129,9 @@
 </div>
 
 <!------------------Sapatos Dorothy------------------>
-    <video id="sapatosRuby" muted playsinline style="cursor: pointer; display: block;">
+    <video id="sapatosRuby" muted playsinline preload="auto" style="cursor: pointer; display: block;">
         <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
+        <source src="video/Shoes/shoes-compat.m4v" type="video/mp4">
         <source src="video/Shoes/shoes.webm" type="video/webm">
     </video>
 

@@ -75,7 +75,8 @@ body.fade-out {
     width: clamp(90px, 10vw, 150px);
     height: auto;
     z-index: 50;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
+    mix-blend-mode: screen;
 }
 
 @media (max-width: 768px) {
@@ -409,12 +410,26 @@ body.fade-out {
 /* Movimento de baixo para cima (créditos) */
 @keyframes scrollCredits {
     0% {
-        top: 100vh;
         transform: translateY(0);
     }
     100% {
-        top: 0;
-        transform: translateY(-100%);
+        transform: translateY(calc(-100vh - 100%));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html,
+    body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .container-creditos {
+        position: relative;
+        top: auto;
+        animation: none;
     }
 }
 

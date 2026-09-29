@@ -1,16 +1,13 @@
 import * as THREE from 'three';
-import * as BufferGeometryUtils from 'addons/utils/BufferGeometryUtils.js';
-import { GLTFLoader } from 'addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'addons/loaders/DRACOLoader.js';
 
-
-const MAX_TIME = 13000; // tempo máx para abertura das nuvens em milissegundos
-let isPaused = false;
-let startTime = Date.now();
+const startTime = Date.now();
 
 
 let camera, scene, renderer;
 const container = document.querySelector('.nuvens');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let animationFrameId = null;
+let cloudsReady = false;
 
 /* ------------------ Cloud shader ------------------ */
 const cloudShader = {
@@ -18,7 +15,11 @@ const cloudShader = {
     varying vec2 vUv;
     void main() {
       vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vec4 transformedPosition = vec4(position, 1.0);
+      #ifdef USE_INSTANCING
+        transformedPosition = instanceMatrix * transformedPosition;
+      #endif
+      gl_Position = projectionMatrix * modelViewMatrix * transformedPosition;
     }
   `,
   fragmentShader: `
@@ -71,7 +72,7 @@ function init() {
     antialias: true
   });
 
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -99,14 +100,18 @@ function init() {
   scene.add(bottomLight);
 
   window.addEventListener('resize', onResize);
+  document.addEventListener('visibilitychange', onVisibilityChange);
 
   const texLoader = new THREE.TextureLoader();
   texLoader.load(
     'https://mrdoob.com/lab/javascript/webgl/clouds/cloud10.png',
     (tex) => {
       createCloudLayers(tex);
-      if (window._loadHouse) loadHouse();
-    }
+      cloudsReady = true;
+      animate();
+    },
+    undefined,
+    (error) => console.error('Failed to load credits cloud texture:', error)
   );
 }
 
@@ -139,8 +144,6 @@ function buildCloudMesh(texture, count, yOffset, zStart, zRange, scale) {
 
   for (let c = 0; c < numChunks; c++) {
 
-    const geometries = [];
-
     // 🔥 FIXED SIDE (nunca muda)
     const side = Math.random() < 0.5 ? -1 : 1;
 
@@ -148,12 +151,13 @@ function buildCloudMesh(texture, count, yOffset, zStart, zRange, scale) {
       side,
       speedOffset: Math.random() * 0.7 + 0.3,
       seed: Math.random() * 1000,
-      mesh: null
+      mesh: new THREE.InstancedMesh(plane, mat, Math.ceil(count / numChunks))
     };
+    chunk.mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
 
+    let instanceCount = 0;
     for (let i = 0; i < count / numChunks; i++) {
 
-    
       const x = side < 0
         ? Math.random() * 500 - 500   // esquerda
         : Math.random() * 500;       // direita
@@ -168,16 +172,12 @@ function buildCloudMesh(texture, count, yOffset, zStart, zRange, scale) {
       obj.scale.setScalar(Math.random() * scale + scale * 0.4);
       obj.updateMatrix();
 
-      const g = plane.clone();
-      g.applyMatrix4(obj.matrix);
-
-      geometries.push(g);
+      chunk.mesh.setMatrixAt(instanceCount++, obj.matrix);
     }
 
-    chunk.mesh = new THREE.Mesh(
-      BufferGeometryUtils.mergeGeometries(geometries),
-      mat
-    );
+    chunk.mesh.count = instanceCount;
+    chunk.mesh.instanceMatrix.needsUpdate = true;
+    chunk.mesh.computeBoundingSphere();
 
     chunks.push(chunk);
   }
@@ -214,47 +214,51 @@ const baseSpeed = [0.7, 1.0, 1.4][i];
 }
 
 /* ----- Animação (de baixo para cima) ----- */
-const clock = new THREE.Clock();
-
 function animate() {
-  requestAnimationFrame(animate);
+  animationFrameId = null;
+  if (!cloudsReady || document.hidden) return;
 
-  const time = Date.now() * 0.001;
-  const elapsed = (Date.now() - startTime) / 1000;
-  
-  // Duração total da animação em segundos
-  const totalDuration = 30; 
-  
-  // Progressão de 0 a 1
-  let progress = Math.min(elapsed / totalDuration, 1);
-  
-  const maxOpening = 100; 
-  let openingFactor = Math.sin(Math.pow(progress, 2) * Math.PI) * maxOpening;
+  if (!prefersReducedMotion) {
+    const time = Date.now() * 0.001;
+    const elapsed = (Date.now() - startTime) / 1000;
+    const progress = Math.min(elapsed / 30, 1);
+    const openingFactor = Math.sin(Math.pow(progress, 2) * Math.PI) * 100;
 
-  /* ------ Nuvens ------ */
-  for (const c of cloudLayers) {
-    const speed = (isPaused ? c.baseSpeed * 0.4 : c.baseSpeed) * c.speedOffset;
+    /* ------ Nuvens ------ */
+    for (const c of cloudLayers) {
+      const speed = c.baseSpeed * c.speedOffset;
 
-    c.mesh.position.x += speed * c.side;
+      c.mesh.position.x += speed * c.side;
 
-    let targetX = c.side * openingFactor;
-    
+      const targetX = c.side * openingFactor;
 
-    c.mesh.position.x += (targetX - c.mesh.position.x) * 0.02;
+      c.mesh.position.x += (targetX - c.mesh.position.x) * 0.02;
 
-    // Efeito de oscilação 
-    const wave = Math.sin(time * 0.8 + c.seed) * 0.12 + Math.sin(time * 1.5 + c.seed * 2) * 0.06;
-    c.mesh.position.x += wave * c.side;
-    c.mesh.position.y += Math.sin(time + c.seed) * 0.02;
+      // Efeito de oscilação
+      const wave = Math.sin(time * 0.8 + c.seed) * 0.12 + Math.sin(time * 1.5 + c.seed * 2) * 0.06;
+      c.mesh.position.x += wave * c.side;
+      c.mesh.position.y += Math.sin(time + c.seed) * 0.02;
 
-    // Limites
-    if (c.side === -1 && c.mesh.position.x < -500) c.mesh.position.x = -500;
-    if (c.side === 1 && c.mesh.position.x > 500) c.mesh.position.x = 500;
+      // Limites
+      if (c.side === -1 && c.mesh.position.x < -500) c.mesh.position.x = -500;
+      if (c.side === 1 && c.mesh.position.x > 500) c.mesh.position.x = 500;
+    }
   }
 
   renderer.render(scene, camera);
+  if (!prefersReducedMotion) {
+    animationFrameId = requestAnimationFrame(animate);
+  }
 }
-animate();
+
+function onVisibilityChange() {
+  if (document.hidden) {
+    if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  } else if (animationFrameId === null) {
+    animate();
+  }
+}
 
 /* ----------------- Responsividade ----------------- */
 function onResize() {
