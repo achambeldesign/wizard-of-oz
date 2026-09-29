@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const shoesVideo = document.getElementById('sapatosRuby');
-    let currentAudio = null; // Variável audio atual
+    let currentAudio = null;
 
-    //Array dos 4 audios 
+    //array 4 audios
     const audios = [
         'sound/shoes/shoes_1.mp3',
         'sound/shoes/shoes_2.mp3',
@@ -14,9 +14,27 @@ document.addEventListener('DOMContentLoaded', () => {
     shoesVideo.currentTime = 0;
 
     function playRandomAudio() {
-        const randomIndex = Math.floor(Math.random() * audios.length);
-        currentAudio = new Audio(audios[randomIndex]);
+        // Obter o último índice guardado no localStorage (se existir)
+        const lastIndex = localStorage.getItem('lastShoeAudioIndex');
         
+        // Criação array com os índices todos 
+        let availableIndexes = audios.map((_, index) => index);
+
+        // Se houver um índice anterior e houver mais do que 1 áudio disponível, remove-o
+        if (lastIndex !== null && audios.length > 1) {
+            const parsedLastIndex = parseInt(lastIndex, 10);
+            availableIndexes = availableIndexes.filter(index => index !== parsedLastIndex);
+        }
+
+        // Escolher aleatoriamente um índice de entre os disponíveis
+        const randomAvailablePosition = Math.floor(Math.random() * availableIndexes.length);
+        const selectedIndex = availableIndexes[randomAvailablePosition];
+
+        // Guardar este novo índice no localStorage para a próxima vez
+        localStorage.setItem('lastShoeAudioIndex', selectedIndex);
+
+        // Tocar o áudio correspondente
+        currentAudio = new Audio(audios[selectedIndex]);
         currentAudio.play().catch(error => console.log("Erro:", error));
     }
 
@@ -30,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Redireciona para o index.html
     function performRedirect() {
         document.body.classList.add('fade-out');
         setTimeout(() => {
@@ -38,14 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 
-    // Quando a animação dos sapatos terminar, verificamos se ainda falta tocar aúdio
     shoesVideo.addEventListener('ended', () => {
-        // Se houver áudio por tocar, esperamos que ele acabe
         if (currentAudio && !currentAudio.paused && !currentAudio.ended) {
             console.log("Esperar que o audio termine");
             currentAudio.addEventListener('ended', performRedirect);
         } else {
-            // Se não houver áudio, redireciona logo para página index.html
             performRedirect();
         }
     });

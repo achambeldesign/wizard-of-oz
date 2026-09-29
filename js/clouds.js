@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import * as BufferGeometryUtils from 'addons/utils/BufferGeometryUtils.js';
 import { GLTFLoader } from 'addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'addons/loaders/DRACOLoader.js';
+import { KTX2Loader } from 'addons/loaders/KTX2Loader.js'; //por causa das texturas ETC1s
 
 //Variáveis globais  
 let camera, scene, renderer;
@@ -192,14 +193,25 @@ window.addEventListener('mousemove', (e) => {
   mouse.y = ny;
 });
 
+// Não te esqueças de importar o KTX2Loader no topo do teu ficheiro juntamente com os outros loaders:
+// import { KTX2Loader } from 'addons/loaders/KTX2Loader.js';
+
 function loadHouse() {
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath(
     'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/libs/draco/'
   );
 
+  // 1. Configurar o KTX2Loader para suportar ETC1s / Basis Universal
+  const ktx2Loader = new KTX2Loader();
+  ktx2Loader.setTranscoderPath(
+    'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/libs/basis/'
+  );
+  ktx2Loader.detectSupport(renderer); // Essencial para o loader saber o que a placa gráfica suporta
+
   const gltfLoader = new GLTFLoader();
   gltfLoader.setDRACOLoader(dracoLoader);
+  gltfLoader.setKTX2Loader(ktx2Loader); // 2. Registar o KTX2Loader no GLTFLoader
 
   gltfLoader.load(
     './model/House.glb',

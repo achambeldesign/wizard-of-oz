@@ -1,0 +1,210 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>The Wizard of Oz</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+                "addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+            }
+        }
+ </script>
+ <!-- Css -->
+<link rel="stylesheet" href="css/style.css" />
+<!-- Javascript -->
+<script type="module" src="js/dorothy_shoes.js"></script>
+<script type="module" src="js/howtoexplore.js"></script> 
+</head>
+
+
+<body>
+<!--------------------------- Story --------------------------->
+<div class="container-historia">
+
+
+<div class="historia" id="historia">
+
+    <div id="estado-atual" class="estado-atual">
+        1 / 10 | Mode: Default
+    </div>
+
+   <!------------------ Pop-up Instruções 3D ------------------>
+    <div id="popup-folha" class="popup-overlay">
+        <canvas id="instructions"></canvas>
+        <div class="popup-ui-container">
+            <button id="fechar-popup" class="popup-close" aria-label="Back">
+                <div class="circle-container">&#10005;</div>
+                <p class="back-text">Back</p>
+            </button>
+        </div>
+    </div>
+
+    <!------------------------------------------ Tijolo nº1 ------------------------------------------>
+    <div class="historia-item active" id="item-0">
+
+        <!---------- Videos ---------->
+
+        <!-- modo default -->
+        <video class="video-default" playsinline preload="auto">
+            <source src="video/1/1_Default.mp4" type="video/mp4">
+        </video>
+
+        <!-- modo livro -->
+        <video class="video-livro" playsinline preload="auto">
+            <source src="video/1/1_Livro.mp4" type="video/mp4">
+        </video>
+
+        <!-- modo filme -->
+        <video class="video-filme" playsinline preload="auto">
+            <source src="video/1/1_Filme.mp4" type="video/mp4">
+        </video>
+
+    </div>
+
+   <!------------------------------------------ Tijolo nº2 ------------------------------------------>
+<div class="historia-item" id="item-1">
+    <!-- modo default -->
+    <video class="video-default" playsinline preload="none">
+        <source src="video/2/2_Default.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo livro -->
+    <video class="video-livro" playsinline preload="none">
+        <source src="video/2/2_Livro.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo filme -->
+    <video class="video-filme" playsinline preload="none">
+        <source src="video/2/2_Filme.mp4" type="video/mp4">
+    </video>
+</div>
+   <!------------------------------------------ Tijolo nº3 ------------------------------------------>
+<div class="historia-item" id="item-2">
+    <!-- modo default -->
+    <video class="video-default" playsinline preload="none">
+        <source src="video/3/3_Default.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo livro -->
+    <video class="video-livro" playsinline preload="none">
+        <source src="video/3/3_Livro.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo filme -->
+    <video class="video-filme" playsinline preload="none">
+        <source src="video/3/3_Filme.mp4" type="video/mp4">
+    </video>
+</div>
+<!------------------------------------------ Tijolo nº4 ------------------------------------------>
+<div class="historia-item" id="item-3">
+    <!-- modo default -->
+    <video class="video-default" playsinline preload="none">
+        <source src="video/4/4_Default.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo livro -->
+    <video class="video-livro" playsinline preload="none">
+        <source src="video/4/4_Livro.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo filme -->
+    <video class="video-filme" playsinline preload="none">
+        <source src="video/4/4_Filme.mp4" type="video/mp4">
+    </video>
+</div>
+<!------------------------------------------ Tijolo nº5 ------------------------------------------>
+<div class="historia-item" id="item-4">
+    <!-- modo default -->
+    <video class="video-default" playsinline preload="none">
+        <source src="video/5/5_Default.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo livro -->
+    <video class="video-livro" playsinline preload="none">
+        <source src="video/5/5_Livro.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo filme -->
+    <video class="video-filme" playsinline preload="none">
+        <source src="video/5/5_Filme.mp4" type="video/mp4">
+    </video>
+</div>
+<!------------------------------------------ Tijolo nº8 ------------------------------------------>
+<div class="historia-item" id="item-5">
+    <!-- modo default -->
+    <video class="video-default" playsinline preload="none">
+        <source src="video/8/8_Default.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo livro -->
+    <video class="video-livro" playsinline preload="none">
+        <source src="video/8/8_Livro.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo filme -->
+    <video class="video-filme" playsinline preload="none">
+        <source src="video/8/8_Filme.mp4" type="video/mp4">
+    </video>
+</div>
+<!------------------------------------------ Tijolo nº9 ------------------------------------------>
+<div class="historia-item" id="item-5">
+    <!-- modo default -->
+    <video class="video-default" playsinline preload="none">
+        <source src="video/9/9_Default.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo livro -->
+    <video class="video-livro" playsinline preload="none">
+        <source src="video/9/9_Livro.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo filme -->
+    <video class="video-filme" playsinline preload="none">
+        <source src="video/9/9_Filme.mp4" type="video/mp4">
+    </video>
+</div>
+<!------------------------------------------ Tijolo nº10 ------------------------------------------>
+<div class="historia-item" id="item-6">
+    <!-- Videos -->
+
+    <!-- modo default -->
+    <video class="video-default" playsinline preload="none">
+        <source src="video/10/10_Default.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo livro -->
+    <video class="video-livro" playsinline preload="none">
+        <source src="video/10/10_Livro.mp4" type="video/mp4">
+    </video>
+
+    <!-- modo filme -->
+    <video class="video-filme" playsinline preload="none">
+        <source src="video/10/10_Filme.mp4" type="video/mp4">
+    </video>
+</div>
+<!-- Tijolos (barras amarelas) -->
+<div class="barras" id="barras"></div>
+
+<!------------------ Play/Pause & Replay Overlays ------------------>
+<div id="play-pause-container" class="play-pause-overlay">
+    <img id="btn-play"  class="btn-play-pause" src="img/play.png"  alt="Play">
+    <img id="btn-pause" class="btn-play-pause" src="img/pause.png" alt="Pause">
+</div>
+
+</div>
+
+<!--javascript-->
+<script src="js/hist1.js"></script>
+
+<!------------------Sapatos Dorothy------------------>
+    <video id="sapatosRuby" muted playsinline style="cursor: pointer; display: block;">
+        <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
+        <source src="video/Shoes/shoes.webm" type="video/webm">
+    </video>
+    
+</body>
+</html>

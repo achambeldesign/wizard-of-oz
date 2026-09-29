@@ -1,14 +1,17 @@
 /*------------------ Variáveis ------------------*/
 :root {
-    --gradienteBackground: linear-gradient(#482417, #532E1F, #71412F, #986853);  /*gradiente background nuvens*/
-    --bar-width: clamp(80px, 10vw, 120px); /*barras amarelas story.html*/
+    --gradienteBackground: linear-gradient(#482417, #532E1F, #71412F, #986853);  /*background nuvens*/
+    --bar-width: clamp(80px, 10vw, 120px); /*barras amarelas Yellow Brick Road*/
+    --bar-radius: 3px; /* arredondamento yellow brick road */
+    --bar-fill: #ffe100; /*cor da yellow brick road */
+    --sombra-barras: rgba(0, 0, 0, 0.2); 
     --bar-height: clamp(20px, 0.8vw, 40px);
-    --gap: clamp(10px, 1.2vw, 20px);
+    --gap: clamp(8px, 0.2vw, 15px);
     --shift: clamp(8px, 2vw, 15px);
     --bar-bg: rgba(255, 255, 255, 0.25);
-    --bar-fill: #FFD600;
     --cor-texto-creditos: #E4C5B4;
     --cor-sombra-creditos: #1d0d07cc;
+    
     /*Indicador Estado atual na experiência*/
     --background-estado-atual: rgba(0, 0, 0, 0.7);
     --cor-tipografia-estado-atual: rgb(228, 197, 180);
@@ -36,11 +39,15 @@
     src: url("../font/livro_texto.woff2") format("woff2"),
         url('font/livro_texto.ttf') format('truetype');
 }
+/*------------------ Evita que crie um fake bold principalmente nos créditos------------------*/
+h1,h2,h3 {
+  font-weight: normal;
+}
 
 * {
     box-sizing: border-box;
 }
-/*------------------ geral html ------------------*/
+/*------------------ geral dos html's ------------------*/
 html, body {
     margin: 0;
     width: 100%;
@@ -551,6 +558,8 @@ body.fade-out {
 .popup-close {
     position: absolute;
     top: -10px;  
+    width: 32px;
+    height: 32px;
     right: -25px; 
     background: transparent;
     border: none;
@@ -608,7 +617,7 @@ body.fade-out {
     transform: scale(1.05);
 }
 
-/* ------------------ barras ------------------ */
+/* ------------------ Barras ------------------ */
 .barras {
     position: absolute;
     top: 50%;
@@ -624,18 +633,46 @@ body.fade-out {
 }
 
 .bar {
+    position: relative;
     width: var(--bar-width);
     height: var(--bar-height);
     background: var(--bar-bg);
+    border-radius: var(--bar-radius);
     overflow: hidden;
     transition: transform 0.4s ease;
+    box-shadow: 4px -6px 3px var(--sombra-barras); /* Sombra para dar profundidade */
 }
 
 .bar__fill {
+    position: relative;
     width: 0%;
     height: 100%;
     background: var(--bar-fill);
+    border-radius: var(--bar-radius);
 }
+
+/* Textura por cima do amarelo acompanhando o progresso */
+.bar__fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.85;
+}
+
+/* ------------------ Texturas das barras ------------------ */
+.bar--textura-1 .bar__fill::after { background-image: url("../img/t_1.png"); }
+.bar--textura-2 .bar__fill::after { background-image: url("../img/t_2.png"); }
+.bar--textura-3 .bar__fill::after { background-image: url("../img/t_3.png"); }
+.bar--textura-4 .bar__fill::after { background-image: url("../img/t_4.png"); }
+.bar--textura-5 .bar__fill::after { background-image: url("../img/t_5.png"); }
+.bar--textura-6 .bar__fill::after { background-image: url("../img/t_6.png"); }
 
 /* Animações das Barras (estrada amarela) */
 .bar.active.shift-right, .bar.completed.shift-right {
@@ -644,20 +681,6 @@ body.fade-out {
 
 .bar.active.shift-left, .bar.completed.shift-left {
     transform: translateX(calc(var(--shift) * -1));
-}
-
-
-@media (max-width: 768px) {
-  .barras {
-    right: 12px;
-  }
-
-  :root {
-    --bar-width: 80px;
-    --bar-height: 15px;
-    --gap: 10px;
-    --shift: 8px;
-  }
 }
 
 /*Estado Atual para situar o utilizador*/
@@ -675,12 +698,6 @@ body.fade-out {
     pointer-events: none;
     letter-spacing: 0.5px;
 }
-
-
-
-
-
-
 
 
 /*---------______________------------*/
