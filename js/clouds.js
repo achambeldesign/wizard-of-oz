@@ -110,7 +110,9 @@ function init() {
     undefined,
     (error) => console.error('Erro ao carregar textura das nuvens:', error)
   );
-  loadHouse();
+  if (container.dataset.showHouse !== 'false') {
+    loadHouse();
+  }
 }
 
 // ------------------ CLOUD LAYER FACTORY ------------------
