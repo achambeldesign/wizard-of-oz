@@ -618,10 +618,10 @@ body.fade-out {
 /* Cruz posicionada no canto superior direito exatamente junto ao modelo */
 .popup-close {
     position: absolute;
-    top: -10px;  
-    width: 32px;
-    height: 32px;
-    right: -34px; 
+    top: -8px;  
+    width: 45px;
+    height: 45px;
+    right: -28px; 
     background: transparent;
     border: none;
     cursor: pointer;
