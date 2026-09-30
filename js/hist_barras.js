@@ -3,6 +3,8 @@
 
 let isPaused = true;     // NOVA: Começa pausado após fechar o pop-up
 let storyEnded = false;  // NOVA: Controla o final da história
+let hasStartedPlayback = false;
+const instructionsPopup = document.getElementById("popup-folha");
 
 
 const TOTAL_ITEMS = 10; // nº total de barras
@@ -961,6 +963,11 @@ document.addEventListener(
     (e) => {
 
         if (e.repeat) return;
+        if (!hasStartedPlayback) return;
+        if (
+            instructionsPopup &&
+            getComputedStyle(instructionsPopup).display !== "none"
+        ) return;
 
         const key =
             e.key.toLowerCase();
@@ -1189,6 +1196,9 @@ function togglePlayPause() {
     clearTimeout(hideButtonTimeout);
 
     isPaused = !isPaused;
+    if (!isPaused) {
+        hasStartedPlayback = true;
+    }
 
     const currentItem = storyItems[currentIndex];
     const videos = getVideos(currentItem);
