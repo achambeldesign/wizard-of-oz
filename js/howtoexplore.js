@@ -113,7 +113,7 @@ window.addEventListener('mousemove', (event) => {
 const loader = new GLTFLoader();
 
 loader.load(
-    'model/HowtoExplore.glb',
+    'model/Explorarhistoria.glb',
 
     (gltf) => {
 
