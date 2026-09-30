@@ -1,4 +1,4 @@
-/* ------------------ Nuvens e Casa ------------------ */
+/* ------------------ Nuvens (index e about) e Casa ------------------ */
 import * as THREE from 'three';
 import { GLTFLoader } from 'addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'addons/loaders/DRACOLoader.js';
