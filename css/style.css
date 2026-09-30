@@ -135,7 +135,7 @@ body.fade-out {
         3.6px 3.6px 0 rgba(29, 13, 7, 0.314),
         4.8px 4.8px 0 rgba(29, 13, 7, 0.314),
         6px 6px 0 rgba(29, 13, 7, 0.314);
-    animation: menu-letter-float 5.24s ease-in-out infinite;
+    animation: menu-letter-float 5s ease-in-out infinite;
 }
 
 .menu-letter:nth-child(7n + 1) { animation-delay: -0.4s; }
