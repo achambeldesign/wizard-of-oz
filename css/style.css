@@ -1,7 +1,6 @@
 /*------------------ Variáveis ------------------*/
 :root {
     --gradienteBackground: linear-gradient(#482417, #532E1F, #71412F, #986853);  /*background nuvens*/
-    --shadow-letras-menu: rgba(29, 13, 7, 0.314);
     --bar-width: clamp(80px, 10vw, 120px); /*barras amarelas Yellow Brick Road*/
     --bar-radius: 3px; /* arredondamento yellow brick road */
     --bar-fill: #ffe100; /*cor da yellow brick road */
@@ -27,7 +26,7 @@
 @font-face {
     font-family: "Wizard";
     src: url("../font/Oz.woff2") format("woff2"),
-        url("../font/Oz.ttf") format("truetype");
+         url("../font/Oz.ttf") format("truetype");
     font-display: swap;
 }
 /* 
@@ -39,7 +38,7 @@
 @font-face {
     font-family: "Texto";
     src: url("../font/livro_texto.woff2") format("woff2"),
-        url('font/livro_texto.ttf') format('truetype');
+         url('../font/livro_texto.ttf') format('truetype');
 }
 /*------------------ Evita que crie um fake bold principalmente nos créditos------------------*/
 h1,h2,h3 {
@@ -131,11 +130,11 @@ body.fade-out {
 .menu-letter {
     display: inline-block;
     text-shadow:
-        1.2px 1.2px 0 var(--shadow-letras-menu),
-        2.4px 2.4px 0 var(--shadow-letras-menu),
-        3.6px 3.6px 0 var(--shadow-letras-menu),
-        4.8px 4.8px 0 var(--shadow-letras-menu),
-        6px 6px 0 var(--shadow-letras-menu);
+        1.2px 1.2px 0 var(--cor-sombra-creditos),
+        2.4px 2.4px 0 var(--cor-sombra-creditos),
+        3.6px 3.6px 0 var(--cor-sombra-creditos),
+        4.8px 4.8px 0 var(--cor-sombra-creditos),
+        6px 6px 0 var(--cor-sombra-creditos);
     animation: menu-letter-float 5s ease-in-out infinite;
 }
 /* nº total de letras que cada palavra tem -> 7*/
