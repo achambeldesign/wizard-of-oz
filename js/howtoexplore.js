@@ -89,13 +89,13 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição x
-folhaGroup.position.x = -0.025;
+folhaGroup.position.x = -0.96;//-0.025; // isto tem que estar relacionado com o blender 
 
 let folha;
 let animTerminou = false;
 let popAnim = false;
 let popTime = 0;
-const BASE_SCALE = 1.12; //escala um pouco maior para ser legivel as instruções
+const BASE_SCALE = 1.2; //escala um pouco maior para ser legivel as instruções
 
 /* ---------- Controlo Rato  ---------- */
 const mouse = new THREE.Vector2();
@@ -113,7 +113,7 @@ window.addEventListener('mousemove', (event) => {
 const loader = new GLTFLoader();
 
 loader.load(
-    'model/Explorarhistoria.glb',
+    'model/Instrucoesv2.glb',
 
     (gltf) => {
 
