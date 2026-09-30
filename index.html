@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Wizard of Oz</title>
+    <link rel="preload" href="font/Oz.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://mrdoob.com" crossorigin />
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <!-- Link: https://discourse.threejs.org/t/flying-through-clouds-2-0/57859/3-->
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
@@ -21,21 +21,19 @@
     <link rel="stylesheet" href="css/style.css" />
     <!--Javascript-->
     <script type="module" src="js/clouds.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
-    <script type="module" src="js/letters.js"></script>
     </head>
 
 <body>
 
 <!---------------- Menu principal ---------------->
-    <a href="about.html">
-        <div id="about"></div>
+    <a id="about" href="about.html" aria-label="About">
+        <span class="menu-letter" aria-hidden="true">A</span><span class="menu-letter" aria-hidden="true">b</span><span class="menu-letter" aria-hidden="true">o</span><span class="menu-letter" aria-hidden="true">u</span><span class="menu-letter" aria-hidden="true">t</span>
     </a>
-    <a href="credits.html">
-        <div id="credits"></div>
+    <a id="credits" href="credits.html" aria-label="Credits">
+        <span class="menu-letter" aria-hidden="true">C</span><span class="menu-letter" aria-hidden="true">r</span><span class="menu-letter" aria-hidden="true">e</span><span class="menu-letter" aria-hidden="true">d</span><span class="menu-letter" aria-hidden="true">i</span><span class="menu-letter" aria-hidden="true">t</span><span class="menu-letter" aria-hidden="true">s</span>
     </a>
-    <a href="estrada.html">
-        <div id="story"></div>
+    <a id="story" href="estrada.html" aria-label="Story">
+        <span class="menu-letter" aria-hidden="true">S</span><span class="menu-letter" aria-hidden="true">t</span><span class="menu-letter" aria-hidden="true">o</span><span class="menu-letter" aria-hidden="true">r</span><span class="menu-letter" aria-hidden="true">y</span>
     </a>
 
 <!---------------- Nuvens + Casa ---------------->

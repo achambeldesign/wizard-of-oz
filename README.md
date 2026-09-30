@@ -28,7 +28,7 @@ Use the directional keys to find your way through Oz. Switch between the book an
 ## Built With:
 
 - **Front-end:** HTML5, CSS & JavaScript 
-- **3D & Interactive Graphics:** Three.js / WebGL, p5.js
+- **3D & Interactive Graphics:** Three.js / WebGL
 - **Assets & Modeling:** Blender
 - **Animation:** Adobe Premiere
 - **Illustrations:** Procreate
