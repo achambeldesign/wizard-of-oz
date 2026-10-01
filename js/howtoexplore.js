@@ -89,7 +89,7 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição x
-folhaGroup.position.x = -0.63;//-0.025;-0.96 // isto tem que estar relacionado com o blender 
+folhaGroup.position.x = -0.56;//-0.54 -0.025;-0.96 // isto tem que estar relacionado com o blender 
 
 let folha;
 let animTerminou = false;
@@ -113,7 +113,7 @@ window.addEventListener('mousemove', (event) => {
 const loader = new GLTFLoader();
 
 loader.load(
-    'model/1.glb', //Instrucoesv2.glb
+    'model/regras.glb', // 1. glb Instrucoesv2.glb
 
     (gltf) => {
 
