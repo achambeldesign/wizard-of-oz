@@ -265,6 +265,11 @@ function animate() {
 
 animate();
 
+
+
+
+
+
 /* ---------------- Responsividade ---------------- */
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
