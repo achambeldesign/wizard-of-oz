@@ -103,7 +103,7 @@ function init() {
 
   const texLoader = new THREE.TextureLoader();
   texLoader.load(
-    'https://mrdoob.com/lab/javascript/webgl/clouds/cloud10.png',
+    'img/cloud.png',
     (tex) => {
       createCloudLayers(tex);
     },

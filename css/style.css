@@ -25,7 +25,7 @@
 */
 @font-face {
     font-family: "Wizard";
-    src: url("../font/Oz.woff2") format("woff2"),
+    src: url("../font/Oz.woff") format("woff"),
          url("../font/Oz.ttf") format("truetype");
     font-display: swap;
 }
@@ -37,7 +37,7 @@
 */
 @font-face {
     font-family: "Texto";
-    src: url("../font/livro_texto.woff2") format("woff2"),
+    src: url("../font/livro_texto.woff") format("woff"),
          url('../font/livro_texto.ttf') format('truetype');
 }
 /*------------------ Evita que crie um fake bold principalmente nos créditos------------------*/
