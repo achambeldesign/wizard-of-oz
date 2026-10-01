@@ -171,10 +171,12 @@ function createCloudLayers(texture) {
   scene.add(front);
 
   cloudLayers.push(
-    { mesh: back,  speed: 0.35, limit: 600 },
-    { mesh: mid,   speed: 0.55, limit: 600 },
-    { mesh: front, speed: 0.85, limit: 600 }
+    { meshes: [back], speed: 0.35, maxZ: 400, scale: 3.5 },
+    { meshes: [mid], speed: 0.55, maxZ: 800, scale: 2.8 },
+    { meshes: [front], speed: 0.85, maxZ: 1100, scale: 2.2 }
   );
+
+  cloudLayers.forEach(updateCloudTiles);
 }
 
 /*----------------------- Modelo da Casa 3D -----------------------*/
@@ -265,20 +267,55 @@ function onResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  cloudLayers.forEach(updateCloudTiles);
 }
 
 const clock = new THREE.Clock();
+
+function getCloudWrapLimit(layer) {
+  const viewDepth = Math.max(camera.near, camera.position.z - layer.maxZ);
+  const halfViewWidth = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
+    * viewDepth
+    * camera.aspect;
+  const cloudExtent = 500 + 64 * layer.scale * 1.4;
+  return halfViewWidth + cloudExtent;
+}
+
+function updateCloudTiles(layer) {
+  const tileWidth = 1000;
+  let tileCount = Math.max(3, Math.ceil((2 * getCloudWrapLimit(layer)) / tileWidth) + 1);
+  if (tileCount % 2 === 0) tileCount++;
+
+  while (layer.meshes.length > tileCount) {
+    scene.remove(layer.meshes.pop());
+  }
+
+  while (layer.meshes.length < tileCount) {
+    const mesh = layer.meshes[0].clone();
+    scene.add(mesh);
+    layer.meshes.push(mesh);
+  }
+
+  layer.meshes.forEach((mesh, index) => {
+    mesh.position.x = (index - (tileCount - 1) / 2) * tileWidth;
+  });
+}
 
 function animate() {
   requestAnimationFrame(animate);
 
   const delta = Math.min(clock.getDelta(), 0.05);
 
-  // Movimento contínuo e limpo das nuvens
+  // Move and recycle each repeated cloud tile independently.
   for (const layer of cloudLayers) {
-    layer.mesh.position.x -= layer.speed * 60 * delta;
-    if (layer.mesh.position.x < -layer.limit) {
-      layer.mesh.position.x = layer.limit;
+    const wrapLimit = getCloudWrapLimit(layer);
+    const tileWidth = 1000;
+
+    for (const mesh of layer.meshes) {
+      mesh.position.x -= layer.speed * 60 * delta;
+      if (mesh.position.x < -wrapLimit) {
+        mesh.position.x += tileWidth * layer.meshes.length;
+      }
     }
   }
 
