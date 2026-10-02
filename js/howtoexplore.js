@@ -89,7 +89,7 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição x
-folhaGroup.position.x = -0.56;//-0.54 -0.025;-0.96 // isto tem que estar relacionado com o blender 
+folhaGroup.position.x = -0.54;//-0.54 -0.025;-0.96 // isto tem que estar relacionado com o blender 
 
 let folha;
 let animTerminou = false;

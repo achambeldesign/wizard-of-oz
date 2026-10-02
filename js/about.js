@@ -94,7 +94,7 @@ window.addEventListener('mousemove', (event) => {
 const loader = new GLTFLoader();
 
 loader.load(
-    'model/About_2vv.glb',
+    'model/ABOUT.glb',
 
     (gltf) => {
 
