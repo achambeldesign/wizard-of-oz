@@ -48,6 +48,13 @@ const cloudShader = {
   `
 };
 
+const loadingScreen = document.querySelector('#loading-screen');
+const loadingMessage = document.querySelector('#loading-message');
+const loadingProgress = document.querySelector('#loading-progress');
+const loadingProgressbar = document.querySelector('#loading-progressbar');
+const loadingPercentage = document.querySelector('#loading-percentage');
+const loadingRetry = document.querySelector('#loading-retry');
+
 // ------------------ INIT ------------------
 init();
 
@@ -106,6 +113,7 @@ function init() {
     'img/cloud.png',
     (tex) => {
       createCloudLayers(tex);
+      startAnimation();
     },
     undefined,
     (error) => console.error('Erro ao carregar textura das nuvens:', error)
@@ -185,22 +193,26 @@ let houseModel = null;
 let modelLoaded = false;
 
 const mouse      = { x: 0, y: 0 };
-const mouseDelta = { x: 0, y: 0 };
-const lastMouse  = { x: 0, y: 0 };
 const current    = { x: 0, y: 0, rotY: 0, rotX: 0 };
 
 window.addEventListener('mousemove', (e) => {
-  const nx =  (e.clientX / window.innerWidth  - 0.5) * 2;
-  const ny = -(e.clientY / window.innerHeight - 0.5) * 2;
-  mouseDelta.x = nx - lastMouse.x;
-  mouseDelta.y = ny - lastMouse.y;
-  lastMouse.x  = nx;
-  lastMouse.y  = ny;
-  mouse.x = nx;
-  mouse.y = ny;
+  mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
 });
 
 function loadHouse() {
+  if (loadingScreen) {
+    document.body.setAttribute('aria-busy', 'true');
+    loadingMessage.textContent = 'The house is finding its way...';
+    loadingRetry.hidden = true;
+    loadingProgressbar.classList.add('is-indeterminate');
+    loadingProgressbar.removeAttribute('aria-valuenow');
+    loadingProgress.style.width = '0%';
+    loadingPercentage.textContent = 'Preparing...';
+    loadingScreen.classList.remove('is-hidden');
+    loadingScreen.setAttribute('aria-hidden', 'false');
+  }
+
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath(
     'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/libs/draco/'
@@ -252,14 +264,52 @@ function loadHouse() {
       gltf.animations.forEach((clip) => mixer.clipAction(clip).play());
 
       modelLoaded = true;
+      startAnimation();
+      if (loadingScreen) {
+        document.body.setAttribute('aria-busy', 'false');
+        loadingMessage.textContent = 'The house has arrived.';
+        loadingProgress.style.width = '100%';
+        loadingProgressbar.classList.remove('is-indeterminate');
+        loadingProgressbar.setAttribute('aria-valuenow', '100');
+        loadingPercentage.textContent = '100%';
+        loadingScreen.classList.add('is-hidden');
+        loadingScreen.setAttribute('aria-hidden', 'true');
+      }
     },
-    undefined,
+    (event) => {
+      if (!loadingScreen) return;
+
+      if (event.lengthComputable && event.total > 0) {
+        const percentage = Math.min(99, Math.round((event.loaded / event.total) * 100));
+        loadingProgressbar.classList.remove('is-indeterminate');
+        loadingProgressbar.setAttribute('aria-valuenow', String(percentage));
+        loadingProgress.style.width = `${percentage}%`;
+        loadingPercentage.textContent = `${percentage}%`;
+        if (percentage === 99) {
+          loadingMessage.textContent = 'Putting the house together...';
+        }
+      } else {
+        loadingProgressbar.classList.add('is-indeterminate');
+        loadingProgressbar.removeAttribute('aria-valuenow');
+        loadingPercentage.textContent = 'Loading...';
+      }
+    },
     (err) => {
       ktx2Loader.dispose();
       dracoLoader.dispose();
       console.error('Erro ao carregar casa:', err);
+      if (loadingScreen) {
+        document.body.setAttribute('aria-busy', 'false');
+        loadingMessage.textContent = 'The house could not load. Check your connection and try again.';
+        loadingPercentage.textContent = '';
+        loadingRetry.hidden = false;
+      }
     }
   );
+}
+
+if (loadingRetry) {
+  loadingRetry.addEventListener('click', loadHouse);
 }
 
 /*----------------- Animação das nuvens -----------------*/
@@ -271,6 +321,13 @@ function onResize() {
 }
 
 const clock = new THREE.Clock();
+let animationStarted = false;
+
+function startAnimation() {
+  if (animationStarted) return;
+  animationStarted = true;
+  animate();
+}
 
 function getCloudWrapLimit(layer) {
   const viewDepth = Math.max(camera.near, camera.position.z - layer.maxZ);
@@ -350,12 +407,7 @@ function animate() {
 
     houseModel.rotation.y = current.rotY;
     houseModel.rotation.x = current.rotX;
-
-    mouseDelta.x = 0;
-    mouseDelta.y = 0;
   }
 
   renderer.render(scene, camera);
 }
-
-animate();
