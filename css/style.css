@@ -68,6 +68,114 @@ body.fade-out {
     inset: 0;
     z-index: 1;
 }
+/*------------------ Carregamento do modelo na página inicial ------------------*/
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    color: var(--cor-texto-creditos);
+    text-align: center;
+    background:
+        radial-gradient(ellipse at center, rgba(113, 65, 47, 0.94), rgba(29, 13, 7, 0.97));
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#loading-screen.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loading-card {
+    width: min(100%, 25rem);
+}
+
+.loading-kicker,
+.loading-percentage {
+    margin: 0;
+    font-family: "Texto", serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.loading-kicker {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.loading-card h1 {
+    margin: 0.5rem 0 1rem;
+    font-family: "Wizard", serif;
+    font-size: clamp(3rem, 10vw, 5rem);
+    text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
+}
+
+#loading-message {
+    margin: 0 0 1.5rem;
+    font-family: "Texto", serif;
+    font-size: 1.1rem;
+}
+
+.loading-progressbar {
+    height: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(228, 197, 180, 0.65);
+    border-radius: 999px;
+    background: rgba(29, 13, 7, 0.55);
+}
+
+.loading-progressbar span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--bar-fill);
+    transition: width 0.2s ease;
+}
+
+.loading-progressbar.is-indeterminate span {
+    width: 35%;
+    animation: loading-progress 1.4s ease-in-out infinite;
+}
+
+.loading-percentage {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+}
+
+#loading-retry {
+    margin-top: 1.25rem;
+    padding: 0.65rem 1.25rem;
+    border: 1px solid var(--cor-texto-creditos);
+    border-radius: 999px;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+}
+
+#loading-retry:hover {
+    color: #1d0d07;
+    background: var(--cor-texto-creditos);
+}
+
+@keyframes loading-progress {
+    from { transform: translateX(-110%); }
+    to { transform: translateX(300%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-progressbar.is-indeterminate span {
+        animation: none;
+        width: 100%;
+        opacity: 0.6;
+    }
+}
 /*------------------ Menu dos Sapatos ------------------*/
 #sapatosRuby {
     position: fixed;

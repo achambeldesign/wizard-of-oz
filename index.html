@@ -25,6 +25,26 @@
 
 <body>
 
+    <div id="loading-screen" role="status" aria-live="polite" aria-label="Loading the house">
+        <div class="loading-card">
+            <p class="loading-kicker">The Wizard of Oz</p>
+            <h1>Loading Oz</h1>
+            <p id="loading-message">The house is finding its way...</p>
+            <div
+                id="loading-progressbar"
+                class="loading-progressbar is-indeterminate"
+                role="progressbar"
+                aria-label="House model loading progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+            >
+                <span id="loading-progress"></span>
+            </div>
+            <p id="loading-percentage" class="loading-percentage">Preparing...</p>
+            <button id="loading-retry" type="button" hidden>Try again</button>
+        </div>
+    </div>
+
 <!---------------- Menu principal ---------------->
     <a id="about" href="about.html" aria-label="About">
         <span class="menu-letter" aria-hidden="true">A</span><span class="menu-letter" aria-hidden="true">b</span><span class="menu-letter" aria-hidden="true">o</span><span class="menu-letter" aria-hidden="true">u</span><span class="menu-letter" aria-hidden="true">t</span>
