@@ -749,22 +749,107 @@ body.fade-out {
     transform: translateX(calc(var(--shift) * -1));
 }
 
-/*Estado Atual para situar o utilizador*/
+/* Rosa dos ventos */
 .estado-atual {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    background: var(--background-estado-atual);
-    color: var(--cor-tipografia-estado-atual);
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-family: 'Texto', serif;
-    font-size: 14px;
+    top: clamp(12px, 2vw, 24px);
+    left: clamp(12px, 2vw, 24px);
     z-index: 1000;
     pointer-events: none;
-    letter-spacing: 0.5px;
 }
 
+.rosa-ventos {
+    position: relative;
+    width: clamp(82px, 10vw, 112px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(228, 197, 180, 0.75);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(83, 46, 31, 0.92), rgba(0, 0, 0, 0.78));
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.35), inset 0 0 12px rgba(228, 197, 180, 0.12);
+}
+
+.rosa-estrela {
+    position: absolute;
+    inset: 19%;
+    width: 62%;
+    height: 62%;
+    fill: rgba(228, 197, 180, 0.76);
+}
+
+.rosa-ponto {
+    position: absolute;
+    z-index: 1;
+    color: var(--cor-tipografia-estado-atual);
+    font-family: 'Texto', serif;
+    font-size: clamp(10px, 1.2vw, 13px);
+    line-height: 1;
+}
+
+.rosa-ponto-norte {
+    top: 7%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.rosa-ponto-sul {
+    bottom: 7%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.rosa-ponto-oeste {
+    left: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.rosa-ponto-este {
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.rosa-bola {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    width: 13px;
+    height: 13px;
+    border: 2px solid #f3d9a7;
+    border-radius: 50%;
+    background: #b84a31;
+    box-shadow: 0 0 10px rgba(243, 217, 167, 0.75);
+    transform: translate(-50%, -50%);
+    transition: top 220ms ease, left 220ms ease;
+}
+
+.estado-atual[data-direction="n"] .rosa-bola {
+    top: 29%;
+    left: 50%;
+}
+
+.estado-atual[data-direction="s"] .rosa-bola {
+    top: 71%;
+    left: 50%;
+}
+
+.estado-atual[data-direction="w"] .rosa-bola {
+    top: 50%;
+    left: 29%;
+}
+
+.estado-atual[data-direction="e"] .rosa-bola {
+    top: 50%;
+    left: 71%;
+}
+
+.estado-atual[data-ball-light="true"] .rosa-bola {
+    background: #e7b88d;
+    border-color: #fff0d9;
+    box-shadow: 0 0 10px rgba(255, 240, 217, 0.55);
+    opacity: 0.72;
+}
 
 /*---------______________------------*/
 /* Overlay de Play/Pause transparente por cima dos vídeos */
