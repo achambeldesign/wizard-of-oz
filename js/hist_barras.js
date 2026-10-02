@@ -11,7 +11,7 @@ const TOTAL_ITEMS = 10; // nº total de barras
 
 const barsContainer = document.getElementById("barras");
 const startOverlay = document.getElementById("startOverlay");
-const statusIndicator = document.getElementById("estado-atual");
+const compassIndicator = document.getElementById("estado-atual");
 
 const storyItems = [];
 
@@ -26,17 +26,17 @@ const VIDEO_FADE_DURATION = 400;
 const AUDIO_FADE_DURATION = 400;
 
 
-/* ------------ Estado atual na história (indicação para o utilizador) ------------ */
-function updateStatus(modeText, keyName = "None") {
+function updateCompassDirection(direction) {
+    if (compassIndicator) {
+        compassIndicator.dataset.direction = direction;
+        compassIndicator.removeAttribute("data-ball-light");
+    }
+}
 
-    if (!statusIndicator) return;
-
-    const currentPart = currentIndex + 1;
-
-    statusIndicator.innerHTML =
-        `<strong>${currentPart}</strong> /10 | ` +
-        `Key: <strong>${keyName}</strong> | ` +
-        `Mode: <strong>${modeText}</strong>`;
+function lightenCompassBall() {
+    if (["w", "e"].includes(compassIndicator?.dataset.direction)) {
+        compassIndicator.dataset.ballLight = "true";
+    }
 }
 
 
@@ -430,11 +430,7 @@ function setMode(mode) {
         );
 
         showModeVideo("default", true);
-
-        updateStatus(
-            "Default",
-            "None"
-        );
+        lightenCompassBall();
 
         return;
     }
@@ -451,11 +447,6 @@ function setMode(mode) {
 
         showModeVideo("book", true);
 
-        updateStatus(
-            "Book",
-            "W"
-        );
-
         return;
     }
 
@@ -470,11 +461,6 @@ function setMode(mode) {
         currentItem.classList.remove("w-pressed");
 
         showModeVideo("movie", true);
-
-        updateStatus(
-            "Movie",
-            "E"
-        );
 
         return;
     }
@@ -663,20 +649,17 @@ function activateItem(index) {
         currentItem.classList.add("w-pressed");
         currentItem.classList.remove("e-pressed");
         showModeVideo("book", false);
-        updateStatus("Book", "W");
 
     } else if (currentMode === "movie") {
         
         currentItem.classList.add("e-pressed");
         currentItem.classList.remove("w-pressed");
         showModeVideo("movie", false);
-        updateStatus("Movie", "E");
 
     } else {
         
         currentItem.classList.remove("w-pressed", "e-pressed");
         showModeVideo("default", false);
-        updateStatus("Default", "None");
 
     }
 
@@ -976,6 +959,10 @@ document.addEventListener(
             storyItems[currentIndex];
 
         if (!currentItem) return;
+
+        if (["n", "w", "s", "e"].includes(key)) {
+            updateCompassDirection(key);
+        }
 
 
         /* =================================================
