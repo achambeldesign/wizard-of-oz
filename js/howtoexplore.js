@@ -223,10 +223,8 @@ function animate() {
             scale = BASE_SCALE;
             popAnim = false;
             
-    /* Revela botão de fechar (back) */
-            const uiContainer = document.querySelector('.popup-ui-container');
-            if (uiContainer) {
-                uiContainer.classList.add('visivel');
+            if (fecharBtn) {
+                fecharBtn.classList.add('visivel');
             }
         }
 
