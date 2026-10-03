@@ -688,6 +688,7 @@ body.fade-out {
     left: 0;
     width: 100vw;
     height: 100vh;
+    background:var(--gradienteBackground); 
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -699,7 +700,6 @@ body.fade-out {
 #popup-folha .nuvens {
     position: absolute;
     z-index: 0;
-    background: var(--gradienteBackground);
     pointer-events: none;
 }
 
@@ -712,19 +712,8 @@ body.fade-out {
     display: block;
     width: 100%;
     height: 100%;
-    pointer-events: auto;
+    /*pointer-events: auto;*/
 }
-
-/* Contentor invisível centrado no ecrã com as dimensões aproximadas do modelo 3D */
-.popup-ui-container {
-    position: relative;
-    width: 640px;  
-    height: 440px; 
-    pointer-events: none; 
-    z-index: 10000;
-    opacity: 0; /* Começa invisível */
-    transition: opacity 0.6s ease; /* Transição suave de aparecimento */
-    }
 
 /* Classe adicionada em javascript quando a folha 3d estabiliza */
 .popup-ui-container.visivel {
@@ -735,18 +724,10 @@ body.fade-out {
 /* Cruz posicionada no canto superior direito exatamente junto ao modelo */
 .popup-close {
     position: absolute;
-    top: -8px;  
-    width: 45px;
-    height: 45px;
-    right: -28px; 
+    top: 0;
+    right: 0;
     background: transparent;
     border: none;
-    cursor: pointer;
-    pointer-events: auto; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
     padding: 0;
     transition: transform 0.2s ease;
 }
@@ -754,7 +735,9 @@ body.fade-out {
 .popup-close img {
     width: 45px;
     height: 45px;
+    cursor: pointer;
     object-fit: contain;
+    position: absolute;
 }
 /* Media queries */
 @media (max-width: 1024px) {
