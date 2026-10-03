@@ -696,9 +696,17 @@ body.fade-out {
     transition: opacity 0.3s ease;
 }
 
+/* Nuvens animadas atrás do modelo 3D das instruções */
+#popup-folha .nuvens {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+}
+
 /* O canvas mantém-se a ocupar o ecrã todo sem alterações */
 #instructions {
     position: absolute;
+    z-index: 1;
     top: 0;
     left: 0;
     display: block;
