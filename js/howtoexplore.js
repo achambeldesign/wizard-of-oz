@@ -5,7 +5,8 @@ let popupAtivo = true;
 
     if (fecharBtn && popupOverlay) {
         fecharBtn.addEventListener('click', () => {
-            popupOverlay.style.opacity = '0';
+            fecharBtn.disabled = true;
+            popupOverlay.classList.add('fechando');
             setTimeout(() => {
                 popupOverlay.style.display = 'none';
                 popupAtivo = false; 
