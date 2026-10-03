@@ -715,40 +715,29 @@ body.fade-out {
     pointer-events: auto;
 }
 
-/* Contentor invisível centrado no ecrã com as dimensões aproximadas do modelo 3D */
-.popup-ui-container {
-    position: relative;
-    width: 640px;  
-    height: 440px; 
-    pointer-events: none; 
-    z-index: 10000;
-    opacity: 0; /* Começa invisível */
-    transition: opacity 0.6s ease; /* Transição suave de aparecimento */
-    }
-
-/* Classe adicionada em javascript quando a folha 3d estabiliza */
-.popup-ui-container.visivel {
-    opacity: 1;
-    pointer-events: auto; 
-}
-
-/* Cruz posicionada no canto superior direito exatamente junto ao modelo */
 .popup-close {
     position: absolute;
-    top: -8px;  
+    top: 20px;
+    right: 20px;
+    z-index: 2;
     width: 45px;
     height: 45px;
-    right: -28px; 
     background: transparent;
     border: none;
     cursor: pointer;
-    pointer-events: auto; 
+    pointer-events: none;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 4px;
     padding: 0;
-    transition: transform 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, transform 0.2s ease;
+}
+
+.popup-close.visivel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .popup-close img {
@@ -756,21 +745,6 @@ body.fade-out {
     height: 45px;
     object-fit: contain;
 }
-/* Media queries */
-@media (max-width: 1024px) {
-    .popup-close {
-        top: -14px;
-        right: -34px;
-    }
-}
-
-@media (max-width: 768px) {
-    .popup-close {
-        top: -14px;
-        right: -24px; 
-    }
-}
-
 .popup-close:hover {
     transform: scale(1.05);
 }
