@@ -688,7 +688,7 @@ body.fade-out {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color:rgba(29, 13, 7, 0.95); 
+    background-color:var(--gradienteBackground); 
     z-index: 9999;
     display: flex;
     justify-content: center;
