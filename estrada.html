@@ -19,6 +19,7 @@
 <!-- Javascript -->
 <script type="module" src="js/dorothy_shoes.js"></script>
 <script type="module" src="js/howtoexplore.js"></script> 
+<script type="module" src="js/clouds.js"></script>
 </head>
 <body>
     
@@ -44,8 +45,9 @@
 
    <!------------------ Pop-up Instruções overlay ------------------>
     <div id="popup-folha" class="popup-overlay">
-        <canvas id="instructions"></canvas>
-        <div class="popup-ui-container">
+       <div class="nuvens" data-show-house="false" aria-hidden="true"></div>
+       <canvas id="instructions"></canvas>
+       <div class="popup-ui-container">
             <button id="fechar-popup" class="popup-close" aria-label="Back">
                 <img src="img/x.PNG" alt="x">
             </button>
