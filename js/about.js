@@ -76,7 +76,7 @@ let animTerminou = false;
 let popAnim = false;
 let popTime = 0;
 
-const BASE_SCALE = 1.1;
+const BASE_SCALE = 1.15;
 
 // ---------- Controlo de Rato e Raycasting ----------
 const mouse = new THREE.Vector2();
@@ -94,7 +94,7 @@ window.addEventListener('mousemove', (event) => {
 const loader = new GLTFLoader();
 
 loader.load(
-    './model/Aboutv1.glb',
+    './model/111.glb',
 
     (gltf) => {
 
