@@ -67,7 +67,7 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição
-folhaGroup.position.x = 0.5;//-0.025
+folhaGroup.position.x = 0.62621;//-0.025
 
 let folha;
 let animTerminou = false;
@@ -94,7 +94,7 @@ window.addEventListener('mousemove', (event) => {
 const loader = new GLTFLoader();
 
 loader.load(
-    './model/About.glb',
+    './model/Aboutv1.glb',
 
     (gltf) => {
 
