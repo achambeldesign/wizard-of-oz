@@ -7,6 +7,7 @@ import { KTX2Loader } from 'addons/loaders/KTX2Loader.js';
 //Variáveis globais  
 let camera, scene, renderer;
 const container = document.querySelector('.nuvens');
+const cloudMovementDirection = container.dataset.movementDirection === 'right' ? 1 : -1;
 
 //Cloud shader (parametros para o shader das nuvens)
 const cloudShader = {
@@ -369,9 +370,11 @@ function animate() {
     const tileWidth = 1000;
 
     for (const mesh of layer.meshes) {
-      mesh.position.x -= layer.speed * 60 * delta;
-      if (mesh.position.x < -wrapLimit) {
+      mesh.position.x += cloudMovementDirection * layer.speed * 60 * delta;
+      if (cloudMovementDirection < 0 && mesh.position.x < -wrapLimit) {
         mesh.position.x += tileWidth * layer.meshes.length;
+      } else if (cloudMovementDirection > 0 && mesh.position.x > wrapLimit) {
+        mesh.position.x -= tileWidth * layer.meshes.length;
       }
     }
   }
