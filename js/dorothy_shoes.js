@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'sound/shoes/shoes_2.mp3',
         'sound/shoes/shoes_3.mp3',
         'sound/shoes/shoes_4.mp3',
+        'sound/shoes/shoes_5.mp3',
     ];
 
     shoesVideo.pause();

@@ -204,7 +204,7 @@ window.addEventListener('mousemove', (e) => {
 function loadHouse() {
   if (loadingScreen) {
     document.body.setAttribute('aria-busy', 'true');
-    loadingMessage.textContent = 'The house is finding its way...';
+    loadingMessage.textContent = 'We must be over the rainbow...';
     loadingRetry.hidden = true;
     loadingProgressbar.classList.add('is-indeterminate');
     loadingProgressbar.removeAttribute('aria-valuenow');
