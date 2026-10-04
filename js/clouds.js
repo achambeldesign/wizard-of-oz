@@ -117,7 +117,7 @@ function init() {
       startAnimation();
     },
     undefined,
-    (error) => console.error('Erro ao carregar textura das nuvens:', error)
+    (error) => console.error('Error:', error)
   );
   if (container.dataset.showHouse !== 'false') {
     loadHouse();
@@ -204,7 +204,7 @@ window.addEventListener('mousemove', (e) => {
 function loadHouse() {
   if (loadingScreen) {
     document.body.setAttribute('aria-busy', 'true');
-    loadingMessage.textContent = 'We must be over the rainbow...';
+    loadingMessage.textContent = 'Not in Kansas anymore...';
     loadingRetry.hidden = true;
     loadingProgressbar.classList.add('is-indeterminate');
     loadingProgressbar.removeAttribute('aria-valuenow');
@@ -268,7 +268,6 @@ function loadHouse() {
       startAnimation();
       if (loadingScreen) {
         document.body.setAttribute('aria-busy', 'false');
-        loadingMessage.textContent = 'The house has arrived.';
         loadingProgress.style.width = '100%';
         loadingProgressbar.classList.remove('is-indeterminate');
         loadingProgressbar.setAttribute('aria-valuenow', '100');
@@ -287,7 +286,7 @@ function loadHouse() {
         loadingProgress.style.width = `${percentage}%`;
         loadingPercentage.textContent = `${percentage}%`;
         if (percentage === 99) {
-          loadingMessage.textContent = 'Putting the house together...';
+          loadingMessage.textContent = 'Not in Kansas anymore...';
         }
       } else {
         loadingProgressbar.classList.add('is-indeterminate');
@@ -298,10 +297,10 @@ function loadHouse() {
     (err) => {
       ktx2Loader.dispose();
       dracoLoader.dispose();
-      console.error('Erro ao carregar casa:', err);
+      console.error('Error:', err);
       if (loadingScreen) {
         document.body.setAttribute('aria-busy', 'false');
-        loadingMessage.textContent = 'The house could not load. Check your connection and try again.';
+        loadingMessage.textContent = 'Check your connection and try again.';
         loadingPercentage.textContent = '';
         loadingRetry.hidden = false;
       }
