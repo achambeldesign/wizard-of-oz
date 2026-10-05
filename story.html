@@ -33,6 +33,7 @@
 
 <div class="historia" id="historia">
 
+    <div class="story-hud-grid">
     <div id="estado-atual" class="estado-atual" data-direction="center">
         <div class="rosa-ventos" aria-hidden="true">
             <span class="rosa-ponto rosa-ponto-norte">N</span>
@@ -45,6 +46,14 @@
             </svg>
             <span class="rosa-bola"></span>
         </div>
+    </div>
+
+    <div class="barras" id="barras"></div>
+
+    <video id="sapatosRuby" muted playsinline style="cursor: pointer; display: block;">
+        <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
+        <source src="video/Shoes/shoes.webm" type="video/webm">
+    </video>
     </div>
 
    <!------------------ Pop-up Instruções overlay ------------------>
@@ -217,7 +226,6 @@
     </video>
 </div>
 <!-- Tijolos Amarelos - Yellow Brick Road (barras progressão) -->
-<div class="barras" id="barras"></div>
 
 <!------------------ Play/Pause & Replay Overlays ------------------>
 <div id="play-pause-container" class="play-pause-overlay">
@@ -230,11 +238,5 @@
 <!--javascript-->
 <script src="js/hist_barras.js"></script>
 
-<!------------------Sapatos Dorothy------------------>
-    <video id="sapatosRuby" muted playsinline style="cursor: pointer; display: block;">
-        <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
-        <source src="video/Shoes/shoes.webm" type="video/webm">
-    </video>
-    
 </body>
 </html>

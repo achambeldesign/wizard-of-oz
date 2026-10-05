@@ -9,6 +9,8 @@
     --gap: clamp(8px, 0.2vw, 15px);
     --shift: clamp(8px, 2vw, 15px);
     --bar-bg: rgba(255, 255, 255, 0.25);
+    --story-hud-inset: clamp(12px, 2vw, 24px);
+    --story-hud-gap: 8px;
     --cor-texto-creditos: #E4C5B4;
     --cor-sombra-creditos: #1d0d07cc;
     
@@ -743,8 +745,8 @@ body.fade-out {
 /* Cruz posicionada no canto superior direito exatamente junto ao modelo */
 .popup-close {
     position: absolute;
-    top: clamp(12px, 2vw, 24px);
-    right: clamp(12px, 2vw, 24px);
+    top: var(--story-hud-inset);
+    right: var(--story-hud-inset);
     z-index: 2;
     display: grid;
     place-items: center;
@@ -778,6 +780,38 @@ body.fade-out {
 }
 
 /* ------------------ Barras ------------------ */
+.story-hud-grid {
+    position: fixed;
+    inset: var(--story-hud-inset);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-rows: max-content minmax(0, 1fr);
+    grid-template-areas:
+        "compass controls"
+        ". road";
+    pointer-events: none;
+    z-index: 50;
+}
+
+.story-hud-grid .estado-atual {
+    position: relative;
+    inset: auto;
+    grid-area: compass;
+    align-self: start;
+    justify-self: start;
+}
+
+.story-hud-grid #sapatosRuby {
+    position: relative;
+    top: auto;
+    right: auto;
+    grid-area: controls;
+    align-self: start;
+    justify-self: end;
+    margin-right: calc(50px + var(--story-hud-gap));
+    pointer-events: auto;
+}
+
 .barras {
     position: absolute;
     top: 50%;
@@ -790,6 +824,16 @@ body.fade-out {
     align-items: center;
     z-index: 50;
     pointer-events: none;
+}
+
+.story-hud-grid .barras {
+    position: relative;
+    top: auto;
+    right: auto;
+    transform: none;
+    grid-area: road;
+    align-self: center;
+    justify-self: end;
 }
 
 .bar {
