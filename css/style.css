@@ -1,3 +1,6 @@
+* {
+    box-sizing: border-box;
+}
 /*------------------ Variáveis ------------------*/
 :root {
     --gradienteBackground: linear-gradient(#482417, #532E1F, #71412F, #986853);  /*background nuvens*/
@@ -13,12 +16,8 @@
     --story-hud-gap: 8px;
     --cor-texto-creditos: #E4C5B4;
     --cor-sombra-creditos: #1d0d07cc;
-    
-    /*Indicador Estado atual na experiência*/
-    --background-estado-atual: rgba(0, 0, 0, 0.7);
-    --cor-tipografia-estado-atual: rgb(228, 197, 180);
 }
-/*------------------ Tipografias------------------*/
+/*------------------ Tipografia------------------*/
 /* 
   Fonte (títulos / inicio de frases): Oz's Wizard  (OzsWizard-Scarecrow.ttf)
   Autor: Mario Arturo
@@ -47,9 +46,6 @@ h1,h2,h3 {
   font-weight: normal;
 }
 
-* {
-    box-sizing: border-box;
-}
 /*------------------ geral dos html's ------------------*/
 html, body {
     margin: 0;
@@ -917,7 +913,7 @@ body.fade-out {
 .rosa-ponto {
     position: absolute;
     z-index: 1;
-    color: var(--cor-tipografia-estado-atual);
+    color: var(--cor-texto-creditos);
     font-family: 'Texto', serif;
     font-size: clamp(10px, 1.2vw, 13px);
     line-height: 1;
@@ -1009,7 +1005,7 @@ body.fade-out {
     left: 50%;
     transform: translate(-50%, -50%);   
     width: 80px; height: 80px;
-    background: var(--background-estado-atual);
+    background: var(--sombra-barras);
     border-radius: 50%;
     display: flex;
     justify-content: center;
