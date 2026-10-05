@@ -4,7 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Wizard of Oz</title>
-    <link rel="icon" type="image/x-icon" href="img/icon.PNG">
+        <!-- Favicon -->
+    <link rel="icon" href="img/light_default.PNG" type="image/x-icon"> <!--(padrão - fallback para navegadores não suportados)-->
+    <link rel="icon" href="img/light_default.PNG" type="image/x-icon" media="(prefers-color-scheme: light)">  <!-- light mode -->
+    <link rel="icon" href="img/dark.PNG" type="image/x-icon" media="(prefers-color-scheme: dark)">  <!-- dark mode -->
+
      <!-- Link: https://discourse.threejs.org/t/flying-through-clouds-2-0/57859/3-->
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
