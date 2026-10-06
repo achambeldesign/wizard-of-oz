@@ -67,7 +67,7 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição
-folhaGroup.position.x = 0.62621;//-0.025
+folhaGroup.position.x = 0.59;//0.62621
 
 let folha;
 let animTerminou = false;
@@ -76,7 +76,7 @@ let animTerminou = false;
 let popAnim = false;
 let popTime = 0;
 
-const BASE_SCALE = 1.15;
+const BASE_SCALE = 1.25;
 
 // ---------- Controlo de Rato e Raycasting ----------
 const mouse = new THREE.Vector2();

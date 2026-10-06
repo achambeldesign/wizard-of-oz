@@ -90,13 +90,12 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição x
-folhaGroup.position.x = -0.62621;//-0.54 -0.025;-0.96 // isto tem que estar relacionado com o blender 
-
+folhaGroup.position.x = -0.628;//-0.62621
 let folha;
 let animTerminou = false;
 let popAnim = false;
 let popTime = 0;
-const BASE_SCALE = 1.15; //1.2escala um pouco maior para ser legivel as instruções
+const BASE_SCALE = 1.25; //1.2escala um pouco maior para ser legivel as instruções
 
 /* ---------- Controlo Rato  ---------- */
 const mouse = new THREE.Vector2();
