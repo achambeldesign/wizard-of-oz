@@ -1022,3 +1022,11 @@ body.fade-out {
     opacity: 0;
     pointer-events: none;
 }
+
+.btn-try-again {
+    border: 0;
+    padding: 0;
+    color: #fff;
+    font-size: 48px;
+    line-height: 1;
+}
