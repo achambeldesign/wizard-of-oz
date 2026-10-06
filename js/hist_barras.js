@@ -7,7 +7,7 @@ let hasStartedPlayback = false;
 const instructionsPopup = document.getElementById("popup-folha");
 
 
-const TOTAL_ITEMS = 10; // nº total de barras
+const TOTAL_ITEMS = document.querySelectorAll(".historia-item").length;
 
 const barsContainer = document.getElementById("barras");
 const startOverlay = document.getElementById("startOverlay");
@@ -767,25 +767,31 @@ function goToNext() {
            A história fica parada, com o vídeo no último frame
            ================================================= */
 
-        storyEnded = true;
-        isPaused = true;
-
-        const currentItem = storyItems[currentIndex];
-
-        if (currentItem) {
-
-            const videos = getVideos(currentItem);
-
-            [videos.default, videos.book, videos.movie].forEach(video => {
-                if (!video) return;
-                video.pause();    // garantir que fica parado
-                video.volume = 0; // sem áudio
-                // NÃO tocar no currentTime -> mantém-se no último frame
-            });
-        }
-
-        document.getElementById("play-pause-container").style.display = "none";
+        finishStory();
     }
+}
+
+function finishStory() {
+    storyEnded = true;
+    isPaused = true;
+    clearTimeout(hideButtonTimeout);
+
+    const currentItem = storyItems[currentIndex];
+
+    if (currentItem) {
+        const videos = getVideos(currentItem);
+
+        [videos.default, videos.book, videos.movie].forEach(video => {
+            if (!video) return;
+            video.pause();
+            video.volume = 0;
+        });
+    }
+
+    playPauseContainer.style.display = "";
+    btnPlay.classList.add("fade-out");
+    btnPause.classList.add("fade-out");
+    btnTryAgain.classList.remove("fade-out");
 }
 
 
@@ -1019,9 +1025,7 @@ if (key === "s") {
             video.volume = 0;
         });
 
-        storyEnded = true;
-        isPaused = true;
-        document.getElementById("play-pause-container").style.display = "none";
+        finishStory();
         isSkipping = false;
 
         return;
@@ -1140,6 +1144,7 @@ function prepareItemVideos(index) {
 const playPauseContainer = document.getElementById("play-pause-container");
 const btnPlay  = document.getElementById("btn-play");
 const btnPause = document.getElementById("btn-pause");
+const btnTryAgain = document.getElementById("btn-try-again");
 
 let hideButtonTimeout = null;
 
@@ -1206,11 +1211,36 @@ function togglePlayPause() {
     }
 }
 
+function restartStory() {
+    clearTimeout(hideButtonTimeout);
+    storyEnded = false;
+    isPaused = false;
+    hasStartedPlayback = true;
+    isSkipping = false;
+    currentMode = "default";
+    updateCompassDirection("center");
+
+    btnTryAgain.classList.add("fade-out");
+    playPauseContainer.style.display = "";
+    updatePlayPauseIcon();
+
+    activateItem(0);
+
+    hideButtonTimeout = setTimeout(() => {
+        hideActiveButton();
+    }, 200);
+}
+
 [btnPlay, btnPause].forEach(btn => {
     btn.addEventListener("click", (e) => {
         e.stopPropagation();
         togglePlayPause();
     });
+});
+
+btnTryAgain.addEventListener("click", (e) => {
+    e.stopPropagation();
+    restartStory();
 });
 
 playPauseContainer.addEventListener("click", () => {
