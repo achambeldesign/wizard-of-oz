@@ -1,8 +1,5 @@
 /* ------------------ Nuvens (index e about) e Casa ------------------ */
 import * as THREE from 'three';
-import { GLTFLoader } from 'addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'addons/loaders/DRACOLoader.js';
-import { KTX2Loader } from 'addons/loaders/KTX2Loader.js';
 
 //Variáveis globais  
 let camera, scene, renderer;
@@ -108,6 +105,7 @@ function init() {
   scene.add(bottomLight);
 
   window.addEventListener('resize', onResize);
+  document.addEventListener('visibilitychange', onVisibilityChange);
 
   const texLoader = new THREE.TextureLoader();
   texLoader.load(
@@ -201,7 +199,7 @@ window.addEventListener('mousemove', (e) => {
   mouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
 });
 
-function loadHouse() {
+async function loadHouse() {
   if (loadingScreen) {
     document.body.setAttribute('aria-busy', 'true');
     loadingMessage.textContent = 'Not in Kansas anymore...';
@@ -214,12 +212,26 @@ function loadHouse() {
     loadingScreen.setAttribute('aria-hidden', 'false');
   }
 
-  const dracoLoader = new DRACOLoader();
-  dracoLoader.setDecoderPath(
-    'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/libs/draco/'
-  );
+  let GLTFLoader;
+  let KTX2Loader;
+  try {
+    const [gltfModule, ktx2Module] = await Promise.all([
+      import('addons/loaders/GLTFLoader.js'),
+      import('addons/loaders/KTX2Loader.js')
+    ]);
+    GLTFLoader = gltfModule.GLTFLoader;
+    KTX2Loader = ktx2Module.KTX2Loader;
+  } catch (error) {
+    console.error('Failed to load 3D model loaders:', error);
+    if (loadingScreen) {
+      document.body.setAttribute('aria-busy', 'false');
+      loadingMessage.textContent = 'Check your connection and try again.';
+      loadingPercentage.textContent = '';
+      loadingRetry.hidden = false;
+    }
+    return;
+  }
 
-  // 1. Configurar o KTX2Loader para suportar ETC1s / Basis Universal
   const ktx2Loader = new KTX2Loader();
   ktx2Loader.setTranscoderPath(
     'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/libs/basis/'
@@ -227,14 +239,12 @@ function loadHouse() {
   ktx2Loader.detectSupport(renderer); // Essencial para o loader saber o que a placa gráfica suporta
 
   const gltfLoader = new GLTFLoader();
-  gltfLoader.setDRACOLoader(dracoLoader);
   gltfLoader.setKTX2Loader(ktx2Loader); // 2. Registar o KTX2Loader no GLTFLoader
 
   gltfLoader.load(
     './model/Dorothy_125.glb',
     (gltf) => {
       ktx2Loader.dispose();
-      dracoLoader.dispose();
       houseModel = gltf.scene;
 
       houseModel.traverse((node) => {
@@ -296,7 +306,6 @@ function loadHouse() {
     },
     (err) => {
       ktx2Loader.dispose();
-      dracoLoader.dispose();
       console.error('Error:', err);
       if (loadingScreen) {
         document.body.setAttribute('aria-busy', 'false');
@@ -322,11 +331,22 @@ function onResize() {
 
 const clock = new THREE.Clock();
 let animationStarted = false;
+let animationFrameId = null;
 
 function startAnimation() {
-  if (animationStarted) return;
+  if (animationStarted || document.hidden) return;
   animationStarted = true;
   animate();
+}
+
+function onVisibilityChange() {
+  if (document.hidden) {
+    if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+    animationStarted = false;
+  } else {
+    startAnimation();
+  }
 }
 
 function getCloudWrapLimit(layer) {
@@ -359,7 +379,11 @@ function updateCloudTiles(layer) {
 }
 
 function animate() {
-  requestAnimationFrame(animate);
+  animationFrameId = null;
+  if (document.hidden) {
+    animationStarted = false;
+    return;
+  }
 
   const delta = Math.min(clock.getDelta(), 0.05);
 
@@ -412,4 +436,5 @@ function animate() {
   }
 
   renderer.render(scene, camera);
+  animationFrameId = requestAnimationFrame(animate);
 }

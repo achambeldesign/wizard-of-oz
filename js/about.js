@@ -81,6 +81,7 @@ const BASE_SCALE = 1.25;
 // ---------- Controlo de Rato e Raycasting ----------
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
+let mouseNeedsRaycast = true;
 
 const targetRotation = { x: 0, y: 0 };
 const currentRotation = { x: 0, y: 0 };
@@ -88,6 +89,7 @@ const currentRotation = { x: 0, y: 0 };
 window.addEventListener('mousemove', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    mouseNeedsRaycast = true;
 }, { passive: true });
 
 // ---------- Carregar o modelo ----------
@@ -212,20 +214,23 @@ function animate() {
 
     // ---------- Interação por Hover (Suavizada) ----------
     if (folha && animTerminou) {
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObject(folha, true);
+        if (mouseNeedsRaycast) {
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(folha, true);
 
-        if (intersects.length > 0) {
-            const hit = intersects[0];
-            const localPoint = hit.point.clone();
-            folha.worldToLocal(localPoint);
+            if (intersects.length > 0) {
+                const hit = intersects[0];
+                const localPoint = hit.point.clone();
+                folha.worldToLocal(localPoint);
 
-            // Amplitude reduzida (0.5) para um toque subtil e elegante
-            targetRotation.y = localPoint.x * 0.5;
-            targetRotation.x = -localPoint.y * 0.5;
-        } else {
-            targetRotation.x = 0;
-            targetRotation.y = 0;
+                targetRotation.y = localPoint.x * 0.5;
+                targetRotation.x = -localPoint.y * 0.5;
+            } else {
+                targetRotation.x = 0;
+                targetRotation.y = 0;
+            }
+
+            mouseNeedsRaycast = false;
         }
 
         // Fator de lerp reduzido para 0.05 (quanto menor, mais suave, flutuante e com inércia fica o movimento)

@@ -3,22 +3,22 @@ const popupOverlay = document.getElementById('popup-folha');
 const fecharBtn = document.getElementById('fechar-popup');
 let popupAtivo = true;
 
-    if (fecharBtn && popupOverlay) {
-        fecharBtn.addEventListener('click', () => {
-            fecharBtn.disabled = true;
-            popupOverlay.classList.add('fechando');
-            setTimeout(() => {
-                popupOverlay.style.display = 'none';
-                popupAtivo = false; 
+if (fecharBtn && popupOverlay) {
+    fecharBtn.addEventListener('click', () => {
+        fecharBtn.disabled = true;
+        popupOverlay.classList.add('fechando');
+        setTimeout(() => {
+            popupOverlay.style.display = 'none';
+            popupAtivo = false;
+            disposeInstructionScene();
 
-                // Iniciar a história após o pop-up ser fechado
-                if (typeof activateItem === 'function' && !window.storyStarted) {
-                    window.storyStarted = true;
-                    activateItem(0);
-                }
-            }, 300);
-        });
-    }
+            if (typeof activateItem === 'function' && !window.storyStarted) {
+                window.storyStarted = true;
+                activateItem(0);
+            }
+        }, 300);
+    });
+}
 
 // Importações Three.js
 import * as THREE from 'three';
@@ -96,18 +96,24 @@ let animTerminou = false;
 let popAnim = false;
 let popTime = 0;
 const BASE_SCALE = 1.25; //1.2escala um pouco maior para ser legivel as instruções
+let animationFrameId = null;
+let sceneDisposed = false;
 
 /* ---------- Controlo Rato  ---------- */
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
+let mouseNeedsRaycast = true;
 
 const targetRotation = { x: 0, y: 0 };
 const currentRotation = { x: 0, y: 0 };
 
-window.addEventListener('mousemove', (event) => {
+function onMouseMove(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-}, { passive: true });
+    mouseNeedsRaycast = true;
+}
+
+window.addEventListener('mousemove', onMouseMove, { passive: true });
 
 /* ---------- Carregar o modelo ---------- */
 const loader = new GLTFLoader();
@@ -116,6 +122,11 @@ loader.load(
     'model/regras.glb', // 1. glb Instrucoesv2.glb
 
     (gltf) => {
+
+        if (sceneDisposed) {
+            disposeGltfResources(gltf.scene);
+            return;
+        }
 
         folha = gltf.scene;
 
@@ -179,16 +190,24 @@ loader.load(
 
 /* ---------- Loop da animação da folha ---------- */
 let isVisible = true;
-document.addEventListener('visibilitychange', () => {
+function onVisibilityChange() {
     isVisible = !document.hidden;
-});
+    if (!isVisible && animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    } else if (isVisible && !sceneDisposed && animationFrameId === null) {
+        animate();
+    }
+}
+document.addEventListener('visibilitychange', onVisibilityChange);
 
 function animate() {
+    if (!isVisible || sceneDisposed || !popupAtivo) {
+        animationFrameId = null;
+        return;
+    }
 
-    requestAnimationFrame(animate);
-
-    if (!isVisible) return;
-
+    animationFrameId = requestAnimationFrame(animate);
     const delta = Math.min(clock.getDelta(), 0.1);
 
     if (mixer) {
@@ -235,20 +254,22 @@ function animate() {
 
 /* ---------------- Interação com o hover do rato + suave ---------------- */
     if (folha && animTerminou) {
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObject(folha, true);
+        if (mouseNeedsRaycast) {
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(folha, true);
 
-        if (intersects.length > 0) {
-            const hit = intersects[0];
-            const localPoint = hit.point.clone();
-            folha.worldToLocal(localPoint);
-            targetRotation.y = localPoint.x * 0.15;
-            targetRotation.x = -localPoint.y * 0.15;
-        } 
-        
-        else {
-            targetRotation.x = 0;
-            targetRotation.y = 0;
+            if (intersects.length > 0) {
+                const hit = intersects[0];
+                const localPoint = hit.point.clone();
+                folha.worldToLocal(localPoint);
+                targetRotation.y = localPoint.x * 0.15;
+                targetRotation.x = -localPoint.y * 0.15;
+            } else {
+                targetRotation.x = 0;
+                targetRotation.y = 0;
+            }
+
+            mouseNeedsRaycast = false;
         }
 
         currentRotation.x = THREE.MathUtils.lerp(currentRotation.x, targetRotation.x, 0.03);
@@ -269,8 +290,52 @@ animate();
 
 
 /* ---------------- Responsividade ---------------- */
-window.addEventListener('resize', () => {
+function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-});
+}
+window.addEventListener('resize', onResize);
+
+function disposeGltfResources(root) {
+    const geometries = new Set();
+    const materials = new Set();
+    const textures = new Set();
+
+    root.traverse((node) => {
+        if (node.geometry) geometries.add(node.geometry);
+        const nodeMaterials = Array.isArray(node.material) ? node.material : [node.material];
+        nodeMaterials.filter(Boolean).forEach((material) => {
+            materials.add(material);
+            Object.values(material).forEach((value) => {
+                if (value?.isTexture) textures.add(value);
+            });
+            Object.values(material.uniforms || {}).forEach(({ value }) => {
+                if (value?.isTexture) textures.add(value);
+            });
+        });
+    });
+
+    geometries.forEach((geometry) => geometry.dispose());
+    materials.forEach((material) => material.dispose());
+    textures.forEach((texture) => texture.dispose());
+}
+
+function disposeInstructionScene() {
+    if (sceneDisposed) return;
+    sceneDisposed = true;
+
+    if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+
+    window.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    window.removeEventListener('resize', onResize);
+
+    if (folha) disposeGltfResources(folha);
+    scene.clear();
+    renderer.dispose();
+    renderer.forceContextLoss();
+}

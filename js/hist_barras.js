@@ -17,6 +17,9 @@ const storyItems = [];
 
 let currentIndex = 0;
 let currentMode = "default";
+let displayedMode = "default";
+let modeSwitchId = 0;
+const audioFadeFrames = new WeakMap();
 
 let rafId = null;
 let isSkipping = false;
@@ -138,6 +141,17 @@ function fadeAudio(video, targetVolume, duration = AUDIO_FADE_DURATION) {
 
     if (!video) return;
 
+    const previousFrame = audioFadeFrames.get(video);
+    if (previousFrame !== undefined) {
+        cancelAnimationFrame(previousFrame);
+    }
+
+    if (duration <= 0) {
+        video.volume = targetVolume;
+        audioFadeFrames.delete(video);
+        return;
+    }
+
     const startVolume = video.volume;
     const startTime = performance.now();
 
@@ -157,29 +171,14 @@ function fadeAudio(video, targetVolume, duration = AUDIO_FADE_DURATION) {
             (targetVolume - startVolume) * eased;
 
         if (progress < 1) {
-
-            requestAnimationFrame(animateAudio);
-
+            audioFadeFrames.set(video, requestAnimationFrame(animateAudio));
         } else {
-
             video.volume = targetVolume;
+            audioFadeFrames.delete(video);
         }
     }
 
-    requestAnimationFrame(animateAudio);
-}
-
-
-/* ------------ Fade de transição dos videos ------------ */
-
-function fadeVideo(video, targetOpacity, duration = VIDEO_FADE_DURATION) {
-
-    if (!video) return;
-
-    video.style.transition =
-        `opacity ${duration}ms ease-in-out`;
-
-    video.style.opacity = targetOpacity;
+    audioFadeFrames.set(video, requestAnimationFrame(animateAudio));
 }
 
 
@@ -187,178 +186,195 @@ function fadeVideo(video, targetOpacity, duration = VIDEO_FADE_DURATION) {
    MOSTRAR VÍDEO + CONTROLAR ÁUDIO
    ========================================================= */
 
-function showModeVideo(mode, fade = true) {
+function getModeVideo(videos, mode) {
+    if (mode === "book") return videos.book;
+    if (mode === "movie") return videos.movie;
+    return videos.default;
+}
 
-    const currentItem = storyItems[currentIndex];
+function waitForVideoEvent(video, eventName, isReady = () => false) {
+    return new Promise((resolve, reject) => {
+        const cleanup = () => {
+            video.removeEventListener(eventName, onReady);
+            video.removeEventListener("error", onError);
+        };
+        const onReady = () => {
+            cleanup();
+            resolve();
+        };
+        const onError = () => {
+            cleanup();
+            reject(new Error(`Falha ao carregar o vídeo: ${video.currentSrc || video.querySelector("source")?.src || "fonte desconhecida"}`));
+        };
 
-    if (!currentItem) return;
-
-    const videos = getVideos(currentItem);
-
-    const allVideos = [
-        videos.default,
-        videos.book,
-        videos.movie
-    ];
-
-
-    /* =====================================================
-       ESCOLHER VÍDEO ATIVO
-       ===================================================== */
-
-    let activeVideo = videos.default;
-
-    if (mode === "book") {
-        activeVideo = videos.book;
-    }
-
-    if (mode === "movie") {
-        activeVideo = videos.movie;
-    }
-
-
-    /* =====================================================
-       VÍDEO
-       ===================================================== */
-
-    allVideos.forEach(video => {
-
-        if (!video) return;
-
-        if (video === activeVideo) {
-
-            video.style.transition =
-                `opacity ${VIDEO_FADE_DURATION}ms ease-in-out`;
-
-            video.style.opacity = "1";
-            video.style.zIndex = "2";
-
-        } else {
-
-            video.style.transition =
-                `opacity ${VIDEO_FADE_DURATION}ms ease-in-out`;
-
-            video.style.opacity = "0";
-            video.style.zIndex = "1";
-        }
-    });
-
-
-    /* =====================================================
-       ÁUDIO
-       ===================================================== */
-
-    allVideos.forEach(video => {
-
-        if (!video) return;
-
-        if (video === activeVideo) {
-
-            if (fade) {
-
-                fadeAudio(
-                    video,
-                    1,
-                    AUDIO_FADE_DURATION
-                );
-
-            } else {
-
-                video.volume = 1;
-            }
-
-        } else {
-
-            if (fade) {
-
-                fadeAudio(
-                    video,
-                    0,
-                    AUDIO_FADE_DURATION
-                );
-
-            } else {
-
-                video.volume = 0;
-            }
-        }
+        video.addEventListener(eventName, onReady, { once: true });
+        video.addEventListener("error", onError, { once: true });
+        if (isReady()) onReady();
     });
 }
 
+function ensureVideoReady(video, eventName = "loadeddata") {
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        return Promise.resolve();
+    }
+
+    const ready = waitForVideoEvent(
+        video,
+        eventName,
+        () => video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+    );
+    if (
+        video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA &&
+        video.networkState !== HTMLMediaElement.NETWORK_LOADING
+    ) {
+        video.load();
+    }
+    return ready;
+}
+
+async function syncVideoToMaster(video, masterVideo) {
+    if (video === masterVideo || !Number.isFinite(masterVideo.currentTime)) return;
+
+    const duration = Number.isFinite(video.duration) ? video.duration : masterVideo.currentTime;
+    const targetTime = Math.min(masterVideo.currentTime, Math.max(0, duration - 0.05));
+    if (Math.abs(video.currentTime - targetTime) < 0.05) return;
+
+    const seeked = waitForVideoEvent(video, "seeked");
+    video.currentTime = targetTime;
+    await seeked;
+}
+
+async function showModeVideo(mode, fade = true) {
+    const currentItem = storyItems[currentIndex];
+    if (!currentItem) return;
+
+    const videos = getVideos(currentItem);
+    const masterVideo = videos.default;
+    const activeVideo = getModeVideo(videos, mode);
+    if (!activeVideo) {
+        console.error(`Não foi encontrado o vídeo do modo "${mode}" na cena ${currentIndex + 1}.`);
+        return;
+    }
+
+    const switchId = ++modeSwitchId;
+    const previousVideo = getModeVideo(videos, displayedMode);
+
+    try {
+        await ensureVideoReady(activeVideo);
+        await syncVideoToMaster(activeVideo, masterVideo);
+
+        if (switchId !== modeSwitchId) return;
+
+        if (!isPaused) {
+            activeVideo.volume = 0;
+            try {
+                await activeVideo.play();
+            } catch (error) {
+                if (!(isPaused && error.name === "AbortError")) throw error;
+            }
+            if (!isPaused) await syncVideoToMaster(activeVideo, masterVideo);
+        }
+
+        if (switchId !== modeSwitchId) {
+            if (activeVideo !== masterVideo && activeVideo !== getModeVideo(videos, currentMode)) {
+                activeVideo.pause();
+            }
+            return;
+        }
+
+        const allVideos = [videos.default, videos.book, videos.movie].filter(Boolean);
+        activeVideo.style.transition = `opacity ${fade ? VIDEO_FADE_DURATION : 0}ms ease-in-out`;
+        activeVideo.style.zIndex = "2";
+
+        if (fade) {
+            activeVideo.style.opacity = "0";
+            await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+
+        activeVideo.style.opacity = "1";
+        if (fade) {
+            fadeAudio(activeVideo, 1, AUDIO_FADE_DURATION);
+        } else {
+            activeVideo.volume = isPaused ? 0 : 1;
+        }
+
+        allVideos.forEach(video => {
+            if (video === activeVideo) return;
+            video.style.transition = `opacity ${fade ? VIDEO_FADE_DURATION : 0}ms ease-in-out`;
+            video.style.opacity = "0";
+            video.style.zIndex = "1";
+            fadeAudio(video, 0, fade ? AUDIO_FADE_DURATION : 0);
+        });
+
+        if (fade) {
+            await new Promise(resolve => setTimeout(resolve, VIDEO_FADE_DURATION));
+        }
+
+        if (switchId !== modeSwitchId) return;
+
+        allVideos.forEach(video => {
+            if (video !== activeVideo && video !== masterVideo) {
+                video.pause();
+            }
+        });
+        displayedMode = mode;
+    } catch (error) {
+        if (switchId !== modeSwitchId) return;
+        console.error(`Não foi possível mudar para o modo "${mode}":`, error);
+        if (previousVideo) {
+            currentMode = displayedMode;
+            currentItem.classList.toggle("w-pressed", displayedMode === "book");
+            currentItem.classList.toggle("e-pressed", displayedMode === "movie");
+        }
+    }
+}
 
 /* =========================================================
-   INICIAR OS 3 VÍDEOS AO MESMO TEMPO
+   PREPARAR O RELÓGIO DA CENA E O VÍDEO SELECIONADO
    ========================================================= */
 
-function startAllVideos(item) {
+async function startAllVideos(item) {
 
     if (!item) return;
 
     const videos = getVideos(item);
+    const activeVideo = getModeVideo(videos, currentMode);
+    const requiredVideos = [...new Set([videos.default, activeVideo].filter(Boolean))];
+    const loadId = ++modeSwitchId;
 
-    const allVideos = [
-        videos.default,
-        videos.book,
-        videos.movie
-    ].filter(Boolean);
-
-
-    // Colocar todos no início
-    allVideos.forEach(video => {
-
+    [videos.default, videos.book, videos.movie].forEach(video => {
+        if (!video) return;
         video.pause();
+        video.volume = 0;
+        video.style.opacity = video === activeVideo ? "1" : "0";
+        video.style.zIndex = video === activeVideo ? "2" : "1";
+    });
 
-        try {
+    try {
+        await Promise.all(requiredVideos.map(video => ensureVideoReady(video)));
+        if (loadId !== modeSwitchId) return;
+
+        requiredVideos.forEach(video => {
             video.currentTime = 0;
-        } catch (error) {
-            console.warn("Não foi possível definir currentTime:", error);
-        }
-
-        // Apenas o Default tem áudio inicialmente
-        video.volume =
-            video === videos.default
-                ? 1
-                : 0;
-    });
-
-
-    // Esperar que todos tenham metadata
-    const waitForMetadata = allVideos.map(video => {
-
-        if (video.readyState >= 1) {
-            return Promise.resolve();
-        }
-
-        return new Promise(resolve => {
-
-            video.addEventListener(
-                "loadedmetadata",
-                resolve,
-                { once: true }
-            );
+            video.volume = video === activeVideo ? 1 : 0;
         });
-    });
+        displayedMode = currentMode;
 
-
-Promise.all(waitForMetadata).then(() => {
-        // Garantir novamente que começam exatamente no início
-        allVideos.forEach(video => {
-            try {
-                video.currentTime = 0;
-            } catch (error) {
-                // Ignorar
-            }
-        });
-
-        // NOVO: Dar play aos três apenas se não estiver pausado
         if (!isPaused && !storyEnded) {
-            allVideos.forEach(video => {
-                video.play().catch(error => {
-                    console.warn("Erro ao iniciar vídeo:", error);
-                });
-            });
+            try {
+                await Promise.all(requiredVideos.map(video => video.play()));
+            } catch (error) {
+                if (!(isPaused && error.name === "AbortError")) throw error;
+            }
+            if (isPaused || storyEnded) {
+                requiredVideos.forEach(video => video.pause());
+            }
         }
-    });
+    } catch (error) {
+        if (loadId === modeSwitchId) {
+            console.error(`Não foi possível preparar a cena ${currentIndex + 1}:`, error);
+        }
+    }
 }
 
 /* =========================================================
@@ -634,33 +650,16 @@ function activateItem(index) {
 
     const videos = getVideos(currentItem);
 
-    /*
-     * Garantir que todos começam sincronizados.
-     */
     startAllVideos(currentItem);
 
-
-    /*
-     * APLICAR O MODO ATUAL (Persistência)
-     * Como acabámos de iniciar a cena, fade = false (aplica as opacidades e volume de imediato)
-     */
     if (currentMode === "book") {
-        
         currentItem.classList.add("w-pressed");
         currentItem.classList.remove("e-pressed");
-        showModeVideo("book", false);
-
     } else if (currentMode === "movie") {
-        
         currentItem.classList.add("e-pressed");
         currentItem.classList.remove("w-pressed");
-        showModeVideo("movie", false);
-
     } else {
-        
         currentItem.classList.remove("w-pressed", "e-pressed");
-        showModeVideo("default", false);
-
     }
 
 
@@ -1121,23 +1120,10 @@ if (key === "s") {
    CARREGAR APENAS OS VÍDEOS DA CENA NECESSÁRIA
    ========================================================= */
 function prepareItemVideos(index) {
-    const item = storyItems[index];
-    if (!item) return;
-
-    const videos = item.querySelectorAll("video");
-    videos.forEach(video => {
-        // Se o vídeo ainda não começou a carregar
-        if (video.readyState === 0) {
-            video.load(); 
-        }
-    });
-
-    // Pré-carregar em segundo plano a cena seguinte (se existir)
     const nextItem = storyItems[index + 1];
     if (nextItem) {
-        nextItem.querySelectorAll("video").forEach(v => {
-            if (v.readyState === 0) v.load();
-        });
+        const nextDefaultVideo = getVideos(nextItem).default;
+        if (nextDefaultVideo?.readyState === 0) nextDefaultVideo.load();
     }
 }
 
@@ -1194,12 +1180,19 @@ function togglePlayPause() {
 
     const currentItem = storyItems[currentIndex];
     const videos = getVideos(currentItem);
-    const allVideos = [videos.default, videos.book, videos.movie].filter(Boolean);
-
     if (isPaused) {
-        allVideos.forEach(v => v.pause());
+        [videos.default, getModeVideo(videos, currentMode)]
+            .filter((video, index, list) => video && list.indexOf(video) === index)
+            .forEach(video => video.pause());
     } else {
-        allVideos.forEach(v => v.play());
+        [videos.default, getModeVideo(videos, currentMode)]
+            .filter((video, index, list) => video && list.indexOf(video) === index)
+            .forEach(video => {
+                if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+                video.play().catch(error => {
+                    console.error("Não foi possível retomar a reprodução:", error);
+                });
+            });
     }
 
     updatePlayPauseIcon();
