@@ -68,9 +68,18 @@ body.fade-out {
     inset: 0;
     z-index: 1;
 }
-@media (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
+@media (any-pointer: coarse) {
     .nuvens canvas {
         touch-action: none;
+    }
+    #folha {
+        pointer-events: auto;
+    }
+    #folha, #instructions {
+        touch-action: none;
+    }
+    #sapatosRuby {
+        z-index: 110;
     }
 }
 /*------------------ Carregamento do modelo na página inicial ------------------*/

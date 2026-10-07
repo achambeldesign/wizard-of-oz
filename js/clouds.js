@@ -196,9 +196,6 @@ const mouse      = { x: 0, y: 0 };
 const current    = { x: 0, y: 0, rotY: 0, rotX: 0 };
 const touchRaycaster = new THREE.Raycaster();
 const touchPointer = new THREE.Vector2();
-const tabletTouchQuery = window.matchMedia(
-  '(pointer: coarse) and (min-width: 768px) and (max-width: 1366px)'
-);
 let houseTouchDrag = null;
 
 window.addEventListener('mousemove', (e) => {
@@ -338,7 +335,7 @@ function onResize() {
 
 function setupHouseTouchDrag(canvas) {
   canvas.addEventListener('pointerdown', (event) => {
-    if (!tabletTouchQuery.matches || event.pointerType !== 'touch' || !modelLoaded) return;
+    if (event.pointerType !== 'touch' || !modelLoaded) return;
 
     const bounds = canvas.getBoundingClientRect();
     touchPointer.set(
