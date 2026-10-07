@@ -82,6 +82,7 @@ const BASE_SCALE = 1.25;
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 let mouseNeedsRaycast = true;
+let touchPointerId = null;
 
 const targetRotation = { x: 0, y: 0 };
 const currentRotation = { x: 0, y: 0 };
@@ -91,7 +92,47 @@ window.addEventListener('mousemove', (event) => {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     mouseNeedsRaycast = true;
 }, { passive: true });
+function onTouchPointerDown(event) {
+    if (event.pointerType !== 'touch' || !animTerminou || !folha) return;
 
+    const bounds = canvas.getBoundingClientRect();
+    mouse.set(
+        ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+        -((event.clientY - bounds.top) / bounds.height) * 2 + 1
+    );
+    raycaster.setFromCamera(mouse, camera);
+    if (raycaster.intersectObject(folha, true).length === 0) return;
+
+    event.preventDefault();
+    touchPointerId = event.pointerId;
+    canvas.setPointerCapture(event.pointerId);
+    mouseNeedsRaycast = true;
+}
+
+function onTouchPointerMove(event) {
+    if (event.pointerType !== 'touch' || event.pointerId !== touchPointerId) return;
+
+    const bounds = canvas.getBoundingClientRect();
+    mouse.set(
+        ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+        -((event.clientY - bounds.top) / bounds.height) * 2 + 1
+    );
+    mouseNeedsRaycast = true;
+}
+
+function stopTouchDrag(event) {
+    if (event.pointerId !== touchPointerId) return;
+
+    touchPointerId = null;
+    if (canvas.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+    }
+}
+
+canvas.addEventListener('pointerdown', onTouchPointerDown);
+canvas.addEventListener('pointermove', onTouchPointerMove);
+canvas.addEventListener('pointerup', stopTouchDrag);
+canvas.addEventListener('pointercancel', stopTouchDrag);
 // ---------- Carregar o modelo ----------
 const loader = new GLTFLoader();
 
