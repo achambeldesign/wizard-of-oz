@@ -68,6 +68,11 @@ body.fade-out {
     inset: 0;
     z-index: 1;
 }
+@media (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
+    .nuvens canvas {
+        touch-action: none;
+    }
+}
 /*------------------ Carregamento do modelo na página inicial ------------------*/
 #loading-screen {
     position: fixed;

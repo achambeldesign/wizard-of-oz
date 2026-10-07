@@ -76,6 +76,7 @@ function init() {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
+  setupHouseTouchDrag(renderer.domElement);
 
   scene.fog = new THREE.Fog(0x482417, -100, 2500);
 
@@ -193,6 +194,12 @@ let modelLoaded = false;
 
 const mouse      = { x: 0, y: 0 };
 const current    = { x: 0, y: 0, rotY: 0, rotX: 0 };
+const touchRaycaster = new THREE.Raycaster();
+const touchPointer = new THREE.Vector2();
+const tabletTouchQuery = window.matchMedia(
+  '(pointer: coarse) and (min-width: 768px) and (max-width: 1366px)'
+);
+let houseTouchDrag = null;
 
 window.addEventListener('mousemove', (e) => {
   mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -329,6 +336,58 @@ function onResize() {
   cloudLayers.forEach(updateCloudTiles);
 }
 
+function setupHouseTouchDrag(canvas) {
+  canvas.addEventListener('pointerdown', (event) => {
+    if (!tabletTouchQuery.matches || event.pointerType !== 'touch' || !modelLoaded) return;
+
+    const bounds = canvas.getBoundingClientRect();
+    touchPointer.set(
+      ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+      -((event.clientY - bounds.top) / bounds.height) * 2 + 1
+    );
+    touchRaycaster.setFromCamera(touchPointer, camera);
+    if (touchRaycaster.intersectObject(houseModel, true).length === 0) return;
+
+    event.preventDefault();
+    canvas.setPointerCapture(event.pointerId);
+    houseTouchDrag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      modelX: current.x,
+      modelY: current.y
+    };
+  });
+
+  canvas.addEventListener('pointermove', (event) => {
+    if (!houseTouchDrag || event.pointerId !== houseTouchDrag.pointerId) return;
+
+    const bounds = canvas.getBoundingClientRect();
+    const depth = camera.position.z - 750;
+    const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * depth;
+    const halfW = halfH * camera.aspect;
+    const targetX = houseTouchDrag.modelX
+      + ((event.clientX - houseTouchDrag.startX) / bounds.width) * 2 * halfW;
+    const targetY = houseTouchDrag.modelY
+      - ((event.clientY - houseTouchDrag.startY) / bounds.height) * 2 * halfH;
+
+    mouse.x = targetX / halfW;
+    mouse.y = targetY / halfH;
+  });
+
+  const stopHouseTouchDrag = (event) => {
+    if (!houseTouchDrag || event.pointerId !== houseTouchDrag.pointerId) return;
+
+    houseTouchDrag = null;
+    if (canvas.hasPointerCapture(event.pointerId)) {
+      canvas.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  canvas.addEventListener('pointerup', stopHouseTouchDrag);
+  canvas.addEventListener('pointercancel', stopHouseTouchDrag);
+}
+
 const clock = new THREE.Clock();
 let animationStarted = false;
 let animationFrameId = null;
@@ -418,8 +477,13 @@ function animate() {
 
     const positionLerp = 1 - Math.exp(-lp * 60 * delta);
     const rotationLerp = 1 - Math.exp(-lr * 60 * delta);
-    current.x += (targetX - current.x) * positionLerp;
-    current.y += (targetY - current.y) * positionLerp;
+    if (houseTouchDrag) {
+      current.x = targetX;
+      current.y = targetY;
+    } else {
+      current.x += (targetX - current.x) * positionLerp;
+      current.y += (targetY - current.y) * positionLerp;
+    }
 
     houseModel.position.x = current.x;
     houseModel.position.y = current.y;
