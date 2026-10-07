@@ -797,18 +797,12 @@ body.fade-out {
 }
 
 .story-hud-grid .estado-atual {
-    display: none;
+    display: block;
     position: relative;
     inset: auto;
     grid-area: compass;
     align-self: start;
     justify-self: start;
-}
-
-@media (min-width: 768px) and (max-width: 1366px) and (pointer: coarse) {
-    .story-hud-grid .estado-atual {
-        display: block;
-    }
 }
 
 
@@ -842,7 +836,7 @@ body.fade-out {
     left: 50%;
     bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 60;
-    display: grid;
+    display: none;
     grid-template-columns: repeat(4, 52px);
     grid-template-rows: 52px;
     gap: 8px;
@@ -887,6 +881,12 @@ body.fade-out {
 
 .story-direction-button--south {
     grid-area: 1 / 4;
+}
+
+@media (min-width: 768px) and (max-width: 1366px) and (pointer: coarse) {
+    .story-direction-controls {
+        display: grid;
+    }
 }
 
 .bar {
