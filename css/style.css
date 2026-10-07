@@ -797,11 +797,18 @@ body.fade-out {
 }
 
 .story-hud-grid .estado-atual {
+    display: none;
     position: relative;
     inset: auto;
     grid-area: compass;
     align-self: start;
     justify-self: start;
+}
+
+@media (min-width: 768px) and (max-width: 1366px) and (pointer: coarse) {
+    .story-hud-grid .estado-atual {
+        display: block;
+    }
 }
 
 
