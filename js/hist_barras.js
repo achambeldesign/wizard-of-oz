@@ -946,19 +946,12 @@ function goToPrevious() {
    TECLADO
    ========================================================= */
 
-document.addEventListener(
-    "keydown",
-    (e) => {
-
-        if (e.repeat) return;
+function handleStoryControl(key) {
         if (!hasStartedPlayback) return;
         if (
             instructionsPopup &&
             getComputedStyle(instructionsPopup).display !== "none"
         ) return;
-
-        const key =
-            e.key.toLowerCase();
 
         const currentItem =
             storyItems[currentIndex];
@@ -1112,8 +1105,18 @@ if (key === "s") {
 
             return;
         }
-    }
-);
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.repeat) return;
+    handleStoryControl(e.key.toLowerCase());
+});
+
+document.querySelectorAll(".story-direction-button").forEach((button) => {
+    button.addEventListener("click", () => {
+        handleStoryControl(button.dataset.storyKey);
+    });
+});
 
 
 /* =========================================================
