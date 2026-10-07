@@ -8,6 +8,7 @@
     --bar-radius: 3px; /* arredondamento yellow brick road */
     --bar-fill: #ffe100; /*cor da yellow brick road */
     --sombra-barras: rgba(0, 0, 0, 0.2); 
+    --sombra-botoes: rgba(0, 0, 0, 0.5);
     --bar-height: clamp(20px, 0.8vw, 40px);
     --gap: clamp(8px, 0.2vw, 15px);
     --shift: clamp(8px, 2vw, 15px);
@@ -1005,7 +1006,7 @@ body.fade-out {
     left: 50%;
     transform: translate(-50%, -50%);   
     width: 80px; height: 80px;
-    background: var(--sombra-barras);
+    background: var(--sombra-botoes);
     border-radius: 50%;
     display: flex;
     justify-content: center;
