@@ -1,8 +1,8 @@
 //Variáveis globais
 
 
-let isPaused = true;     // NOVA: Começa pausado após fechar o pop-up
-let storyEnded = false;  // NOVA: Controla o final da história
+let isPaused = true;     
+let storyEnded = false; 
 let hasStartedPlayback = false;
 const instructionsPopup = document.getElementById("popup-folha");
 

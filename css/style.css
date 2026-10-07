@@ -193,9 +193,9 @@ body.fade-out {
 /*------------------ Menu dos Sapatos ------------------*/
 #sapatosRuby {
     position: fixed;
+    mix-blend-mode: normal;
     top: 15px;
     right: 5px;
-    mix-blend-mode: normal;
     width: clamp(90px, 10vw, 150px);
     height: auto;
     z-index: 50;
@@ -799,16 +799,6 @@ body.fade-out {
     justify-self: start;
 }
 
-.story-hud-grid #sapatosRuby {
-    position: relative;
-    top: auto;
-    right: auto;
-    grid-area: controls;
-    align-self: start;
-    justify-self: end;
-    margin-right: calc(50px + var(--story-hud-gap));
-    pointer-events: auto;
-}
 
 .barras {
     position: absolute;
@@ -822,6 +812,7 @@ body.fade-out {
     align-items: center;
     z-index: 50;
     pointer-events: none;
+    cursor: default;
 }
 
 .story-hud-grid .barras {

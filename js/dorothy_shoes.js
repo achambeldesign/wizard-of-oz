@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const shoesVideo = document.getElementById('sapatosRuby');
     let currentAudio = null;
 
-    //array 4 audios
+    //Array 5 audios
     const audios = [
         'sound/shoes/shoes_1.mp3',
         'sound/shoes/shoes_2.mp3',
