@@ -3,11 +3,13 @@ import * as THREE from 'three';
 
 //Variáveis globais  
 let camera, scene, renderer;
-const container = document.querySelector('.nuvens');
-const cloudMovementDirection = container.dataset.movementDirection === 'right' ? 1 : -1;
 const mobileUnavailableQuery = window.matchMedia(
   '(max-width: 767px), (max-height: 500px) and (pointer: coarse)'
 );
+const container = document.querySelector('.nuvens[data-cloud-background]')
+  || document.querySelector('.nuvens');
+const cloudMovementDirection = container.dataset.movementDirection === 'right' ? 1 : -1;
+
 
 //Cloud shader (parametros para o shader das nuvens)
 const cloudShader = {

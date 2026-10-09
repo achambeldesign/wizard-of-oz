@@ -109,6 +109,9 @@ body.fade-out {
     inset: 0;
     z-index: 1;
 }
+body > .nuvens {
+    z-index: 0;
+}
 @media (any-pointer: coarse) {
     .nuvens canvas {
         touch-action: none;
@@ -717,6 +720,8 @@ body.fade-out {
 }
 /* ------------------ story.html ------------------ */
 .container-historia {
+    position: relative;
+    z-index: 1;
     width: 100vw;
     height: 100vh;
 }

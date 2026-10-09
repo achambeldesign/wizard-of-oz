@@ -26,6 +26,8 @@
 <script type="module" src="js/clouds.js"></script>
 </head>
 <body>
+    <div class="nuvens" data-show-house="false" data-movement-direction="right" aria-hidden="true"></div>
+
 <!------------------ Mensagem -> not available on mobile ------------------>
   <div id="versao-mobile" lang="en" role="alert">
             <h1>Toto, I’ve a feeling we’re not on the right device anymore.</h1>
@@ -66,7 +68,6 @@
 
    <!------------------ Pop-up Instruções overlay ------------------>
     <div id="popup-folha" class="popup-overlay">
-       <div class="nuvens" data-show-house="false" data-movement-direction="right" aria-hidden="true"></div>
        <canvas id="instructions"></canvas>
        <button id="fechar-popup" class="popup-close" aria-label="Fechar pop-up" title="Close">
                 <img src="img/x.PNG" alt="close" width="500" height="500" >
@@ -264,8 +265,13 @@
         <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
         <source src="video/Shoes/shoes.webm" type="video/webm">
     </video>
+</div>
+
 <!--javascript-->
 <script src="js/hist_barras.js"></script>
+
+<!------------------Nuvens de fundo para a versão mobile------------------>
+<div class="nuvens" data-cloud-background data-show-house="false" data-movement-direction="right" aria-hidden="true"></div>
 
 </body>
 </html>
