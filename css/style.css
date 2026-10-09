@@ -62,6 +62,43 @@ body.fade-out {
     opacity: 0;
     transition: opacity 0.5s ease-in-out; 
 }
+/* ------------------ Indisponibilidade em visualizar mobile ------------------ */
+#versao-mobile {
+    display: none;
+}
+
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
+    body > :not(#versao-mobile) {
+        display: none !important;
+    }
+
+    #versao-mobile {
+        display: flex;                
+        flex-direction: column;      
+        align-items: center;          
+        justify-content: center;      
+        gap: 4px;                     
+        padding: 24px;               
+        min-height: 100vh;            
+        box-sizing: border-box;      
+        text-align: center;
+        color: var(--cor-texto-creditos);
+        background: var(--gradienteBackground);
+        margin: 0;
+    }
+
+    .versao-mobile h1 {
+        font-family: "Wizard";
+        font-size: clamp(1.5rem, 6vw, 3rem);
+        padding: clamp(1.5rem, 6vw, 3rem);
+        box-shadow: var(--cor-sombra-creditos) 4px 6px 3px;
+    }
+
+    .versao-mobile p {
+        font-family: "Texto";
+        font-size: clamp(1rem, 4vw, 1.25rem);
+    }
+}
 /*------------------ Nuvens de Fundo ------------------*/
 .nuvens {
     position: fixed;
@@ -959,51 +996,7 @@ body.fade-out {
     box-shadow: 0 3px 14px rgba(0, 0, 0, 0.35), inset 0 0 12px rgba(228, 197, 180, 0.12);
 }
 
-/* ------------------ Indisponibilidade em mobile ------------------ */
-#mobile-unavailable {
-    display: none;
-}
 
-@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
-    body > :not(#mobile-unavailable) {
-        display: none !important;
-    }
-
-    #mobile-unavailable {
-        position: fixed;
-        inset: 0;
-        z-index: 2000;
-        display: grid;
-        place-items: center;
-        padding: 1.5rem;
-        color: var(--cor-texto-creditos);
-        text-align: center;
-        background: var(--gradienteBackground);
-    }
-
-    .mobile-unavailable-card {
-        width: min(100%, 32rem);
-        padding: clamp(1.5rem, 6vw, 3rem);
-        border: 1px solid rgba(228, 197, 180, 0.55);
-        background: rgba(29, 13, 7, 0.4);
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
-    }
-
-    .mobile-unavailable-card h1 {
-        margin: 0;
-        font-family: "Wizard", serif;
-        font-size: clamp(2rem, 8vw, 3.5rem);
-        line-height: 1.15;
-        text-shadow: 3px 4px 3px var(--cor-sombra-creditos);
-    }
-
-    .mobile-unavailable-card p {
-        margin: 1rem 0 0;
-        font-family: "Texto", serif;
-        font-size: clamp(1rem, 4vw, 1.25rem);
-        line-height: 1.4;
-    }
-}
 
 .rosa-estrela {
     position: absolute;
