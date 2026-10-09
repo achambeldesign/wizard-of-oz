@@ -64,10 +64,10 @@ function getVideos(item) {
 }
 
 
-/* ------------ Irregularidade visual das barras (tamanho + textura aleatórios) ------------ */
+/* ------------ Irregularidade visual das barras (forma, tamanho e textura aleatórios) ------------ */
 /*
- * Isto NÃO mexe no .bar__fill (barra amarela de progressão).
- * Mexe apenas no .bar (o "invólucro" de cada barra): largura, altura e textura.
+ * A forma é aplicada ao .bar para que o preenchimento acompanhe o contorno
+ * irregular de cada tijolo.
  */
 
 const TOTAL_TEXTURAS = 6; // nº de texturas disponíveis -> classes .bar--textura-1 a .bar--textura-5
@@ -83,6 +83,52 @@ const VARIACAO_ALTURA_MAX = 1.6; // 140% do tamanho base
 
 function randomBetween(min, max) {
     return Math.random() * (max - min) + min;
+}
+
+function criarContornoAleatorio() {
+    const sampleCount = 96;
+    const phase = randomBetween(0, Math.PI * 2);
+    const points = Array.from({ length: sampleCount }, (_, index) => {
+        const angle = (index / sampleCount) * Math.PI * 2;
+        const cosine = Math.cos(angle);
+        const sine = Math.sin(angle);
+        const xBase = Math.sign(cosine) * Math.pow(Math.abs(cosine), 0.42);
+        const yBase = Math.sign(sine) * Math.pow(Math.abs(sine), 0.42);
+        const sideIrregularity =
+            Math.sin(angle * 4 + phase) * 0.032 +
+            Math.sin(angle * 7 + phase * 1.6) * 0.022 +
+            Math.sin(angle * 13 + phase * 0.7) * 0.012 +
+            Math.sin(angle * 23 + phase * 1.2) * 0.006;
+        const longSideWeight = Math.pow(Math.abs(sine), 6);
+
+        return {
+            x: 0.5 + xBase * 0.47,
+            y: 0.5 + yBase * 0.46 + sideIrregularity * longSideWeight
+        };
+    });
+
+    const firstPoint = points[0];
+    const pathCommands = [`M ${firstPoint.x} ${firstPoint.y}`];
+
+    points.forEach((point, index) => {
+        const previous = points[(index - 1 + sampleCount) % sampleCount];
+        const next = points[(index + 1) % sampleCount];
+        const afterNext = points[(index + 2) % sampleCount];
+        const control1 = {
+            x: point.x + (next.x - previous.x) / 6,
+            y: point.y + (next.y - previous.y) / 6
+        };
+        const control2 = {
+            x: next.x - (afterNext.x - point.x) / 6,
+            y: next.y - (afterNext.y - point.y) / 6
+        };
+
+        pathCommands.push(
+            `C ${control1.x} ${control1.y}, ${control2.x} ${control2.y}, ${next.x} ${next.y}`
+        );
+    });
+
+    return pathCommands.join(" ") + " Z";
 }
 
 function aplicarTamanhoETexturaAleatorios(bar) {
@@ -104,6 +150,17 @@ function aplicarTamanhoETexturaAleatorios(bar) {
     bar.classList.add(`bar--textura-${texturaEscolhida}`);
 }
 
+const clipPathNamespace = "http://www.w3.org/2000/svg";
+const clipPathSvg = document.createElementNS(clipPathNamespace, "svg");
+const clipPathDefs = document.createElementNS(clipPathNamespace, "defs");
+clipPathSvg.setAttribute("aria-hidden", "true");
+clipPathSvg.setAttribute("focusable", "false");
+clipPathSvg.style.position = "absolute";
+clipPathSvg.style.width = "0";
+clipPathSvg.style.height = "0";
+clipPathSvg.appendChild(clipPathDefs);
+document.body.prepend(clipPathSvg);
+
 
 /* ------------ Criação das barras amarelas de progressão na história ------------ */
 
@@ -124,10 +181,20 @@ for (let i = 0; i < TOTAL_ITEMS; i++) {
     const fill = document.createElement("div");
     fill.className = "bar__fill";
 
+    const clipPath = document.createElementNS(clipPathNamespace, "clipPath");
+    const outline = document.createElementNS(clipPathNamespace, "path");
+    const clipPathId = `bar-outline-${i}`;
+    clipPath.id = clipPathId;
+    clipPath.setAttribute("clipPathUnits", "objectBoundingBox");
+    outline.setAttribute("d", criarContornoAleatorio());
+    clipPath.appendChild(outline);
+    clipPathDefs.appendChild(clipPath);
+    bar.style.clipPath = `url(#${clipPathId})`;
+
     bar.appendChild(fill);
     barsContainer.appendChild(bar);
 
-    // Aplicar tamanho e textura aleatórios a esta barra (só ao invólucro, não ao fill)
+    // Aplicar tamanho e textura aleatórios a esta barra
     aplicarTamanhoETexturaAleatorios(bar);
 }
 
