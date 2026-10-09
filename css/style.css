@@ -76,7 +76,7 @@ body.fade-out {
     #versao-mobile {
         position: fixed;
         inset: 0;
-        z-index: 2;
+        z-index: 3;
         display: flex;                
         flex-direction: column;      
         align-items: center;          
@@ -111,6 +111,10 @@ body.fade-out {
 }
 body > .nuvens {
     z-index: 0;
+}
+.nuvens[data-cloud-background] {
+    z-index: 2;
+    pointer-events: none;
 }
 @media (any-pointer: coarse) {
     .nuvens canvas {
@@ -721,7 +725,6 @@ body > .nuvens {
 /* ------------------ story.html ------------------ */
 .container-historia {
     position: relative;
-    z-index: 1;
     width: 100vw;
     height: 100vh;
 }
