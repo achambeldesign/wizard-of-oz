@@ -139,7 +139,7 @@ body.fade-out {
 }
 
 .loading-card {
-    width: min(100%, 27.5rem);
+    width: min(100%, 32rem);
 }
 
 .loading-kicker,
