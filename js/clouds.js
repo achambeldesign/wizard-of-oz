@@ -5,6 +5,9 @@ import * as THREE from 'three';
 let camera, scene, renderer;
 const container = document.querySelector('.nuvens');
 const cloudMovementDirection = container.dataset.movementDirection === 'right' ? 1 : -1;
+const mobileUnavailableQuery = window.matchMedia(
+  '(max-width: 767px), (max-height: 500px) and (pointer: coarse)'
+);
 
 //Cloud shader (parametros para o shader das nuvens)
 const cloudShader = {
@@ -118,7 +121,7 @@ function init() {
     undefined,
     (error) => console.error('Error:', error)
   );
-  if (container.dataset.showHouse !== 'false') {
+  if (container.dataset.showHouse !== 'false' && !mobileUnavailableQuery.matches) {
     loadHouse();
   }
 }
@@ -272,6 +275,7 @@ async function loadHouse() {
 
       houseModel.position.z = 750;
       houseModel.position.y = 30;
+      houseModel.visible = !mobileUnavailableQuery.matches;
 
       scene.add(houseModel);
 
@@ -330,6 +334,9 @@ function onResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  if (houseModel) {
+    houseModel.visible = !mobileUnavailableQuery.matches;
+  }
   cloudLayers.forEach(updateCloudTiles);
 }
 

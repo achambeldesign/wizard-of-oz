@@ -69,11 +69,14 @@ body.fade-out {
 }
 
 @media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
-    body > :not(#versao-mobile) {
+    body > :not(#versao-mobile):not(.nuvens) {
         display: none !important;
     }
 
     #versao-mobile {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
         display: flex;                
         flex-direction: column;      
         align-items: center;          
@@ -84,18 +87,18 @@ body.fade-out {
         box-sizing: border-box;      
         text-align: center;
         color: var(--cor-texto-creditos);
-        background: var(--gradienteBackground);
+        background: transparent;
         margin: 0;
     }
 
-    .versao-mobile h1 {
+    #versao-mobile h1 {
         font-family: "Wizard";
         font-size: clamp(1.5rem, 6vw, 3rem);
         padding: clamp(1.5rem, 6vw, 3rem);
-        box-shadow: var(--cor-sombra-creditos) 4px 6px 3px;
+        text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
     }
 
-    .versao-mobile p {
+    #versao-mobile p {
         font-family: "Texto";
         font-size: clamp(1rem, 4vw, 1.25rem);
     }
