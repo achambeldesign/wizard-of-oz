@@ -264,8 +264,8 @@ function animate() {
                 const localPoint = hit.point.clone();
                 folha.worldToLocal(localPoint);
 
-                targetRotation.y = localPoint.x * 0.5;
-                targetRotation.x = -localPoint.y * 0.5;
+                targetRotation.y = localPoint.x * 0.7;
+                targetRotation.x = -localPoint.y * 0.7;
             } else {
                 targetRotation.x = 0;
                 targetRotation.y = 0;

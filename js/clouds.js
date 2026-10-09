@@ -72,7 +72,6 @@ const loadingProgressbar = document.querySelector('#loading-progressbar');
 const loadingPercentage = document.querySelector('#loading-percentage');
 const loadingRetry = document.querySelector('#loading-retry');
 
-
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
@@ -85,18 +84,19 @@ function createIrregularLoadingOutline() {
     const angle = (index / sampleCount) * Math.PI * 2;
     const cosine = Math.cos(angle);
     const sine = Math.sin(angle);
-    const xBase = Math.sign(cosine) * Math.pow(Math.abs(cosine), 0.42);
-    const yBase = Math.sign(sine) * Math.pow(Math.abs(sine), 0.42);
+    const xBase = Math.sign(cosine) * Math.pow(Math.abs(cosine), 0.3);
+    const yBase = Math.sign(sine) * Math.pow(Math.abs(sine), 0.3);
     const sideIrregularity =
       Math.sin(angle * 4 + phase) * 0.032 +
       Math.sin(angle * 7 + phase * 1.6) * 0.022 +
       Math.sin(angle * 13 + phase * 0.7) * 0.012 +
       Math.sin(angle * 23 + phase * 1.2) * 0.006;
     const longSideWeight = Math.pow(Math.abs(sine), 6);
+    
 
     return {
       x: 0.5 + xBase * 0.47,
-      y: 0.5 + yBase * 0.4 + sideIrregularity * longSideWeight * 0.65
+      y: 0.5 + yBase * 0.46 + sideIrregularity * longSideWeight
     };
   });
 
@@ -164,6 +164,7 @@ function init() {
   renderer.toneMappingExposure = 1.2;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate = false;
   container.appendChild(renderer.domElement);
   setupHouseTouchDrag(renderer.domElement);
 
@@ -482,7 +483,7 @@ function setupHouseTouchDrag(canvas) {
 const clock = new THREE.Clock();
 let animationStarted = false;
 let animationFrameId = null;
-
+let shadowUpdateElapsed = 0.1;
 function startAnimation() {
   if (animationStarted || document.hidden) return;
   animationStarted = true;
@@ -589,7 +590,14 @@ function animate() {
     houseModel.rotation.y = current.rotY;
     houseModel.rotation.x = current.rotX;
   }
-
+  if (modelLoaded) {
+    shadowUpdateElapsed += delta;
+    if (shadowUpdateElapsed >= 0.1) {
+      // The house moves every frame, but updating its shadow ten times per second is sufficient.
+      renderer.shadowMap.needsUpdate = true;
+      shadowUpdateElapsed %= 0.1;
+    }
+  }
   renderer.render(scene, camera);
   animationFrameId = requestAnimationFrame(animate);
 }
