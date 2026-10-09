@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Wizard of Oz</title>
 
-
         <!-- Favicon -->
     <link rel="icon" href="img/light_default.PNG" type="image/x-icon"> <!--(padrão - fallback para navegadores não suportados)-->
     <link rel="icon" href="img/light_default.PNG" type="image/x-icon" media="(prefers-color-scheme: light)">  <!-- light mode -->
@@ -31,18 +30,15 @@
     </head>
 
 <body>
-<!------------------Not available on mobile------------------>
-  <div id="mobile-unavailable" lang="en" role="alert">
-        <div class="mobile-unavailable-card">
-            <h1>This version is not available on mobile.</h1>
+<!------------------ Mensagem -> not available on mobile ------------------>
+  <div id="versao-mobile" lang="en" role="alert">
+            <h1>Toto, I’ve a feeling we’re not on the right device anymore.</h1>
             <p>Please try on a computer or tablet.</p>
-        </div>
     </div>
 
-    <!--Loading Screen-->
+<!------------------ Loading Screen (ecrãs desktop e tablet - carregar a casa .glb) ------------------>
     <div id="loading-screen" role="status" aria-live="polite" aria-label="Loading">
         <div class="loading-card">
-            <!--<p class="loading-kicker">The Wizard of Oz</p>-->
             <h1>Loading...</h1>
             <p id="loading-message">Not in Kansas anymore...</p>
             <div
@@ -55,7 +51,7 @@
             >
                 <span id="loading-progress"></span>
             </div>
-            <p id="loading-percentage" class="loading-percentage">Preparing...</p>
+            <p id="loading-percentage" class="loading-percentage">Please wait just a moment...</p>
             <button id="loading-retry" type="button" hidden>Try again</button>
         </div>
     </div>
