@@ -1,6 +1,9 @@
 // ---------- Controlo para Fechar o Pop-up ----------
 const popupOverlay = document.getElementById('popup-folha');
 const fecharBtn = document.getElementById('fechar-popup');
+const mobileUnavailableQuery = window.matchMedia(
+    '(max-width: 767px), (max-height: 500px) and (pointer: coarse)'
+);
 let popupAtivo = true;
 
 if (fecharBtn && popupOverlay) {
@@ -237,14 +240,31 @@ function onVisibilityChange() {
     if (!isVisible && animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
-    } else if (isVisible && !sceneDisposed && animationFrameId === null) {
+    } else if (
+        isVisible &&
+        !mobileUnavailableQuery.matches &&
+        !sceneDisposed &&
+        animationFrameId === null
+    ) {
         animate();
     }
 }
 document.addEventListener('visibilitychange', onVisibilityChange);
 
+function onDisplayModeChange() {
+    if (mobileUnavailableQuery.matches) {
+        if (animationFrameId !== null) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+    } else if (isVisible && !sceneDisposed && popupAtivo && animationFrameId === null) {
+        animate();
+    }
+}
+mobileUnavailableQuery.addEventListener('change', onDisplayModeChange);
+
 function animate() {
-    if (!isVisible || sceneDisposed || !popupAtivo) {
+    if (!isVisible || mobileUnavailableQuery.matches || sceneDisposed || !popupAtivo) {
         animationFrameId = null;
         return;
     }
@@ -374,6 +394,7 @@ function disposeInstructionScene() {
 
     window.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('visibilitychange', onVisibilityChange);
+    mobileUnavailableQuery.removeEventListener('change', onDisplayModeChange);
     window.removeEventListener('resize', onResize);
     canvas.removeEventListener('pointerdown', onTouchPointerDown);
     canvas.removeEventListener('pointermove', onTouchPointerMove);

@@ -6,7 +6,21 @@ let camera, scene, renderer;
 const mobileUnavailableQuery = window.matchMedia(
   '(max-width: 767px), (max-height: 500px) and (pointer: coarse)'
 );
-const container = document.querySelector('.nuvens[data-cloud-background]')
+const cloudBackground = document.querySelector('.nuvens[data-cloud-background]');
+const storyPopup = document.querySelector('#popup-folha');
+
+function updateCloudBackgroundLocation() {
+  if (!cloudBackground || !storyPopup) return;
+
+  const target = mobileUnavailableQuery.matches ? document.body : storyPopup;
+  if (cloudBackground.parentElement !== target) {
+    target.appendChild(cloudBackground);
+  }
+}
+
+updateCloudBackgroundLocation();
+
+const container = cloudBackground
   || document.querySelector('.nuvens');
 const cloudMovementDirection = container.dataset.movementDirection === 'right' ? 1 : -1;
 
@@ -182,6 +196,7 @@ function init() {
 
   window.addEventListener('resize', onResize);
   document.addEventListener('visibilitychange', onVisibilityChange);
+  mobileUnavailableQuery.addEventListener('change', updateCloudBackgroundLocation);
 
   const texLoader = new THREE.TextureLoader();
   texLoader.load(
@@ -403,6 +418,7 @@ if (loadingRetry) {
 
 /*----------------- Animação das nuvens -----------------*/
 function onResize() {
+  updateCloudBackgroundLocation();
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
