@@ -56,6 +56,76 @@ const loadingProgressbar = document.querySelector('#loading-progressbar');
 const loadingPercentage = document.querySelector('#loading-percentage');
 const loadingRetry = document.querySelector('#loading-retry');
 
+
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function createIrregularLoadingOutline() {
+  const namespace = 'http://www.w3.org/2000/svg';
+  const sampleCount = 96;
+  const phase = randomBetween(0, Math.PI * 2);
+  const points = Array.from({ length: sampleCount }, (_, index) => {
+    const angle = (index / sampleCount) * Math.PI * 2;
+    const cosine = Math.cos(angle);
+    const sine = Math.sin(angle);
+    const xBase = Math.sign(cosine) * Math.pow(Math.abs(cosine), 0.42);
+    const yBase = Math.sign(sine) * Math.pow(Math.abs(sine), 0.42);
+    const sideIrregularity =
+      Math.sin(angle * 4 + phase) * 0.032 +
+      Math.sin(angle * 7 + phase * 1.6) * 0.022 +
+      Math.sin(angle * 13 + phase * 0.7) * 0.012 +
+      Math.sin(angle * 23 + phase * 1.2) * 0.006;
+    const longSideWeight = Math.pow(Math.abs(sine), 6);
+
+    return {
+      x: 0.5 + xBase * 0.47,
+      y: 0.5 + yBase * 0.4 + sideIrregularity * longSideWeight * 0.65
+    };
+  });
+
+  const pathCommands = [`M ${points[0].x} ${points[0].y}`];
+  points.forEach((point, index) => {
+    const previous = points[(index - 1 + sampleCount) % sampleCount];
+    const next = points[(index + 1) % sampleCount];
+    const afterNext = points[(index + 2) % sampleCount];
+    const control1 = {
+      x: point.x + (next.x - previous.x) / 6,
+      y: point.y + (next.y - previous.y) / 6
+    };
+    const control2 = {
+      x: next.x - (afterNext.x - point.x) / 6,
+      y: next.y - (afterNext.y - point.y) / 6
+    };
+
+    pathCommands.push(
+      `C ${control1.x} ${control1.y}, ${control2.x} ${control2.y}, ${next.x} ${next.y}`
+    );
+  });
+
+  const clipPathId = 'loading-progress-outline';
+  const svg = document.createElementNS(namespace, 'svg');
+  const defs = document.createElementNS(namespace, 'defs');
+  const clipPath = document.createElementNS(namespace, 'clipPath');
+  const outline = document.createElementNS(namespace, 'path');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  svg.style.position = 'absolute';
+  svg.style.width = '0';
+  svg.style.height = '0';
+  clipPath.id = clipPathId;
+  clipPath.setAttribute('clipPathUnits', 'objectBoundingBox');
+  outline.setAttribute('d', `${pathCommands.join(' ')} Z`);
+  clipPath.appendChild(outline);
+  defs.appendChild(clipPath);
+  svg.appendChild(defs);
+  document.body.prepend(svg);
+  loadingProgressbar.style.clipPath = `url(#${clipPathId})`;
+}
+
+if (loadingProgressbar) {
+  createIrregularLoadingOutline();
+}
 // ------------------ INIT ------------------
 init();
 
