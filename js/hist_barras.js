@@ -70,7 +70,7 @@ function getVideos(item) {
  * irregular de cada tijolo.
  */
 
-const TOTAL_TEXTURAS = 6; // nº de texturas disponíveis -> classes .bar--textura-1 a .bar--textura-5
+const TOTAL_TEXTURAS = 4; // nº de texturas disponíveis -> classes .bar--textura-1 a .bar--textura-5
 
 // Variação de tamanho: percentagem do tamanho base já definido no CSS (--bar-width / --bar-height)
 // Largura: ligeiramente reduzida em relação ao tamanho base

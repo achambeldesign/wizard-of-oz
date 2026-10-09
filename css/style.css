@@ -114,7 +114,7 @@ body.fade-out {
         touch-action: none;
     }
 }
-/*------------------ Carregamento do modelo na página inicial ------------------*/
+/*------------------ Carregar modelo casa (loading screen) ------------------*/
 #loading-screen {
     position: fixed;
     inset: 0;
@@ -124,7 +124,6 @@ body.fade-out {
     padding: 1.5rem;
     color: var(--cor-texto-creditos);
     text-align: center;
-   /* background:radial-gradient(ellipse at center, #986853, #301810);*/
     background: rgba(29, 13, 7, 0.58);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
@@ -148,7 +147,6 @@ body.fade-out {
     margin: 0;
     font-family: "Texto", serif;
     letter-spacing: 0.12em;
-    text-transform: uppercase;
 }
 
 .loading-kicker {
@@ -253,7 +251,7 @@ body.fade-out {
   #sapatosRuby {
     top: 12px;
     right: 3px;
-    width: clamp(80px, 8vw, 100px); 
+    width: clamp(85px, 8vw, 120px); 
   }
 }
 #sapatosRuby:hover {
@@ -296,7 +294,7 @@ body.fade-out {
     height: 150px;
 }
 
-.menu-letter {
+.menu-letra {
     display: inline-block;
     text-shadow:
         1.2px 1.2px 0 var(--cor-sombra-creditos),
@@ -304,25 +302,25 @@ body.fade-out {
         3.6px 3.6px 0 var(--cor-sombra-creditos),
         4.8px 4.8px 0 var(--cor-sombra-creditos),
         6px 6px 0 var(--cor-sombra-creditos);
-    animation: menu-letter-float 5s ease-in-out infinite;
+    animation: menu-letra-float 5s ease-in-out infinite;
 }
 /* nº total de letras que cada palavra tem -> 7*/
 /* Animação de flutuação com delay para cada letra */
-.menu-letter:nth-child(7n + 1) { animation-delay: -0.4s; }
-.menu-letter:nth-child(7n + 2) { animation-delay: -1.1s; }
-.menu-letter:nth-child(7n + 3) { animation-delay: -2.3s; }
-.menu-letter:nth-child(7n + 4) { animation-delay: -3.6s; }
-.menu-letter:nth-child(7n + 5) { animation-delay: -4.7s; }
-.menu-letter:nth-child(7n + 6) { animation-delay: -1.8s; }
-.menu-letter:nth-child(7n) { animation-delay: -3s; }
+.menu-letra:nth-child(7n + 1) { animation-delay: -0.4s; }
+.menu-letra:nth-child(7n + 2) { animation-delay: -1.1s; }
+.menu-letra:nth-child(7n + 3) { animation-delay: -2.3s; }
+.menu-letra:nth-child(7n + 4) { animation-delay: -3.6s; }
+.menu-letra:nth-child(7n + 5) { animation-delay: -4.7s; }
+.menu-letra:nth-child(7n + 6) { animation-delay: -1.8s; }
+.menu-letra:nth-child(7n) { animation-delay: -3s; }
 
-@keyframes menu-letter-float {
+@keyframes menu-letra-float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .menu-letter {
+    .menu-letra {
         animation: none;
     }
 }
@@ -969,8 +967,7 @@ body.fade-out {
 .bar--textura-2 .bar__fill::after { background-image: url("../img/t_2.png"); }
 .bar--textura-3 .bar__fill::after { background-image: url("../img/t_3.png"); }
 .bar--textura-4 .bar__fill::after { background-image: url("../img/t_4.png"); }
-.bar--textura-5 .bar__fill::after { background-image: url("../img/t_5.png"); }
-.bar--textura-6 .bar__fill::after { background-image: url("../img/t_6.png"); }
+
 
 /* Animações das Barras (estrada amarela) */
 .bar.active.shift-right, .bar.completed.shift-right {
