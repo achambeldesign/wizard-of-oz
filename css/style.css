@@ -16,12 +16,18 @@
     --story-hud-gap: 8px;
     --cor-texto-creditos: #E4C5B4;
     --cor-sombra-creditos: #1d0d07cc;
-    /*cores dos icones story.html (light para movie e default) e (dark para book)*/
+    /*Cores dos icones story.html: livro usa icone light/circulo dark-alpha; default e filme o inverso*/
     --icones-light-version: rgb(245, 236, 231);
     --icones-light-version-alpha: rgba(245, 236, 231, 0.4);
     --icones-dark-version: rgb(29, 13, 7);
     --icones-dark-version-alpha: rgba(29, 13, 7, 0.4);
+    --story-icon-color: var(--icones-dark-version);
+    --story-icon-circle-color: var(--icones-light-version-alpha);
+}
 
+:root[data-story-mode="book"] {
+    --story-icon-color: var(--icones-light-version);
+    --story-icon-circle-color: var(--icones-dark-version-alpha);
 }
 /*------------------ Tipografia------------------*/
 /* 
@@ -807,9 +813,11 @@ body > .nuvens {
     place-items: center;
     width: 50px;
     height: 50px;
-    background: transparent;
+    background: var(--story-icon-circle-color);
     border: none;
+    border-radius: 50%;
     padding: 0;
+    color: var(--story-icon-color);
     opacity: 0;
     visibility: hidden;
     cursor: pointer;
@@ -823,12 +831,16 @@ body > .nuvens {
     pointer-events: auto;
 }
 
-.popup-close img {
+.popup-close svg {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
     pointer-events: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 11.5833;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 .popup-close:hover {
     transform: scale(1.05);
@@ -1113,13 +1125,15 @@ body > .nuvens {
     left: 50%;
     transform: translate(-50%, -50%);   
     width: 80px; height: 80px;
-    background: var(--sombra-botoes);
+    background: var(--story-icon-circle-color);
     border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 32px;
-    object-fit: contain;                
+    color: var(--story-icon-color);
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 11.5833;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     transition: opacity 0.4s ease;
     cursor: pointer;
     pointer-events: auto;
@@ -1132,9 +1146,5 @@ body > .nuvens {
 }
 
 .btn-try-again {
-    border: 0;
-    padding: 0;
-    color: #fff;
-    font-size: 48px;
-    line-height: 1;
+    color: var(--story-icon-color);
 }

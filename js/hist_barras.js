@@ -499,6 +499,7 @@ function setMode(mode) {
     if (!currentItem) return;
 
     currentMode = mode;
+    document.documentElement.dataset.storyMode = mode;
 
 
     /* =====================================================
