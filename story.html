@@ -69,8 +69,10 @@
        <div class="nuvens" data-cloud-background data-show-house="false" data-movement-direction="right" aria-hidden="true"></div>
        <canvas id="instructions"></canvas>
        <button id="fechar-popup" class="popup-close" aria-label="Fechar pop-up" title="Close">
-                <img src="img/close.svg" alt="close" width="500" height="500" >
-            </button>
+           <svg viewBox="0 0 278 278" aria-hidden="true" focusable="false">
+               <path d="M208.5 69.5L69.5 208.5M69.5 69.5L208.5 208.5" />
+           </svg>
+       </button>
     </div>
 
     <!------------------------------------------ Tijolo nº1 ------------------------------------------>
@@ -254,9 +256,15 @@
 
 <!------------------ Play/Pause & Replay Overlays ------------------>
 <div id="play-pause-container" class="play-pause-overlay">
-    <img id="btn-play"  class="btn-play-pause" src="img/play.svg"  alt="Play" title="Play" width="2000" height="2000">
-    <img id="btn-pause" class="btn-play-pause" src="img/pause.svg" alt="Pause" title="Pause" width="2000" height="2000">
-    <img id="btn-try-again" class="btn-play-pause btn-try-again fade-out" src="img/reload.svg" width="2000" height="2000" alt="Try again" title="Try again">
+    <svg id="btn-play" class="btn-play-pause" viewBox="0 0 278 278" role="img" aria-label="Play" title="Play">
+        <path d="M104.25 69.5L172.931 138.181C173.383 138.633 173.383 139.367 172.931 139.819L104.25 208.5" />
+    </svg>
+    <svg id="btn-pause" class="btn-play-pause" viewBox="0 0 278 278" role="img" aria-label="Pause" title="Pause">
+        <path d="M104.25 211.396L104.25 66.6041M162.167 211.396L162.167 66.6041" />
+    </svg>
+    <svg id="btn-try-again" class="btn-play-pause btn-try-again fade-out" viewBox="0 0 278 278" role="img" aria-label="Try again" title="Try again">
+        <path d="M162.167 173.75L116.652 219.264C116.2 219.717 116.2 220.45 116.652 220.902L162.167 266.417M68.7797 179.542C59.5933 163.63 56.0831 145.071 58.8239 126.904C61.5648 108.737 70.3944 92.0389 83.8661 79.5461C97.3378 67.0532 114.653 59.506 132.975 58.1408C151.297 56.7756 169.539 61.6733 184.714 72.0316C199.888 82.3899 211.095 97.5947 216.498 115.155C221.901 132.715 221.18 151.59 214.453 168.687C207.726 185.784 195.392 200.09 179.472 209.26C163.552 218.431 144.989 221.923 126.824 219.164" />
+    </svg>
 </div>
 
 </div>
