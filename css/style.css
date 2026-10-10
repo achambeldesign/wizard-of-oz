@@ -842,6 +842,14 @@ body > .nuvens {
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+
+.popup-close svg path,
+.btn-play-pause path {
+    transform: scale(0.6);
+    transform-box: view-box;
+    transform-origin: center;
+}
+
 .popup-close:hover {
     transform: scale(1.05);
 }
