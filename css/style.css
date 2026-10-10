@@ -1,22 +1,27 @@
 * {
     box-sizing: border-box;
 }
-/*------------------ Variáveis ------------------*/
+/*------------------ Variáveis Gerais ------------------*/
 :root {
     --gradienteBackground: linear-gradient(#482417, #532E1F, #71412F, #986853);  /*background nuvens*/
-    --bar-width: clamp(80px, 10vw, 120px); /*barras amarelas Yellow Brick Road*/
-    --bar-radius: 3px; /* arredondamento yellow brick road */
-    --bar-fill: #ffe100; /*cor da yellow brick road */
+    --barra-width: clamp(80px, 10vw, 120px); /* width das barras amarelas Yellow Brick Road*/
+    --barra-height: clamp(20px, 0.8vw, 40px); /* height das barras amarelas Yellow Brick Road*/
+    --barra-radius: 3px; /* arredondamento das barras amarelas Yellow Brick Road */
+    --barra-cor-amarela: #ffe100; /*cor da yellow brick road */
+    --barra-cor-escura: rgba(255, 255, 255, 0.25); /*cor do background das barras amarelas */
     --sombra-barras: rgba(0, 0, 0, 0.2); 
-    --sombra-botoes: rgba(0, 0, 0, 0.5);
-    --bar-height: clamp(20px, 0.8vw, 40px);
     --gap: clamp(8px, 0.2vw, 15px);
     --shift: clamp(8px, 2vw, 15px);
-    --bar-bg: rgba(255, 255, 255, 0.25);
     --story-hud-inset: clamp(12px, 2vw, 24px);
     --story-hud-gap: 8px;
     --cor-texto-creditos: #E4C5B4;
     --cor-sombra-creditos: #1d0d07cc;
+    /*cores dos icones story.html (light para movie e default) e (dark para book)*/
+    --icones-light-version: rgb(245, 236, 231);
+    --icones-light-version-alpha: rgba(245, 236, 231, 0.4);
+    --icones-dark-version: rgb(29, 13, 7);
+    --icones-dark-version-alpha: rgba(29, 13, 7, 0.4);
+
 }
 /*------------------ Tipografia------------------*/
 /* 
@@ -141,7 +146,7 @@ body > .nuvens {
     pointer-events: none;
 }
 
-.loading-card {
+.loading-container {
     width: min(100%, 32rem);
 }
 
@@ -157,7 +162,7 @@ body > .nuvens {
     opacity: 0.8;
 }
 
-.loading-card h1 {
+.loading-container h1 {
     margin: 0.5rem 0 1rem;
     font-family: "Wizard", serif;
     font-size: clamp(3rem, 10vw, 5rem);
@@ -185,7 +190,7 @@ body > .nuvens {
     width: 0;
     height: 100%;
     border-radius: inherit;
-    background: var(--bar-fill);
+    background: var(--barra-cor-amarela);
     transition: width 0.2s ease;
 }
 
@@ -238,7 +243,7 @@ body > .nuvens {
         opacity: 0.6;
     }
 }
-/*------------------ Menu dos Sapatos ------------------*/
+/*------------------ Icone dos Sapatos (story, credits e about) ------------------*/
 #sapatosRuby {
     position: fixed;
     mix-blend-mode: normal;
@@ -261,7 +266,8 @@ body > .nuvens {
 #sapatosRuby:hover {
     transform: scale(1.05);
 }
-/*------------------ Menu index.html ------------------*/
+
+/*------------------ Menu index ------------------*/
 #about,#credits, #story {
     position: fixed;
     z-index: 10;
@@ -309,7 +315,7 @@ body > .nuvens {
     animation: menu-letra-float 5s ease-in-out infinite;
 }
 /* nº total de letras que cada palavra tem -> 7*/
-/* Animação de flutuação com delay para cada letra */
+/* Animação de flutuação com delay para cada letra (anteriormente estava em p5.js) */
 .menu-letra:nth-child(7n + 1) { animation-delay: -0.4s; }
 .menu-letra:nth-child(7n + 2) { animation-delay: -1.1s; }
 .menu-letra:nth-child(7n + 3) { animation-delay: -2.3s; }
@@ -329,7 +335,7 @@ body > .nuvens {
     }
 }
 
-/*------------------ about.html ------------------*/
+/*------------------ about.html (modelo 3d) ------------------*/
 #folha {
     position: fixed;
     top: 0;
@@ -355,8 +361,9 @@ body > .nuvens {
     align-items: center;
     overflow-x: hidden;
     z-index: 10;
-    animation: scrollCredits 30s linear forwards; 
+    animation: scrollCredits 30s linear forwards; /*sentido baixo para cima*/
 }
+
 /*Título - "Credits"*/
 .container-creditos h1 {
     font-family: 'Wizard', serif;
@@ -492,7 +499,6 @@ body > .nuvens {
     text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
 }
 
-/* Nomes dos orientadores */
 .nome-tipografia p {
     font-size:1.2rem;
     letter-spacing: 0.10rem;
@@ -561,10 +567,11 @@ body > .nuvens {
     text-align:left;
     text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
 }
+/*Orientador nº1*/
 .nomes-orientadores p:nth-child(1) {
     margin: 0 0 1.2rem 0;
 }
-
+/*Orientador nº2*/
 .nomes-orientadores p:nth-child(2) {
     padding-left: 16%;
 }
@@ -859,7 +866,7 @@ body > .nuvens {
     display: flex;
     flex-direction: column;
     gap: var(--gap);
-    width: calc(var(--bar-width) + (var(--shift) * 2));
+    width: calc(var(--barra-width) + (var(--shift) * 2));
     align-items: center;
     z-index: 50;
     pointer-events: none;
@@ -936,10 +943,10 @@ body > .nuvens {
 
 .bar {
     position: relative;
-    width: var(--bar-width);
-    height: var(--bar-height);
-    background: var(--bar-bg);
-    border-radius: var(--bar-radius);
+    width: var(--barra-width);
+    height: var(--barra-height);
+    background: var(--barra-cor-escura);
+    border-radius: var(--barra-radius);
     overflow: hidden;
     transition: transform 0.4s ease;
     box-shadow: 4px -6px 3px var(--sombra-barras); /* Sombra para dar profundidade */
@@ -949,8 +956,8 @@ body > .nuvens {
     position: relative;
     width: 0%;
     height: 100%;
-    background: var(--bar-fill);
-    border-radius: var(--bar-radius);
+    background: var(--barra-cor-amarela);
+    border-radius: var(--barra-radius);
 }
 
 /* Textura por cima do amarelo acompanhando o progresso */
@@ -975,7 +982,7 @@ body > .nuvens {
 .bar--textura-4 .bar__fill::after { background-image: url("../img/t_4.png"); }
 
 
-/* Animações das Barras (estrada amarela) */
+/* Animações das Barras (estrada amarela) esquerda/direita alternado*/
 .bar.active.shift-right, .bar.completed.shift-right {
     transform: translateX(var(--shift));
 }
