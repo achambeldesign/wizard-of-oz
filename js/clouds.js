@@ -337,7 +337,7 @@ async function loadHouse() {
   gltfLoader.setKTX2Loader(ktx2Loader); // 2. Registar o KTX2Loader no GLTFLoader
 
   gltfLoader.load(
-    './model/Untitled2.glb',
+    './model/Dorothy_125.glb',
     (gltf) => {
       ktx2Loader.dispose();
       houseModel = gltf.scene;
