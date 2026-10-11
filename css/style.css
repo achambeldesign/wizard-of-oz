@@ -1027,7 +1027,12 @@ body > .nuvens {
 
 .rosa-direcao {
     position: absolute;
-    color: var(--cor-texto-creditos);
+    color: #fff;
+    transition: color 180ms ease;
+}
+
+.estado-atual[data-mode="book"] .rosa-direcao {
+    color: #000;
 }
 
 .rosa-linha {
@@ -1128,7 +1133,6 @@ body > .nuvens {
 .estado-atual[data-default-source="w"] [data-compass-key="w"],
 .estado-atual[data-default-source="e"] [data-compass-key="e"],
 .rosa-ponto.is-temporarily-active {
-    color: #ffe100;
     font-weight: 700;
     -webkit-text-stroke-width: 0.4px;
 }
