@@ -45,7 +45,7 @@ function updateCompassMode(mode, defaultSource = null) {
 
 function highlightCompassKeyTemporarily(key) {
     const compassKey = compassIndicator?.querySelector(`[data-compass-key="${key}"]`);
-    const compassDirection = compassKey?.closest(".rosa-direcao");
+    const compassDirection = compassKey?.closest(".direcao");
     if (!compassKey || !compassDirection) return;
 
     compassKey.classList.add("is-temporarily-active");

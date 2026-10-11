@@ -1008,23 +1008,23 @@ body > .nuvens {
     pointer-events: none;
 }
 
-.rosa-ventos {
+.bussula {
     position: relative;
     width: clamp(86px, 10vw, 106px);
     aspect-ratio: 1;
 }
 
-.rosa-direcao {
+.direcao {
     position: absolute;
     color: #fff;
     transition: color 180ms ease;
 }
 
-.estado-atual[data-mode="book"] .rosa-direcao {
+.estado-atual[data-mode="book"] .direcao {
     color: #000;
 }
 
-.rosa-linha {
+.linha {
     position: absolute;
     display: block;
     border-radius: 999px;
@@ -1033,7 +1033,7 @@ body > .nuvens {
     transition: width 180ms ease, height 180ms ease, opacity 180ms ease;
 }
 
-.rosa-ponto {
+.letra-direcional {
     position: absolute;
     display: inline-block;
     color: currentColor;
@@ -1045,73 +1045,73 @@ body > .nuvens {
  transition: color 180ms ease, opacity 180ms ease, font-weight 180ms ease, -webkit-text-stroke-width 180ms ease;
 }
 
-.rosa-direcao-norte {
+.direcao-norte {
     top: 50%;
     left: 50%;
 }
 
-.rosa-direcao-norte .rosa-linha {
+.direcao-norte .linha {
     top: -32px;
     left: -0.75px;
     width: 1.5px;
     height: 32px;
 }
 
-.rosa-direcao-norte .rosa-ponto {
+.direcao-norte .letra-direcional {
     top: -43px;
     left: -0.75px;
     transform: translate(-50%, -50%);
 }
 
-.rosa-direcao-sul {
+.direcao-sul {
     top: 50%;
     left: 50%;
 }
 
-.rosa-direcao-sul .rosa-linha {
+.direcao-sul .linha {
     top: 0;
     left: -0.75px;
     width: 1.5px;
     height: 32px;
 }
 
-.rosa-direcao-sul .rosa-ponto {
+.direcao-sul .letra-direcional {
     top: 43px;
     left: -0.75px;
     transform: translate(-50%, -50%);
 }
 
-.rosa-direcao-oeste {
+.direcao-oeste {
     top: 50%;
     left: 50%;
 }
 
-.rosa-direcao-oeste .rosa-linha {
+.direcao-oeste .linha {
     top: -0.75px;
     right: 0;
     width: 17px;
     height: 1.5px;
 }
 
-.rosa-direcao-oeste .rosa-ponto {
+.direcao-oeste .letra-direcional {
     top: 0;
     right: 20px;
     transform: translateY(-50%);
 }
 
-.rosa-direcao-este {
+.direcao-este {
     top: 50%;
     left: 50%;
 }
 
-.rosa-direcao-este .rosa-linha {
+.direcao-este .linha {
     top: -0.75px;
     left: 0;
     width: 17px;
     height: 1.5px;
 }
 
-.rosa-direcao-este .rosa-ponto {
+.direcao-este .letra-direcional {
     top: 0;
     left: 20px;
     transform: translateY(-50%);
@@ -1121,49 +1121,49 @@ body > .nuvens {
 .estado-atual[data-mode="movie"] [data-compass-key="e"],
 .estado-atual[data-default-source="w"] [data-compass-key="w"],
 .estado-atual[data-default-source="e"] [data-compass-key="e"],
-.rosa-ponto.is-temporarily-active {
+.letra-direcional.is-temporarily-active {
     font-weight: 600;
     opacity: 1;
 }
 
-.estado-atual[data-mode="book"] .rosa-direcao-oeste .rosa-linha,
-.estado-atual[data-default-source="w"] .rosa-direcao-oeste .rosa-linha,
-.estado-atual[data-mode="movie"] .rosa-direcao-este .rosa-linha,
-.estado-atual[data-default-source="e"] .rosa-direcao-este .rosa-linha,
-.rosa-direcao.is-temporarily-active .rosa-linha {
+.estado-atual[data-mode="book"] .direcao-oeste .linha,
+.estado-atual[data-default-source="w"] .direcao-oeste .linha,
+.estado-atual[data-mode="movie"] .direcao-este .linha,
+.estado-atual[data-default-source="e"] .direcao-este .linha,
+.direcao.is-temporarily-active .linha {
     opacity: 1;
 }
 
-.rosa-direcao-norte.is-temporarily-active .rosa-linha,
-.rosa-direcao-sul.is-temporarily-active .rosa-linha {
+.direcao-norte.is-temporarily-active .linha,
+.direcao-sul.is-temporarily-active .linha {
     width: 3px;
 }
 
-.rosa-direcao-oeste.is-temporarily-active .rosa-linha,
-.rosa-direcao-este.is-temporarily-active .rosa-linha {
+.direcao-oeste.is-temporarily-active .linha,
+.direcao-este.is-temporarily-active .linha {
     top: -1.5px;
     height: 3px;
 }
 
-.estado-atual[data-mode="book"] .rosa-direcao-oeste .rosa-linha,
-.estado-atual[data-default-source="w"] .rosa-direcao-oeste .rosa-linha,
-.estado-atual[data-mode="movie"] .rosa-direcao-este .rosa-linha,
-.estado-atual[data-default-source="e"] .rosa-direcao-este .rosa-linha {
+.estado-atual[data-mode="book"] .direcao-oeste .linha,
+.estado-atual[data-default-source="w"] .direcao-oeste .linha,
+.estado-atual[data-mode="movie"] .direcao-este .linha,
+.estado-atual[data-default-source="e"] .direcao-este .linha {
     height: 3px;
 }
 
-.estado-atual[data-mode="book"] .rosa-direcao-oeste .rosa-linha,
-.estado-atual[data-default-source="w"] .rosa-direcao-oeste .rosa-linha {
+.estado-atual[data-mode="book"] .direcao-oeste .linha,
+.estado-atual[data-default-source="w"] .direcao-oeste .linha {
     top: -1.5px;
 }
 
-.estado-atual[data-mode="movie"] .rosa-direcao-este .rosa-linha,
-.estado-atual[data-default-source="e"] .rosa-direcao-este .rosa-linha {
+.estado-atual[data-mode="movie"] .direcao-este .linha,
+.estado-atual[data-default-source="e"] .direcao-este .linha {
     top: -1.5px;
 }
 
-.rosa-direcao-norte.is-temporarily-active .rosa-linha,
-.rosa-direcao-sul.is-temporarily-active .rosa-linha {
+.direcao-norte.is-temporarily-active .linha,
+.direcao-sul.is-temporarily-active .linha {
     left: -1.5px;
 }
 

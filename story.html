@@ -5,10 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Wizard of Oz</title>
-        <!-- Favicon -->
-    <link rel="icon" href="img/light_default.PNG" type="image/x-icon"> <!--(padrão - fallback para navegadores não suportados)-->
-    <link rel="icon" href="img/light_default.PNG" type="image/x-icon" media="(prefers-color-scheme: light)">  <!-- light mode -->
-    <link rel="icon" href="img/dark.PNG" type="image/x-icon" media="(prefers-color-scheme: dark)">  <!-- dark mode -->
+    <!-- Favicon dark e light mode -->
+    <link rel="icon" href="img/light_default.PNG" type="image/x-icon">
+    <link rel="icon" href="img/dark.PNG" type="image/x-icon" media="(prefers-color-scheme: dark)"> 
 
     <script type="importmap">
         {
@@ -41,41 +40,41 @@
 <!--------------------------- Story --------------------------->
 <div class="container-historia">
 
-<!-- Tijolos Amarelos - Yellow Brick Road (barras progressão) -->
 <div class="historia" id="historia">
-
+    <!-- Bússula N, S, E. W-->
     <div class="story-hud-grid">
     <div id="estado-atual" class="estado-atual" data-mode="default">
-        <div class="rosa-ventos" aria-hidden="true">
-            <span class="rosa-direcao rosa-direcao-norte">
-                <span class="rosa-linha"></span>
-                <span class="rosa-ponto" data-compass-key="n">N</span>
+        <div class="bussula" aria-hidden="true">
+            <span class="direcao direcao-norte">
+                <span class="linha"></span>
+                <span class="letra-direcional" data-compass-key="n">N</span>
             </span>
-            <span class="rosa-direcao rosa-direcao-sul">
-                <span class="rosa-linha"></span>
-                <span class="rosa-ponto" data-compass-key="s">S</span>
+            <span class="direcao direcao-sul">
+                <span class="linha"></span>
+                <span class="letra-direcional" data-compass-key="s">S</span>
             </span>
-            <span class="rosa-direcao rosa-direcao-oeste">
-                <span class="rosa-linha"></span>
-                <span class="rosa-ponto" data-compass-key="w">W</span>
+            <span class="direcao direcao-oeste">
+                <span class="linha"></span>
+               <span class="letra-direcional" data-compass-key="w">W</span>
             </span>
-            <span class="rosa-direcao rosa-direcao-este">
-                <span class="rosa-linha"></span>
-                <span class="rosa-ponto" data-compass-key="e">E</span>
+            <span class="direcao direcao-este">
+                <span class="linha"></span>
+                <span class="letra-direcional" data-compass-key="e">E</span>
             </span>
         </div>
     </div>
 
+    <!-- Tijolos Amarelos - Yellow Brick Road (barras progressão) -->
     <div class="barras" id="barras"></div>
 
+    <!-- Botões N, S, E, W - solução para tablets -->
     <div class="story-direction-controls" role="group" aria-label="Controlos da história">
         <button class="story-direction-button story-direction-button--north" type="button" data-story-key="n" aria-label="Cena anterior">N</button>
         <button class="story-direction-button story-direction-button--west" type="button" data-story-key="w" aria-label="Livro">W</button>
         <button class="story-direction-button story-direction-button--east" type="button" data-story-key="e" aria-label="Filme">E</button>
         <button class="story-direction-button story-direction-button--south" type="button" data-story-key="s" aria-label="Cena seguinte">S</button>
     </div>
-
-    </div>
+</div>
 
    <!------------------ Pop-up Instruções overlay ------------------>
     <div id="popup-folha" class="popup-overlay">
