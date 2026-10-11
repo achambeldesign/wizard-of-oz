@@ -7,8 +7,7 @@ const mobileUnavailableQuery = window.matchMedia(
   '(max-width: 767px), (max-height: 500px) and (pointer: coarse)'
 );
 const cloudBackground = document.querySelector('.nuvens[data-cloud-background]');
-const storyPopup = document.querySelector('#popup-folha');
-
+const storyPopup = document.querySelector('.popup-overlay');
 function updateCloudBackgroundLocation() {
   if (!cloudBackground || !storyPopup) return;
 

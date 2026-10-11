@@ -768,14 +768,14 @@ body > .nuvens {
 }
 
 /* Nuvens animadas atrás do modelo 3D das instruções */
-#popup-folha .nuvens {
+.popup-overlay .nuvens {
     position: absolute;
     z-index: 0;
     pointer-events: none;
 }
 
 /* O canvas mantém-se a ocupar o ecrã todo sem alterações */
-#instructions {
+.instructions-canvas {
     position: absolute;
     z-index: 1;
     top: 0;
@@ -786,11 +786,6 @@ body > .nuvens {
     /*pointer-events: auto;*/
 }
 
-/* Classe adicionada em javascript quando a folha 3d estabiliza */
-.popup-ui-container.visivel {
-    opacity: 1;
-    pointer-events: auto; 
-}
 
 /* Cruz posicionada no canto superior direito exatamente junto ao modelo */
 .popup-close {

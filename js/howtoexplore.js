@@ -1,6 +1,6 @@
 // ---------- Controlo para Fechar o Pop-up ----------
-const popupOverlay = document.getElementById('popup-folha');
-const fecharBtn = document.getElementById('fechar-popup');
+const popupOverlay = document.querySelector('.popup-overlay');
+const fecharBtn = document.querySelector('.popup-close');
 const mobileUnavailableQuery = window.matchMedia(
     '(max-width: 767px), (max-height: 500px) and (pointer: coarse)'
 );
@@ -28,7 +28,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'addons/loaders/GLTFLoader.js';
 
 // ---------- Configuração base ----------
-const canvas = document.getElementById('instructions');
+const canvas = document.querySelector('.instructions-canvas');
 
 const renderer = new THREE.WebGLRenderer({
     canvas,
