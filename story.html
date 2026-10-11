@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Wizard of Oz</title>
         <!-- Favicon -->
-    <link rel="icon" href="img/light_default.PNG" type="image/x-icon">
+    <link rel="icon" href="img/light_default.PNG" type="image/x-icon"> <!--(padrão - fallback para navegadores não suportados)-->
+    <link rel="icon" href="img/light_default.PNG" type="image/x-icon" media="(prefers-color-scheme: light)">  <!-- light mode -->
     <link rel="icon" href="img/dark.PNG" type="image/x-icon" media="(prefers-color-scheme: dark)">  <!-- dark mode -->
 
     <script type="importmap">
@@ -17,6 +18,11 @@
             }
         }
  </script>
+
+ <!-- Preload da fonte Google Fonts-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://gstatic.com" crossorigin>
+<link href="https://googleapis.com" rel="stylesheet">
 
  <!-- Css -->
 <link rel="stylesheet" href="css/style.css" />
@@ -275,7 +281,7 @@
 </div>
 
 </div>
-    <video id="sapatosRuby" muted playsinline preload="auto">
+  <video id="sapatosRuby" muted playsinline preload="auto">
         <source src="video/Shoes/shoes.mov" type='video/mp4; codecs="hvc1"'>
         <source src="video/Shoes/shoes.webm" type="video/webm">
     </video>
