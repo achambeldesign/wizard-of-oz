@@ -5,7 +5,7 @@
 :root {
     --gradienteBackground: linear-gradient(#482417, #532E1F, #71412F, #986853);  /*background nuvens*/
     --barra-width: clamp(80px, 10vw, 120px); /* width das barras amarelas Yellow Brick Road*/
-    --barra-height: clamp(20px, 0.8vw, 40px); /* height das barras amarelas Yellow Brick Road*/
+    --barra-height: clamp(25px, 0.8vw, 35px); /* height das barras amarelas Yellow Brick Road*/
     --barra-radius: 3px; /* arredondamento das barras amarelas Yellow Brick Road */
     --barra-cor-amarela: #ffe100; /*cor da yellow brick road */
     --barra-cor-escura: rgba(255, 255, 255, 0.25); /*cor do background das barras amarelas */
@@ -1048,12 +1048,12 @@ body > .nuvens {
     position: absolute;
     display: inline-block;
     color: currentColor;
-    font-family: "Texto", serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: clamp(10px, 1.2vw, 13px);
-    font-weight: 400;
-    line-height: 1;
+    font-weight: 300;
+    opacity: 0.4;
     -webkit-text-stroke-width: 0;
-    transition: color 180ms ease, font-weight 180ms ease, -webkit-text-stroke-width 180ms ease;
+ transition: color 180ms ease, opacity 180ms ease, font-weight 180ms ease, -webkit-text-stroke-width 180ms ease;
 }
 
 .rosa-direcao-norte {
@@ -1133,8 +1133,8 @@ body > .nuvens {
 .estado-atual[data-default-source="w"] [data-compass-key="w"],
 .estado-atual[data-default-source="e"] [data-compass-key="e"],
 .rosa-ponto.is-temporarily-active {
-    font-weight: 700;
-    -webkit-text-stroke-width: 0.4px;
+    font-weight: 600;
+    opacity: 1;
 }
 
 .estado-atual[data-mode="book"] .rosa-direcao-oeste .rosa-linha,
