@@ -371,13 +371,10 @@ body > .nuvens {
     text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
 }
 
-.creditos {
+.container-creditos > :not(h1) {
     position: relative;
     width: 100%;
     max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
     z-index: 10;
 }
 
