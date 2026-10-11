@@ -12,6 +12,7 @@ const TOTAL_ITEMS = document.querySelectorAll(".historia-item").length;
 const barsContainer = document.getElementById("barras");
 const startOverlay = document.getElementById("startOverlay");
 const compassIndicator = document.getElementById("estado-atual");
+const compassKeyTimeouts = new Map();
 
 const storyItems = [];
 
@@ -27,19 +28,35 @@ let started = false;
 
 const VIDEO_FADE_DURATION = 400;
 const AUDIO_FADE_DURATION = 400;
+const COMPASS_KEY_HIGHLIGHT_DURATION = 2000;
 
 
-function updateCompassDirection(direction) {
-    if (compassIndicator) {
-        compassIndicator.dataset.direction = direction;
-        compassIndicator.removeAttribute("data-ball-light");
+function updateCompassMode(mode, defaultSource = null) {
+    if (!compassIndicator) return;
+
+    compassIndicator.dataset.mode = mode;
+
+    if (mode === "default" && ["w", "e"].includes(defaultSource)) {
+        compassIndicator.dataset.defaultSource = defaultSource;
+    } else {
+        compassIndicator.removeAttribute("data-default-source");
     }
 }
 
-function lightenCompassBall() {
-    if (["w", "e"].includes(compassIndicator?.dataset.direction)) {
-        compassIndicator.dataset.ballLight = "true";
-    }
+function highlightCompassKeyTemporarily(key) {
+    const compassKey = compassIndicator?.querySelector(`[data-compass-key="${key}"]`);
+    const compassDirection = compassKey?.closest(".rosa-direcao");
+    if (!compassKey || !compassDirection) return;
+
+    compassKey.classList.add("is-temporarily-active");
+    compassDirection.classList.add("is-temporarily-active");
+    clearTimeout(compassKeyTimeouts.get(key));
+
+    compassKeyTimeouts.set(key, setTimeout(() => {
+        compassKey.classList.remove("is-temporarily-active");
+        compassDirection.classList.remove("is-temporarily-active");
+        compassKeyTimeouts.delete(key);
+    }, COMPASS_KEY_HIGHLIGHT_DURATION));
 }
 
 
@@ -390,6 +407,8 @@ async function showModeVideo(mode, fade = true) {
         console.error(`Não foi possível mudar para o modo "${mode}":`, error);
         if (previousVideo) {
             currentMode = displayedMode;
+            document.documentElement.dataset.storyMode = displayedMode;
+            updateCompassMode(displayedMode);
             currentItem.classList.toggle("w-pressed", displayedMode === "book");
             currentItem.classList.toggle("e-pressed", displayedMode === "movie");
         }
@@ -492,7 +511,7 @@ function stopAllVideos(item, reset = true) {
    DEFINIR O MODO
    ========================================================= */
 
-function setMode(mode) {
+function setMode(mode, defaultSource = null) {
 
     const currentItem = storyItems[currentIndex];
 
@@ -500,6 +519,7 @@ function setMode(mode) {
 
     currentMode = mode;
     document.documentElement.dataset.storyMode = mode;
+    updateCompassMode(mode, defaultSource);
 
 
     /* =====================================================
@@ -514,7 +534,6 @@ function setMode(mode) {
         );
 
         showModeVideo("default", true);
-        lightenCompassBall();
 
         return;
     }
@@ -581,6 +600,7 @@ function activateItem(index) {
     // Resetar para default APENAS se estivermos a iniciar a história no primeiro tijolo
     if (index === 0) {
         currentMode = "default";
+        updateCompassMode("default");
     }
 
     // 1. Assegurar que os vídeos desta cena (e da próxima) são carregados
@@ -1026,17 +1046,12 @@ function handleStoryControl(key) {
 
         if (!currentItem) return;
 
-        if (["n", "w", "s", "e"].includes(key)) {
-            updateCompassDirection(key);
-        }
-
-
         /* =================================================
            N = CENA ANTERIOR
            ================================================= */
 
         if (key === "n") {
-
+            highlightCompassKeyTemporarily(key);
             goToPrevious();
 
             return;
@@ -1048,6 +1063,8 @@ function handleStoryControl(key) {
    ========================================================= */
 
 if (key === "s") {
+
+    highlightCompassKeyTemporarily(key);
 
     if (isSkipping) return;
 
@@ -1133,7 +1150,7 @@ if (key === "s") {
                  * W novamente -> Default
                  */
 
-                setMode("default");
+                setMode("default", "w");
 
             } else {
 
@@ -1160,7 +1177,7 @@ if (key === "s") {
                  * E novamente -> Default
                  */
 
-                setMode("default");
+                setMode("default", "e");
 
             } else {
 
@@ -1282,7 +1299,7 @@ function restartStory() {
     hasStartedPlayback = true;
     isSkipping = false;
     currentMode = "default";
-    updateCompassDirection("center");
+    updateCompassMode("default");
 
     btnTryAgain.classList.add("fade-out");
     playPauseContainer.style.display = "";
