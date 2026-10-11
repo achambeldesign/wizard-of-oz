@@ -211,7 +211,6 @@ body > .nuvens {
     animation: loading-progress 1.4s ease-in-out infinite;
 }
 
-
 #loading-retry {
     margin-top: 1.25rem;
     padding: 0.65rem 1.25rem;
@@ -242,8 +241,10 @@ body > .nuvens {
 }
 /*------------------ Icone dos Sapatos (story, credits e about) ------------------*/
 #sapatosRuby {
+    display: block;
     position: fixed;
     mix-blend-mode: normal;
+    cursor: pointer;
     top: 15px;
     right: 5px;
     width: clamp(90px, 10vw, 150px);
