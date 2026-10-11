@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Wizard of Oz</title>
-        <!-- Favicon -->
+    <!-- Favicon -->
     <link rel="icon" href="img/light_default.PNG" type="image/x-icon"> <!--(padrão - fallback para navegadores não suportados)-->
     <link rel="icon" href="img/light_default.PNG" type="image/x-icon" media="(prefers-color-scheme: light)">  <!-- light mode -->
     <link rel="icon" href="img/dark.PNG" type="image/x-icon" media="(prefers-color-scheme: dark)">  <!-- dark mode -->
@@ -18,13 +18,13 @@
     </script>
     <!--Css-->
     <link rel="stylesheet" href="css/style.css" />
+    <!--Js-->
     <script type="module">
         const loadCloudScene = () => {
             import('./js/clouds_credits.js').catch((error) => {
                 console.error('Error:', error);
             });
         };
-
         if ('requestIdleCallback' in window) {
             window.requestIdleCallback(loadCloudScene, { timeout: 1500 });
         } else {
@@ -41,11 +41,9 @@
             <p>Please try on a computer or tablet.</p>
     </div>
 
+<!-------------------------------- CRÉDITOS -------------------------------->  
 <div class="container-creditos">
     <h1>Credits</h1>
-
-    <div class="creditos">
-
     <!------------------Baseado em------------------>
         <div class="baseado-em">
             <h2>Based on . . . .</h2>
@@ -124,17 +122,14 @@
                 <span class="pontos"></span>
                 <span class="palavra">2027</span>
             </div>
-            </div>
+        </div>
             
-<!------------------Imagens dos logos da UC e do DEI------------------>
+<!------ Imagens dos logos da UC e do DEI ------>
         <div class="logos-creditos">
             <div class="UC-DEI">
                 <img src="img/UC_logo.png" alt="UC" width="248" height="56" loading="lazy" decoding="async" />
                 <img src="img/DEI_logo.png" alt="DEI" width="382" height="66" loading="lazy" decoding="async" />
             </div>
-        </div>
-
-
     </div>
 </div>
 
