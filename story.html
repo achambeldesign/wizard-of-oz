@@ -39,17 +39,24 @@
 <div class="historia" id="historia">
 
     <div class="story-hud-grid">
-    <div id="estado-atual" class="estado-atual" data-direction="center">
+    <div id="estado-atual" class="estado-atual" data-mode="default">
         <div class="rosa-ventos" aria-hidden="true">
-            <span class="rosa-ponto rosa-ponto-norte">N</span>
-            <span class="rosa-ponto rosa-ponto-oeste">W</span>
-            <span class="rosa-ponto rosa-ponto-este">E</span>
-            <span class="rosa-ponto rosa-ponto-sul">S</span>
-            <svg class="rosa-estrela" viewBox="0 0 100 100">
-                <path d="M50 15 58 42 85 50 58 58 50 85 42 58 15 50 42 42Z" />
-                <circle cx="50" cy="50" r="4" />
-            </svg>
-            <span class="rosa-bola"></span>
+            <span class="rosa-direcao rosa-direcao-norte">
+                <span class="rosa-linha"></span>
+                <span class="rosa-ponto" data-compass-key="n">N</span>
+            </span>
+            <span class="rosa-direcao rosa-direcao-sul">
+                <span class="rosa-linha"></span>
+                <span class="rosa-ponto" data-compass-key="s">S</span>
+            </span>
+            <span class="rosa-direcao rosa-direcao-oeste">
+                <span class="rosa-linha"></span>
+                <span class="rosa-ponto" data-compass-key="w">W</span>
+            </span>
+            <span class="rosa-direcao rosa-direcao-este">
+                <span class="rosa-linha"></span>
+                <span class="rosa-ponto" data-compass-key="e">E</span>
+            </span>
         </div>
     </div>
 
