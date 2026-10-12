@@ -93,12 +93,12 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição x
-folhaGroup.position.x = -0.628;//-0.62621
+folhaGroup.position.x = -0.628;//Valor tirado do blender 
 let folha;
 let animTerminou = false;
 let popAnim = false;
 let popTime = 0;
-const BASE_SCALE = 1.25; //1.2escala um pouco maior para ser legivel as instruções
+const BASE_SCALE = 1.25; //escala um pouco maior para ser legivel as instruções
 let animationFrameId = null;
 let sceneDisposed = false;
 
@@ -164,7 +164,7 @@ canvas.addEventListener('pointercancel', stopTouchDrag);
 const loader = new GLTFLoader();
 
 loader.load(
-    'model/regras.glb', // 1. glb Instrucoesv2.glb
+    'model/regras.glb', 
 
     (gltf) => {
 
@@ -314,7 +314,7 @@ function animate() {
     }
 
 
-/* ---------------- Interação com o hover do rato + suave ---------------- */
+/* ---------------- Interação com o hover do rato  ---------------- */
     if (folha && animTerminou) {
         if (mouseNeedsRaycast) {
             raycaster.setFromCamera(mouse, camera);
@@ -324,8 +324,8 @@ function animate() {
                 const hit = intersects[0];
                 const localPoint = hit.point.clone();
                 folha.worldToLocal(localPoint);
-                targetRotation.y = localPoint.x * 0.4;
-                targetRotation.x = -localPoint.y * 0.4;
+                targetRotation.y = localPoint.x * 0.7;
+                targetRotation.x = -localPoint.y * 0.7;
             } else {
                 targetRotation.x = 0;
                 targetRotation.y = 0;

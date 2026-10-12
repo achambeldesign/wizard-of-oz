@@ -228,7 +228,7 @@ body > .nuvens {
         opacity: 0.6;
     }
 }
-/*------------------ Icone dos Sapatos (story, credits e about) ------------------*/
+/*------------------ Icone dos Sapatos ------------------*/
 #sapatosRuby {
     display: block;
     position: fixed;
@@ -368,7 +368,13 @@ body > .nuvens {
 }
 
 /*---span que são iguais---*/
-.baseado-em span, .ilustracoes-originais span, .narracao span, .nome-tipografia span, .sons span, .nomes-orientadores span, .valor span, .palavra span {
+.baseado-em span,
+.ilustracoes-originais span,
+.narracao span,
+.nome-tipografia span,
+.sons span, .nomes-orientadores span,
+.valor span,
+.palavra span {
     font-size: 1rem;
     text-transform: lowercase;
     text-shadow: 2px 3px 3px var(--cor-sombra-creditos);
@@ -465,7 +471,6 @@ body > .nuvens {
     text-align:center;
     text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
 }
-
 
 /*----------Tipografia----------*/
 .tipografia {
@@ -650,13 +655,33 @@ body > .nuvens {
         font-size: 4.5rem; 
         margin-bottom: 4rem; 
     }
-    .baseado-em h2, .feito-por h2, .ilustracoes-originais h2, .narracao h2, .tipografia h2, .sons-adicionais h2, .orientacao h2 { 
+    .baseado-em h2,
+    .feito-por h2, 
+    .ilustracoes-originais h2, 
+    .narracao h2, 
+    .tipografia h2, 
+    .sons-adicionais h2, 
+    .orientacao h2 { 
         font-size: 2.3rem; 
     }
-     .baseado-em p, .feito-por p, .nomes-orientadores p, .ilustracoes-originais p, .narracao p, .nome-tipografia p, .sons p, .palavra { 
+     .baseado-em p, 
+     .feito-por p, 
+     .nomes-orientadores p, 
+     .ilustracoes-originais p, 
+     .narracao p, 
+     .nome-tipografia p, 
+     .sons p, 
+     .palavra { 
         font-size: 1.2rem; 
     }
-    .baseado-em span, .ilustracoes-originais span, .narracao span, .nome-tipografia span, .sons span, .nomes-orientadores span, .valor span, .palavra span {
+    .baseado-em span, 
+    .ilustracoes-originais span, 
+    .narracao span, 
+    .nome-tipografia span, 
+    .sons span, 
+    .nomes-orientadores span, 
+    .valor span, 
+    .palavra span {
         font-size: 1rem;
     }
     .feito-por h2 {
@@ -673,7 +698,13 @@ body > .nuvens {
         font-size: 3.5rem; 
         margin-bottom: 3rem; 
     }
-    .baseado-em h2, .feito-por h2, .ilustracoes-originais h2, .narracao h2, .tipografia h2, .sons-adicionais h2, .orientacao h2 { 
+    .baseado-em h2, 
+    .feito-por h2, 
+    .ilustracoes-originais h2, 
+    .narracao h2, 
+    .tipografia h2, 
+    .sons-adicionais h2, 
+    .orientacao h2 { 
         font-size: 1.8rem; 
         margin-bottom: 2rem; 
         text-align: center; 
@@ -684,10 +715,24 @@ body > .nuvens {
         .feito-por h2 {
         margin-bottom: 0.5rem;
     }
-    .baseado-em p, .feito-por p, .nomes-orientadores p, .ilustracoes-originais p, .narracao p, .nome-tipografia p, .sons p, .palavra { 
+    .baseado-em p, 
+    .feito-por p, 
+    .nomes-orientadores p, 
+    .ilustracoes-originais p, 
+    .narracao p, 
+    .nome-tipografia p, 
+    .sons p, 
+    .palavra { 
         font-size: 0.9rem; 
     }
-      .baseado-em span, .ilustracoes-originais span, .narracao span, .nome-tipografia span, .sons span, .nomes-orientadores span, .valor span, .palavra span {
+    .baseado-em span, 
+    .ilustracoes-originais span, 
+    .narracao span, 
+    .nome-tipografia span, 
+    .sons span, 
+    .nomes-orientadores span, 
+    .valor span, 
+    .palavra span {
         font-size: 0.6rem;
     }
     .baseado-em p { 
@@ -772,11 +817,10 @@ body > .nuvens {
     display: block;
     width: 100%;
     height: 100%;
-    /*pointer-events: auto;*/
 }
 
 
-/* Cruz posicionada no canto superior direito exatamente junto ao modelo */
+/* Cruz popup */
 .popup-close {
     position: absolute;
     top: var(--story-hud-inset);
@@ -983,7 +1027,7 @@ body > .nuvens {
     transform: translateX(calc(var(--shift) * -1));
 }
 
-/* Rosa dos ventos */
+/* Bussula - Estado atual onde nos encontramos nos videos */
 .estado-atual {
     position: absolute;
     top: clamp(12px, 2vw, 24px);

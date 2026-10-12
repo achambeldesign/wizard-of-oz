@@ -1,14 +1,10 @@
 //Variáveis globais
-
-
 let isPaused = true;     
 let storyEnded = false; 
 let hasStartedPlayback = false;
 const instructionsPopup = document.getElementById("popup-folha");
-
-
+//total de barras (cenas) na história
 const TOTAL_ITEMS = document.querySelectorAll(".historia-item").length;
-
 const barsContainer = document.getElementById("barras");
 const startOverlay = document.getElementById("startOverlay");
 const compassIndicator = document.getElementById("estado-atual");
@@ -42,7 +38,7 @@ function updateCompassMode(mode, defaultSource = null) {
         compassIndicator.removeAttribute("data-default-source");
     }
 }
-
+// Função para destacar temporariamente a tecla do compasso correspondente 
 function highlightCompassKeyTemporarily(key) {
     const compassKey = compassIndicator?.querySelector(`[data-compass-key="${key}"]`);
     const compassDirection = compassKey?.closest(".direcao");
@@ -61,7 +57,7 @@ function highlightCompassKeyTemporarily(key) {
 
 
 
-/* ------------ Obter os 3 vídeos de uma cena (video default, video filme e video livro) ------------ */
+/* ------------ Obter os 3 vídeos de uma barra/cena (video default, video filme e video livro) ------------ */
 
 function getVideos(item) {
 
@@ -81,22 +77,16 @@ function getVideos(item) {
 }
 
 
-/* ------------ Irregularidade visual das barras (forma, tamanho e textura aleatórios) ------------ */
-/*
- * A forma é aplicada ao .bar para que o preenchimento acompanhe o contorno
- * irregular de cada tijolo.
- */
+/* ------------ Irregularidade visual das barras/Tijoloes (forma, tamanho e textura aleatórios) ------------ */
 
 const TOTAL_TEXTURAS = 4; // nº de texturas disponíveis -> classes .bar--textura-1 a .bar--textura-5
+// width
+const VARIACAO_LARGURA_MIN = 0.5; 
+const VARIACAO_LARGURA_MAX = 1; 
 
-// Variação de tamanho: percentagem do tamanho base já definido no CSS (--bar-width / --bar-height)
-// Largura: ligeiramente reduzida em relação ao tamanho base
-const VARIACAO_LARGURA_MIN = 0.5; // 60% do tamanho base
-const VARIACAO_LARGURA_MAX = 1; // 90% do tamanho base
-
-// Altura: aumentada mais em relação ao tamanho base
-const VARIACAO_ALTURA_MIN = 1; // 90% do tamanho base
-const VARIACAO_ALTURA_MAX = 1.6; // 140% do tamanho base
+// height
+const VARIACAO_ALTURA_MIN = 1; 
+const VARIACAO_ALTURA_MAX = 1.6; 
 
 function randomBetween(min, max) {
     return Math.random() * (max - min) + min;
@@ -179,8 +169,8 @@ clipPathSvg.appendChild(clipPathDefs);
 document.body.prepend(clipPathSvg);
 
 
-/* ------------ Criação das barras amarelas de progressão na história ------------ */
-
+/* ------------ Criação das barras de progressão na história ------------ */
+//total de 10
 for (let i = 0; i < TOTAL_ITEMS; i++) {
 
     const item = document.getElementById(`item-${i}`);
@@ -463,9 +453,7 @@ async function startAllVideos(item) {
     }
 }
 
-/* =========================================================
-   PARAR OS VÍDEOS DE UMA CENA
-   ========================================================= */
+/* PARAR OS VÍDEOS DE UMA BARRA */
 
 function stopAllVideos(item, reset = true) {
 
@@ -485,31 +473,19 @@ function stopAllVideos(item, reset = true) {
 
         video.pause();
 
-        /*
-         * Garantir que o áudio fica desligado
-         * quando a cena deixa de estar ativa.
-         */
-
+        /* Garantir que o áudio fica desligado quando a cena deixa de estar ativa */
         video.volume = 0;
 
         if (reset) {
-
             try {
-
                 video.currentTime = 0;
-
-            } catch (error) {
-
-                // Ignorar
-            }
+            } catch (error) {}
         }
     });
 }
 
 
-/* =========================================================
-   DEFINIR O MODO
-   ========================================================= */
+/* DEFINIR O MODO (livro/default/filme) */
 
 function setMode(mode, defaultSource = null) {
 
@@ -522,9 +498,7 @@ function setMode(mode, defaultSource = null) {
     updateCompassMode(mode, defaultSource);
 
 
-    /* =====================================================
-       DEFAULT
-       ===================================================== */
+    /* DEFAULT modo*/
 
     if (mode === "default") {
 
@@ -539,9 +513,7 @@ function setMode(mode, defaultSource = null) {
     }
 
 
-    /* =====================================================
-       LIVRO
-       ===================================================== */
+    /* LIVRO modo */
 
     if (mode === "book") {
 
@@ -554,9 +526,7 @@ function setMode(mode, defaultSource = null) {
     }
 
 
-    /* =====================================================
-       FILME
-       ===================================================== */
+    /* FILME modo */
 
     if (mode === "movie") {
 
@@ -570,26 +540,16 @@ function setMode(mode, defaultSource = null) {
 }
 
 
-/* =========================================================
-   OBTER O VÍDEO PRINCIPAL / MASTER
-   ========================================================= */
+/* OBTER O VÍDEO PRINCIPAL / MASTER */
 
 function getMasterVideo(item) {
-
     if (!item) return null;
-
-    /*
-     * O Default é usado como referência temporal
-     * para a barra e para terminar a cena.
-     */
-
+    /* O Default é usado como referência temporal para a barra e para terminar a cena.*/
     return item.querySelector(".video-default");
 }
 
 
-/* =========================================================
-   PREPARAR UMA CENA
-   ========================================================= */
+/* PREPARAR UMA BARRA */
 
 function activateItem(index) {
 
@@ -597,19 +557,17 @@ function activateItem(index) {
 
     currentIndex = index;
 
-    // Resetar para default APENAS se estivermos a iniciar a história no primeiro tijolo
+    // Resetar para default apenas se estivermos a iniciar a história no primeiro tijolo amarelo
     if (index === 0) {
         currentMode = "default";
         updateCompassMode("default");
     }
 
-    // 1. Assegurar que os vídeos desta cena (e da próxima) são carregados
+    // Assegurar que os vídeos desta cena (e da próxima) são carregados
     prepareItemVideos(index);
 
 
-    /* =====================================================
-       ATUALIZAR ESTADO DAS CENAS
-       ===================================================== */
+    /* ATUALIZAR ESTADO DAS BARRAS */
 
     storyItems.forEach((item, i) => {
 
@@ -620,7 +578,7 @@ function activateItem(index) {
             i === index
         );
 
-        // Limpar as classes de teclado APENAS das cenas inativas
+        // Limpar as classes de teclado das cenas inativas
         if (i !== index) {
             item.classList.remove(
                 "w-pressed",
@@ -628,9 +586,7 @@ function activateItem(index) {
             );
         }
 
-        /* =================================================
-           OUTRAS CENAS
-           ================================================= */
+        /* OUTRAS BARRAS */
 
         if (i !== index) {
 
@@ -656,17 +612,13 @@ function activateItem(index) {
         }
 
 
-        /* =================================================
-           BARRAS
-           ================================================= */
+        /* BARRAS */
 
         const bar = barEls[i];
 
         if (!bar) return;
 
-        /* =================================================
-           CENA ANTERIOR / CONCLUÍDA
-           ================================================= */
+        /*  CENA ANTERIOR / CONCLUÍDA */
 
         if (i < index) {
 
@@ -686,9 +638,7 @@ function activateItem(index) {
             barFills[i].style.width = "100%";
         }
 
-        /* =================================================
-           CENA ATUAL
-           ================================================= */
+        /* CENA ATUAL */
 
         else if (i === index) {
 
@@ -710,9 +660,7 @@ function activateItem(index) {
             barFills[i].style.width = "0%";
         }
 
-        /* =================================================
-           CENA FUTURA
-           ================================================= */
+        /* CENA FUTURA */
 
         else {
 
@@ -728,9 +676,7 @@ function activateItem(index) {
     });
 
 
-    /* =====================================================
-       CENA ATUAL
-       ===================================================== */
+    /* CENA ATUAL */
 
     const currentItem = storyItems[index];
 
@@ -751,9 +697,7 @@ function activateItem(index) {
     }
 
 
-    /* =====================================================
-       QUANDO O DEFAULT TERMINAR
-       ===================================================== */
+    /* QUANDO O DEFAULT TERMINAR */
 
     const masterVideo = getMasterVideo(currentItem);
 
@@ -765,17 +709,13 @@ function activateItem(index) {
     }
 
 
-    /* =====================================================
-       INICIAR A BARRA
-       ===================================================== */
+    /* INICIAR A BARRA */
 
     updateProgress();
 }
 
 
-/* =========================================================
-   ATUALIZAR BARRA
-   ========================================================= */
+/* ATUALIZAR BARRA */
 
 function updateProgress() {
 
@@ -810,9 +750,7 @@ function updateProgress() {
 }
 
 
-/* =========================================================
-   AVANÇAR PARA A PRÓXIMA CENA
-   ========================================================= */
+/* AVANÇAR PARA A PRÓXIMA CENA */
 function goToNext() {
 
     if (isSkipping) return;
@@ -827,9 +765,7 @@ function goToNext() {
 
     if (next < storyItems.length) {
 
-        /* =================================================
-           NÃO É A ÚLTIMA CENA: parar tudo e avançar normalmente
-           ================================================= */
+        /* NÃO É A ÚLTIMA CENA: parar tudo e avançar normalmente */
 
         const currentItem = storyItems[currentIndex];
 
@@ -849,10 +785,7 @@ function goToNext() {
 
     } else {
 
-        /* =================================================
-           CHEGOU À ÚLTIMA CENA (10ª barra)
-           A história fica parada, com o vídeo no último frame
-           ================================================= */
+        /* CHEGOU À ÚLTIMA CENA (10ª barra) A história fica parada, com o vídeo no último frame */
 
         finishStory();
     }
@@ -1204,9 +1137,7 @@ document.querySelectorAll(".story-direction-button").forEach((button) => {
 });
 
 
-/* =========================================================
-   CARREGAR APENAS OS VÍDEOS DA CENA NECESSÁRIA
-   ========================================================= */
+/* CARREGAR APENAS OS VÍDEOS DA CENA NECESSÁRIA */
 function prepareItemVideos(index) {
     const nextItem = storyItems[index + 1];
     if (nextItem) {

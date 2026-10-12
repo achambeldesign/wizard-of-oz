@@ -21,6 +21,7 @@ updateCloudBackgroundLocation();
 
 const container = cloudBackground
   || document.querySelector('.nuvens');
+// as direções são diferentes por causa das folhas uma vai para a dir e a outra esq
 const cloudMovementDirection = container.dataset.movementDirection === 'right' ? 1 : -1;
 
 
@@ -213,7 +214,7 @@ function init() {
   }
 }
 
-// ------------------ CLOUD LAYER FACTORY ------------------
+// Constantes para a animação das nuvens
 function buildCloudMesh(texture, count, yOffset, zStart, zRange, scale) {
   const mat = new THREE.ShaderMaterial({
     uniforms: {
@@ -333,7 +334,7 @@ async function loadHouse() {
   ktx2Loader.detectSupport(renderer); // Essencial para o loader saber o que a placa gráfica suporta
 
   const gltfLoader = new GLTFLoader();
-  gltfLoader.setKTX2Loader(ktx2Loader); // 2. Registar o KTX2Loader no GLTFLoader
+  gltfLoader.setKTX2Loader(ktx2Loader); // Addon texturas usadas no blender
 
   gltfLoader.load(
     './model/Dorothy_125.glb',
@@ -592,7 +593,6 @@ function animate() {
   if (modelLoaded) {
     shadowUpdateElapsed += delta;
     if (shadowUpdateElapsed >= 0.1) {
-      // The house moves every frame, but updating its shadow ten times per second is sufficient.
       renderer.shadowMap.needsUpdate = true;
       shadowUpdateElapsed %= 0.1;
     }
