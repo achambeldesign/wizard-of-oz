@@ -22,6 +22,8 @@ Use the directional keys to find your way through Oz. Switch between the book an
 | <kbd>S</kbd> | Go to the next part |
 | <kbd>E</kbd> | See the film |
 
+On tablets, tap the circular W/S/N/E controls at the bottom of the screen to perform the same actions.
+
 > 💡 **Tip:** You can also interact with 3D elements on the screen using the mouse.
 
 ----------------------------------------------------------------------------------------------------
