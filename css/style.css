@@ -925,9 +925,11 @@ body > .nuvens {
     bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 60;
     display: none;
-    grid-template-columns: repeat(4, 52px);
-    grid-template-rows: 52px;
-    gap: 8px;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 999px;
+    background: #fff;
     transform: translateX(-50%);
     pointer-events: auto;
 }
@@ -935,45 +937,54 @@ body > .nuvens {
 .story-direction-button {
     display: grid;
     place-items: center;
-    width: 52px;
-    height: 52px;
+    width: 38px;
+    height: 38px;
     padding: 0;
-    border: 1px solid rgba(228, 197, 180, 0.75);
-    border-radius: 50%;
-    background: rgba(29, 13, 7, 0.82);
-    color: var(--cor-texto-creditos);
+    border: 0;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.8);
     font: inherit;
     font-size: 1.1rem;
     font-weight: 700;
     line-height: 1;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    transition: width 180ms ease, height 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.story-direction-button.is-selected,
+.story-direction-button.is-temporarily-active {
+    width: 54px;
+    height: 54px;
+}
+
+.story-direction-button.is-temporarily-active {
+    background: #000;
+    color: #fff;
 }
 
 .story-direction-button:active {
-    background: rgba(83, 46, 31, 0.95);
-    transform: scale(0.94);
+    transform: scale(1.06);
 }
 
-.story-direction-button--north {
-    grid-area: 1 / 1;
+:root[data-story-mode="book"] .story-direction-controls {
+    background: #000;
 }
 
-.story-direction-button--west {
-    grid-area: 1 / 2;
+:root[data-story-mode="book"] .story-direction-button {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.story-direction-button--east {
-    grid-area: 1 / 3;
-}
-
-.story-direction-button--south {
-    grid-area: 1 / 4;
+:root[data-story-mode="book"] .story-direction-button.is-temporarily-active {
+    background: #fff;
+    color: #000;
 }
 
 @media (min-width: 768px) and (max-width: 1366px) and (pointer: coarse) {
     .story-direction-controls {
-        display: grid;
+        display: flex;
     }
 }
 

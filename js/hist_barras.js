@@ -9,6 +9,7 @@ const barsContainer = document.getElementById("barras");
 const startOverlay = document.getElementById("startOverlay");
 const compassIndicator = document.getElementById("estado-atual");
 const compassKeyTimeouts = new Map();
+const storyControlTimeouts = new Map();
 
 const storyItems = [];
 
@@ -25,6 +26,25 @@ let started = false;
 const VIDEO_FADE_DURATION = 400;
 const AUDIO_FADE_DURATION = 400;
 const COMPASS_KEY_HIGHLIGHT_DURATION = 2000;
+
+function selectStoryControl(key) {
+    document.querySelectorAll(".story-direction-button").forEach(button => {
+        button.classList.toggle("is-selected", button.dataset.storyKey === key);
+    });
+}
+
+function highlightStoryControlTemporarily(key) {
+    const button = document.querySelector(`.story-direction-button[data-story-key="${key}"]`);
+    if (!button) return;
+
+    button.classList.add("is-temporarily-active");
+    clearTimeout(storyControlTimeouts.get(key));
+
+    storyControlTimeouts.set(key, setTimeout(() => {
+        button.classList.remove("is-temporarily-active");
+        storyControlTimeouts.delete(key);
+    }, COMPASS_KEY_HIGHLIGHT_DURATION));
+}
 
 
 function updateCompassMode(mode, defaultSource = null) {
@@ -993,6 +1013,11 @@ function handleStoryControl(key) {
             storyItems[currentIndex];
 
         if (!currentItem) return;
+        if (["w", "e"].includes(key)) {
+            selectStoryControl(key);
+        } else if (["n", "s"].includes(key)) {
+            highlightStoryControlTemporarily(key);
+        }
 
         /* =================================================
            N = CENA ANTERIOR
