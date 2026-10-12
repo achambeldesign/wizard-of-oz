@@ -7,11 +7,12 @@
     <!-- Favicon dark e light mode -->
     <link rel="icon" href="img/light_default.PNG" type="image/x-icon">
     <link rel="icon" href="img/dark.PNG" type="image/x-icon" media="(prefers-color-scheme: dark)"> 
-    <!--Preload da fonte de Oz-->
+    <!-- Preload da fonte de Oz -->
     <link rel="preload" href="font/Oz.woff" as="font" type="font/woff" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <!-- Link: https://discourse.threejs.org/t/flying-through-clouds-2-0/57859/3-->
+    <!-- Link: https://discourse.threejs.org/t/flying-through-clouds-2-0/57859/3 -->
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <!-- Importmap -->
     <script type="importmap">
         {
             "imports": {
@@ -20,38 +21,38 @@
             }
         }
     </script>
-    <!--Css-->
+    <!-- Css -->
     <link rel="stylesheet" href="css/style.css" />
-    <!--Javascript-->
+    <!-- Javascrip -->
     <script type="module" src="js/clouds.js"></script>
-    </head>
+</head>
 
 <body>
 <!------------------ Mensagem -> not available on mobile ------------------>
-  <div id="versao-mobile" lang="en" role="alert">
-            <h1>Toto, I’ve a feeling we’re not on the right device anymore.</h1>
-            <p>Please try on a computer or tablet.</p>
-    </div>
+<div id="versao-mobile" lang="en" role="alert">
+    <h1>Toto, I’ve a feeling we’re not on the right device anymore.</h1>
+    <p>Please try on a computer or tablet.</p>
+</div>
 
 <!------------------ Loading Screen (ecrãs desktop e tablet - carregar a casa .glb) ------------------>
-    <div id="loading-screen" role="status" aria-live="polite" aria-label="Loading">
-        <div class="loading-container">
-            <h1>Loading...</h1>
-            <p id="loading-message">Not in Kansas anymore...</p>
-            <div
-                id="loading-progressbar"
-                class="is-indeterminate"
-                role="progressbar"
-                aria-label="House model loading progress"
-                aria-valuemin="0"
-                aria-valuemax="100"
-            >
-                <span id="loading-progress"></span>
-            </div>
-            <p id="loading-percentage">Please wait just a moment...</p>
-            <button id="loading-retry" type="button" hidden>Try again</button>
-        </div>
+<div id="loading-screen" role="status" aria-live="polite" aria-label="Loading">
+    <div class="loading-container">
+        <h1>Loading...</h1>
+            <p id="loading-mensagem">Not in Kansas anymore...</p>
+    <div
+        id="barra-progresso"
+        class="is-indeterminate"
+        role="progressbar"
+        aria-label="House model loading progress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+    >
+        <span id="loading-progress"></span>
     </div>
+        <p id="percentagem">Please wait just a moment...</p>
+        <button id="loading-retry" type="button" hidden>Try again</button>
+    </div>
+</div>
 
 <!---------------- Menu principal (antigamente era em p5.js https://editor.p5js.org/achambel2002/full/N8YrcWPz7)---------------->
     <a id="about" href="about.html" aria-label="About">

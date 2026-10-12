@@ -1216,9 +1216,9 @@ function prepareItemVideos(index) {
 }
 
 const playPauseContainer = document.getElementById("play-pause-container");
-const btnPlay  = document.getElementById("btn-play");
-const btnPause = document.getElementById("btn-pause");
-const btnTryAgain = document.getElementById("btn-try-again");
+const btnPlay  = document.getElementById("botao-play");
+const btnPause = document.getElementById("botao-pause");
+const btnTryAgain = document.getElementById("botao-try-again");
 
 let hideButtonTimeout = null;
 

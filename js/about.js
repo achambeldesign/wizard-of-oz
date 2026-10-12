@@ -67,7 +67,7 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição
-folhaGroup.position.x = 0.59;//0.62621
+folhaGroup.position.x = 0.59;//posição inicial retirada do blender (set origin to geometry)
 
 let folha;
 let animTerminou = false;
@@ -219,7 +219,7 @@ function animate() {
         mixer.update(delta);
     }
 
-    /* ------ efeito "pop" ------ */
+    /* ------ Efeito "pop" ------ */
     if (popAnim && folha) {
 
         popTime += delta;
@@ -253,7 +253,7 @@ function animate() {
 
     }
 
-    // ---------- Interação por Hover (Suavizada) ----------
+    // ---------- Interação por Hover  ----------
     if (folha && animTerminou) {
         if (mouseNeedsRaycast) {
             raycaster.setFromCamera(mouse, camera);
@@ -274,7 +274,7 @@ function animate() {
             mouseNeedsRaycast = false;
         }
 
-        // Fator de lerp reduzido para 0.05 (quanto menor, mais suave, flutuante e com inércia fica o movimento)
+        // Suavizar rotação folha
         currentRotation.x = THREE.MathUtils.lerp(currentRotation.x, targetRotation.x, 0.05);
         currentRotation.y = THREE.MathUtils.lerp(currentRotation.y, targetRotation.y, 0.05);
 

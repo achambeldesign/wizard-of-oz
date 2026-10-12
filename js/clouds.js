@@ -65,10 +65,10 @@ const cloudShader = {
 };
 
 const loadingScreen = document.querySelector('#loading-screen');
-const loadingMessage = document.querySelector('#loading-message');
+const loadingMessage = document.querySelector('#loading-mensagem');
 const loadingProgress = document.querySelector('#loading-progress');
-const loadingProgressbar = document.querySelector('#loading-progressbar');
-const loadingPercentage = document.querySelector('#loading-percentage');
+const loadingProgressbar = document.querySelector('#barra-progresso');
+const loadingPercentage = document.querySelector('#percentagem');
 const loadingRetry = document.querySelector('#loading-retry');
 
 function randomBetween(min, max) {

@@ -16,19 +16,8 @@
     --story-hud-gap: 8px;
     --cor-texto-creditos: #E4C5B4;
     --cor-sombra-creditos: #1d0d07cc;
-    /*Cores dos icones story.html: livro usa icone light/circulo dark-alpha; default e filme o inverso*/
-    --icones-light-version: rgb(245, 236, 231);
-    --icones-light-version-alpha: rgba(245, 236, 231, 0.4);
-    --icones-dark-version: rgb(29, 13, 7);
-    --icones-dark-version-alpha: rgba(29, 13, 7, 0.4);
-    --story-icon-color: var(--icones-dark-version);
-    --story-icon-circle-color: var(--icones-light-version-alpha);
 }
 
-:root[data-story-mode="book"] {
-    --story-icon-color: var(--icones-light-version);
-    --story-icon-circle-color: var(--icones-dark-version-alpha);
-}
 /*------------------ Tipografia------------------*/
 /* 
   Fonte (títulos / inicio de frases): Oz's Wizard  (OzsWizard-Scarecrow.ttf)
@@ -54,6 +43,7 @@
          url('../font/livro_texto.ttf') format('truetype');
     font-display: swap;
 }
+
 /*------------------ Evita que crie um fake bold principalmente nos créditos------------------*/
 h1,h2,h3 {
   font-weight: normal;
@@ -104,7 +94,7 @@ body.fade-out {
 
     #versao-mobile h1 {
         font-family: "Wizard";
-        font-size: clamp(1.5rem, 6vw, 3rem);
+        font-size: clamp(1.35rem, 6vw, 2.8rem);
         padding: clamp(1.5rem, 6vw, 3rem);
         text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
     }
@@ -156,7 +146,7 @@ body > .nuvens {
     width: min(100%, 32rem);
 }
 
-#loading-percentage {
+#percentagem {
     margin: 0.75rem 0 0;
     font-family: "Texto", serif;
     letter-spacing: 0.12em;
@@ -170,22 +160,21 @@ body > .nuvens {
     text-shadow: 4px 6px 3px var(--cor-sombra-creditos);
 }
 
-#loading-message {
+#loading-mensagem {
     margin: 0 0 1.5rem;
     font-family: "Texto", serif;
     font-size: 1.1rem;
 }
 
-#loading-progressbar {
+#barra-progresso {
     width: 100%;
     height: 2.5rem;
     overflow: hidden;
-    border: 1px solid transparent;
     border-radius: 3px;
     background: rgba(29, 13, 7, 0.55);
 }
 
-#loading-progressbar span {
+#barra-progresso span {
     position: relative;
     display: block;
     width: 0;
@@ -195,7 +184,7 @@ body > .nuvens {
     transition: width 0.2s ease;
 }
 
-#loading-progressbar span::after {
+#barra-progresso span::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -206,7 +195,7 @@ body > .nuvens {
     opacity: 0.85;
 }
 
-#loading-progressbar.is-indeterminate span {
+#barra-progresso.is-indeterminate span {
     width: 35%;
     animation: loading-progress 1.4s ease-in-out infinite;
 }
@@ -228,12 +217,12 @@ body > .nuvens {
 }
 
 @keyframes loading-progress {
-    from { transform: translateX(-110%); }
+    from { transform: translateX(-150%); }
     to { transform: translateX(300%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #loading-progressbar.is-indeterminate span {
+    #barra-progresso.is-indeterminate span {
         animation: none;
         width: 100%;
         opacity: 0.6;
@@ -827,7 +816,7 @@ body > .nuvens {
     stroke-linejoin: round;
 }
 
-.btn-play-pause path {
+.botao-play-pause path {
     transform: scale(0.6);
     transform-box: view-box;
     transform-origin: center;
@@ -1037,7 +1026,7 @@ body > .nuvens {
     font-weight: 300;
     opacity: 0.4;
     -webkit-text-stroke-width: 0;
- transition: color 180ms ease, opacity 180ms ease, font-weight 180ms ease, -webkit-text-stroke-width 180ms ease;
+    transition: color 180ms ease, opacity 180ms ease, font-weight 180ms ease, -webkit-text-stroke-width 180ms ease;
 }
 
 .direcao-norte {
@@ -1173,7 +1162,28 @@ body > .nuvens {
     content: "";
 }
 
-/*---------______________------------*/
+/*---------------------- Botões Play, Pause e Try Again ----------------------*/
+/* Cores dos botões */
+:root {
+    /*Cores dos icones story.html: livro usa icone light/circulo dark-alpha; default e filme o inverso*/
+    --icones-light-version: rgb(245, 236, 231);
+    --icones-light-version-alpha: rgba(245, 236, 231, 0.4);
+    --icones-dark-version: rgb(29, 13, 7);
+    --icones-dark-version-alpha: rgba(29, 13, 7, 0.4);
+    --story-icon-color: var(--icones-dark-version);
+    --story-icon-circle-color: var(--icones-light-version-alpha);
+}
+
+:root[data-story-mode="book"] {
+    --story-icon-color: var(--icones-light-version);
+    --story-icon-circle-color: var(--icones-dark-version-alpha);
+}
+
+/* Botão Try Again */
+.botao-try-again {
+    color: var(--story-icon-color);
+}
+
 /* Overlay de Play/Pause transparente por cima dos vídeos */
 .play-pause-overlay {
     position: absolute;
@@ -1183,16 +1193,15 @@ body > .nuvens {
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
 }
-
-
-.btn-play-pause {
+/* Botões Play e Pause versão escura e clara */
+.botao-play-pause {
     position: absolute;               
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);   
-    width: 80px; height: 80px;
+    width: 80px; 
+    height: 80px;
     background: var(--story-icon-circle-color);
     border-radius: 50%;
     color: var(--story-icon-color);
@@ -1207,12 +1216,9 @@ body > .nuvens {
     pointer-events: auto;
 }
 
-
-.btn-play-pause.fade-out {
+.botao-play-pause.fade-out {
     opacity: 0;
     pointer-events: none;
 }
 
-.btn-try-again {
-    color: var(--story-icon-color);
-}
+
