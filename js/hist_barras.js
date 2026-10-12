@@ -318,6 +318,21 @@ async function syncVideoToMaster(video, masterVideo) {
     await seeked;
 }
 
+async function seekVideoToEnd(video) {
+    if (!Number.isFinite(video.duration) || video.duration <= 0) {
+        throw new Error("A duração do vídeo não está disponível.");
+    }
+    if (video.currentTime >= video.duration) return;
+
+    const seeked = waitForVideoEvent(
+        video,
+        "seeked",
+        () => !video.seeking && video.currentTime >= video.duration
+    );
+    video.currentTime = video.duration;
+    await seeked;
+}
+
 async function showModeVideo(mode, fade = true) {
     const currentItem = storyItems[currentIndex];
     if (!currentItem) return;
@@ -1001,6 +1016,36 @@ if (key === "s") {
 
     if (isSkipping) return;
 
+    const nextIndex = currentIndex + 1;
+    const isLastScene = nextIndex >= storyItems.length;
+
+    if (isLastScene) {
+        isSkipping = true;
+        cancelAnimationFrame(rafId);
+
+        if (barFills[currentIndex]) {
+            barFills[currentIndex].style.transition =
+                `width ${VIDEO_FADE_DURATION}ms ease-in-out`;
+            barFills[currentIndex].style.width = "100%";
+        }
+
+        const videos = getVideos(currentItem);
+        const activeVideo = getModeVideo(videos, currentMode);
+        const videosToSeek = [...new Set([videos.default, activeVideo].filter(Boolean))];
+
+        Promise.all(videosToSeek.map(seekVideoToEnd))
+            .then(() => finishStory())
+            .catch(error => {
+                console.error("Não foi possível avançar o vídeo até ao fim:", error);
+                updateProgress();
+            })
+            .finally(() => {
+                isSkipping = false;
+            });
+
+        return;
+    }
+
     isSkipping = true;
 
     cancelAnimationFrame(rafId);
@@ -1019,27 +1064,6 @@ if (key === "s") {
             : currentMode === "movie"
                 ? videos.movie
                 : videos.default;
-
-    const nextIndex = currentIndex + 1;
-    const isLastScene = nextIndex >= storyItems.length;
-
-    if (isLastScene) {
-
-        /* =================================================
-           ÚLTIMA CENA: sem fade nem reset, fica no último frame
-           ================================================= */
-
-        [videos.default, videos.book, videos.movie].forEach(video => {
-            if (!video) return;
-            video.pause();
-            video.volume = 0;
-        });
-
-        finishStory();
-        isSkipping = false;
-
-        return;
-    }
 
     /* =====================================================
        FADE DO VÍDEO + ÁUDIO (cenas normais)
