@@ -1242,8 +1242,7 @@ body > .nuvens {
 .botao-play-pause {
     position: absolute;               
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);   
+    left: 50%;  
     width: 80px; 
     height: 80px;
     background: var(--story-icon-circle-color);
@@ -1255,7 +1254,9 @@ body > .nuvens {
     stroke-width: 11.5833;
     stroke-linecap: round;
     stroke-linejoin: round;
-    transition: opacity 0.4s ease;
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.75, 0.3, 1);
     cursor: pointer;
     pointer-events: auto;
 }
@@ -1265,4 +1266,8 @@ body > .nuvens {
     pointer-events: none;
 }
 
-
+@media (prefers-reduced-motion: reduce) {
+    .botao-play-pause {
+        transition-duration: 0.01ms;
+    }
+}
