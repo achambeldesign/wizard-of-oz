@@ -67,7 +67,7 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição
-folhaGroup.position.x = 0.59;//posição inicial retirada do blender (set origin to geometry)
+folhaGroup.position.x = 0.62;//posição inicial retirada do blender (set origin to geometry)
 
 let folha;
 let animTerminou = false;
