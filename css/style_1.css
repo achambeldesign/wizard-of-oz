@@ -236,7 +236,7 @@ body > .nuvens {
     cursor: pointer;
     top: 15px;
     right: 5px;
-    width: clamp(90px, 10vw, 150px);
+    width: clamp(80px, 10vw, 150px);
     height: auto;
     z-index: 50;
     transition: transform 0.3s ease;
@@ -922,16 +922,17 @@ body > .nuvens {
 .story-direction-controls {
     position: fixed;
     left: 50%;
-    bottom: max(12px, env(safe-area-inset-bottom));
+    bottom: max(16px, env(safe-area-inset-bottom));
     z-index: 60;
     display: none;
     align-items: center;
-    gap: 4px;
-    padding: 6px;
+    gap: 16px; /* Maior espaçamento entre os botões */
+    padding: 8px 12px;
     border-radius: 999px;
-    background: #fff;
+    background: rgba(245, 236, 231, 0.8); /* Cor do container arredondado: #F5ECE7 com 80% opacidade */
     transform: translateX(-50%);
     pointer-events: auto;
+    transition: background-color 180ms ease;
 }
 
 .story-direction-button {
@@ -941,12 +942,12 @@ body > .nuvens {
     height: 38px;
     padding: 0;
     border: 0;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.2);
-    color: rgba(0, 0, 0, 0.8);
-    font: inherit;
+    border-radius: 50%; /* Se preferires totalmente redondo, ou podes manter 10px se preferires cantos arredondados */
+    background: rgba(29, 13, 7, 0.4); /* Cor background dos botões: #1D0D07 com 40% opacidade */
+    color: #F5ECE7; /* Cor da tipografia */
+    font-family: 'League Spartan', sans-serif;
     font-size: 1.1rem;
-    font-weight: 700;
+    font-weight: 300; /* Tipografia Spartan Light */
     line-height: 1;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
@@ -955,31 +956,35 @@ body > .nuvens {
 
 .story-direction-button.is-selected,
 .story-direction-button.is-temporarily-active {
-    width: 54px;
-    height: 54px;
+    width: 50px;
+    height: 50px;
 }
 
+/* Quando a tecla W é acionada (ou modo book / selecionado) */
+:root[data-story-mode="book"] .story-direction-controls {
+    background: rgba(29, 13, 7, 0.4); /* Cor do container arredondado: #1D0D07 com 40% opacidade */
+}
+
+:root[data-story-mode="book"] .story-direction-button {
+    background: rgba(245, 236, 231, 0.8); /* Cor background dos botões: #F5ECE7 com 80% opacidade */
+    color: #1D0D07; /* Cor da tipografia */
+}
+
+/* Mantém o comportamento visual quando ativo/temporário no modo normal */
 .story-direction-button.is-temporarily-active {
-    background: #000;
-    color: #fff;
+    background: #F5ECE7;
+    color: #1D0D07;
+    font-weight: 600;
+}
+
+:root[data-story-mode="book"] .story-direction-button.is-temporarily-active {
+    background: #1D0D07;
+    color: #F5ECE7;
+    font-weight: 600;
 }
 
 .story-direction-button:active {
     transform: scale(1.06);
-}
-
-:root[data-story-mode="book"] .story-direction-controls {
-    background: #000;
-}
-
-:root[data-story-mode="book"] .story-direction-button {
-    background: rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.8);
-}
-
-:root[data-story-mode="book"] .story-direction-button.is-temporarily-active {
-    background: #fff;
-    color: #000;
 }
 
 @media (min-width: 768px) and (max-width: 1366px) and (pointer: coarse) {
@@ -1220,7 +1225,6 @@ body > .nuvens {
 /*---------------------- Botões Play, Pause e Try Again ----------------------*/
 /* Cores dos botões */
 :root {
-    /*Cores dos icones story.html: livro usa icone light/circulo dark-alpha; default e filme o inverso*/
     --icones-light-version: rgb(245, 236, 231);
     --icones-light-version-alpha: rgba(245, 236, 231, 0.4);
     --icones-dark-version: rgb(29, 13, 7);
@@ -1267,8 +1271,6 @@ body > .nuvens {
     stroke-linejoin: round;
     opacity: 1;
     transform: translate(-50%, -50%);
-    /* Animação suave play <-> pause: o ícone que sai encolhe + desvanece,
-       o que entra cresce + aparece (ambos partilham a mesma transição) */
     transition: opacity 0.8s ease, transform 0.45s cubic-bezier(0.2, 0.75, 0.3, 1);
     cursor: pointer;
     pointer-events: auto;
