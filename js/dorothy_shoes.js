@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const shoesVideo = document.getElementById('sapatosRuby');
     let currentAudio = null;
 
-    //Array 5 audios
+    // Array com os 5 áudios
     const audios = [
         'sound/shoes/shoes_1.mp3',
         'sound/shoes/shoes_2.mp3',
@@ -14,25 +14,44 @@ document.addEventListener('DOMContentLoaded', () => {
     shoesVideo.pause();
     shoesVideo.currentTime = 0;
 
-    function playRandomAudio() {
-        // Obter o último índice guardado no localStorage (se existir)
-        const lastIndex = localStorage.getItem('lastShoeAudioIndex');
-        
-        // Criação array com os índices todos 
-        let availableIndexes = audios.map((_, index) => index);
+    // Função para baralhar um array (Algoritmo Fisher-Yates)
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
 
-        // Se houver um índice anterior e houver mais do que 1 áudio disponível, remove-o
-        if (lastIndex !== null && audios.length > 1) {
-            const parsedLastIndex = parseInt(lastIndex, 10);
-            availableIndexes = availableIndexes.filter(index => index !== parsedLastIndex);
+    // Obter ou criar a permutação atual guardada no localStorage
+    function getShuffledPlaylist() {
+        let playlist = JSON.parse(localStorage.getItem('shoeAudioPlaylist'));
+        let currentIndex = parseInt(localStorage.getItem('shoeAudioCurrentIndex'), 10);
+
+        // Se não existir playlist ou se já tivermos reproduzido todos, criamos uma nova permutação
+        if (!playlist || !Array.isArray(playlist) || isNaN(currentIndex) || currentIndex >= playlist.length) {
+            playlist = audios.map((_, index) => index);
+            shuffleArray(playlist);
+            currentIndex = 0;
+            
+            localStorage.setItem('shoeAudioPlaylist', JSON.stringify(playlist));
+            localStorage.setItem('shoeAudioCurrentIndex', currentIndex);
         }
 
-        // Escolher aleatoriamente um índice de entre os disponíveis
-        const randomAvailablePosition = Math.floor(Math.random() * availableIndexes.length);
-        const selectedIndex = availableIndexes[randomAvailablePosition];
+        return { playlist, currentIndex };
+    }
 
-        // Guardar este novo índice no localStorage para a próxima vez
-        localStorage.setItem('lastShoeAudioIndex', selectedIndex);
+    function playNextPermutedAudio() {
+        let { playlist, currentIndex } = getShuffledPlaylist();
+
+        // Obter o índice do áudio atual na permutação
+        const selectedIndex = playlist[currentIndex];
+
+        // Avançar o índice para a próxima posição na próxima reprodução
+        currentIndex++;
+        localStorage.setItem('shoeAudioCurrentIndex', currentIndex);
 
         // Tocar o áudio correspondente
         currentAudio = new Audio(audios[selectedIndex]);
@@ -45,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             shoesVideo.play();
         }
         if (!shoesVideo.paused && !shoesVideo.ended) {
-            playRandomAudio();
+            playNextPermutedAudio();
         }
     });
 
