@@ -60,11 +60,14 @@ camera.position.set(0, 0, 1);
 camera.lookAt(0, 0, 0);
 
 // ---------- Luzes ----------
-const ambient = new THREE.AmbientLight(0xD2B6A5, 0.7);
+const ambient = new THREE.AmbientLight(0xD2B6A5, 0.8); // ligeiramente mais alta para compensar a luz removida
 scene.add(ambient);
 
+// Key light: mais alta e inclinada, a apontar para a parte superior do modelo
 const keyLight = new THREE.DirectionalLight(0x986853, 1);
-keyLight.position.set(0, 5, 15);
+keyLight.position.set(0, 12, 8);
+keyLight.target.position.set(0, 0.4, 0); // alvo ligeiramente acima do centro
+scene.add(keyLight.target);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.width = 1024;
 keyLight.shadow.mapSize.height = 1024;
@@ -73,17 +76,28 @@ keyLight.shadow.camera.far = 1000;
 keyLight.shadow.bias = -0.001;
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0xD6B09A, 1);
-fillLight.position.set(-5, 3, -3);
+// Fill light: vem de cima/trás, sem chegar à base
+const fillLight = new THREE.DirectionalLight(0xD6B09A, 0.8);
+fillLight.position.set(-5, 8, -3);
+fillLight.target.position.set(0, 0.4, 0);
+scene.add(fillLight.target);
 scene.add(fillLight);
 
+// Rim light mantém-se
 const rimLight = new THREE.DirectionalLight(0xF2C7A5, 0.1);
 rimLight.position.set(0, 10, -10);
 scene.add(rimLight);
-
-const bottomLight = new THREE.DirectionalLight(0xFFF2E8, 0.7);
-bottomLight.position.set(0, -3, 0);
-scene.add(bottomLight);
+// Luz de centro: spot suave, apontada ao meio da folha
+const centerLight = new THREE.SpotLight(0xF2D2BC, 0.6);
+centerLight.position.set(0.677411, 1.5, 6); // x igual ao folhaGroup, à frente e ligeiramente acima
+centerLight.target.position.set(0.677411, 0.2, 0); // ligeiramente acima do centro, longe da base
+scene.add(centerLight.target);
+centerLight.angle = 0.28;      // abertura do cone
+centerLight.penumbra = 1;      // bordas totalmente difusas
+centerLight.decay = 0;         // sem queda por distância, mais fácil de controlar
+centerLight.distance = 0;
+centerLight.castShadow = false;
+scene.add(centerLight);
 
 // Variáveis
 let mixer;
@@ -93,7 +107,7 @@ const folhaGroup = new THREE.Group();
 scene.add(folhaGroup);
 
 // Ajuste de posição x
-folhaGroup.position.x = -0.628;//Valor tirado do blender 
+folhaGroup.position.x = -0.655744;//Valor tirado do blender 
 let folha;
 let animTerminou = false;
 let popAnim = false;
@@ -164,7 +178,7 @@ canvas.addEventListener('pointercancel', stopTouchDrag);
 const loader = new GLTFLoader();
 
 loader.load(
-    'model/regras2.glb', 
+    'model/Regras.glb', 
 
     (gltf) => {
 
