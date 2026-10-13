@@ -337,7 +337,7 @@ async function loadHouse() {
   gltfLoader.setKTX2Loader(ktx2Loader); // Addon texturas usadas no blender
 
   gltfLoader.load(
-    './model/Dorothy_125.glb',
+    './model/etc1s_normal.glb',
     (gltf) => {
       ktx2Loader.dispose();
       houseModel = gltf.scene;
