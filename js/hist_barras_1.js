@@ -1,0 +1,1388 @@
+//Variáveis globais
+let isPaused = true;     
+let storyEnded = false; 
+let hasStartedPlayback = false;
+const instructionsPopup = document.getElementById("popup-folha");
+//total de barras (cenas) na história
+const TOTAL_ITEMS = document.querySelectorAll(".historia-item").length;
+const barsContainer = document.getElementById("barras");
+const startOverlay = document.getElementById("startOverlay");
+const compassIndicator = document.getElementById("estado-atual");
+const compassKeyTimeouts = new Map();
+const storyControlTimeouts = new Map();
+
+const storyItems = [];
+
+let currentIndex = 0;
+let currentMode = "default";
+let displayedMode = "default";
+let modeSwitchId = 0;
+const audioFadeFrames = new WeakMap();
+
+let rafId = null;
+let isSkipping = false;
+let started = false;
+
+const VIDEO_FADE_DURATION = 400;
+const AUDIO_FADE_DURATION = 400;
+const COMPASS_KEY_HIGHLIGHT_DURATION = 2000;
+
+// N: até este tempo (segundos) a barra conta como "no início" -> volta à barra anterior.
+// Depois disto, N reinicia a barra atual.
+const RESTART_THRESHOLD_SECONDS = 2;
+
+// Tempo que o ícone fica visível depois de um play (para a animação play -> pause se ver)
+const ICON_HOLD_AFTER_PLAY = 900;
+
+function selectStoryControl(key) {
+    document.querySelectorAll(".story-direction-button").forEach(button => {
+        button.classList.toggle("is-selected", button.dataset.storyKey === key);
+    });
+}
+
+function highlightStoryControlTemporarily(key) {
+    const button = document.querySelector(`.story-direction-button[data-story-key="${key}"]`);
+    if (!button) return;
+
+    button.classList.add("is-temporarily-active");
+    clearTimeout(storyControlTimeouts.get(key));
+
+    storyControlTimeouts.set(key, setTimeout(() => {
+        button.classList.remove("is-temporarily-active");
+        storyControlTimeouts.delete(key);
+    }, COMPASS_KEY_HIGHLIGHT_DURATION));
+}
+
+
+function updateCompassMode(mode, defaultSource = null) {
+    if (!compassIndicator) return;
+
+    compassIndicator.dataset.mode = mode;
+
+    if (mode === "default" && ["w", "e"].includes(defaultSource)) {
+        compassIndicator.dataset.defaultSource = defaultSource;
+    } else {
+        compassIndicator.removeAttribute("data-default-source");
+    }
+}
+// Função para destacar temporariamente a tecla do compasso correspondente 
+function highlightCompassKeyTemporarily(key) {
+    const compassKey = compassIndicator?.querySelector(`[data-compass-key="${key}"]`);
+    const compassDirection = compassKey?.closest(".direcao");
+    if (!compassKey || !compassDirection) return;
+
+    compassKey.classList.add("is-temporarily-active");
+    compassDirection.classList.add("is-temporarily-active");
+    clearTimeout(compassKeyTimeouts.get(key));
+
+    compassKeyTimeouts.set(key, setTimeout(() => {
+        compassKey.classList.remove("is-temporarily-active");
+        compassDirection.classList.remove("is-temporarily-active");
+        compassKeyTimeouts.delete(key);
+    }, COMPASS_KEY_HIGHLIGHT_DURATION));
+}
+
+
+
+/* ------------ Obter os 3 vídeos de uma barra/cena (video default, video filme e video livro) ------------ */
+
+function getVideos(item) {
+
+    if (!item) {
+        return {
+            default: null,
+            book: null,
+            movie: null
+        };
+    }
+
+    return {
+        default: item.querySelector(".video-default"),
+        book: item.querySelector(".video-livro"),
+        movie: item.querySelector(".video-filme")
+    };
+}
+
+
+/* ------------ Irregularidade visual das barras/Tijoloes (forma, tamanho e textura aleatórios) ------------ */
+
+const TOTAL_TEXTURAS = 4; // nº de texturas disponíveis -> classes .bar--textura-1 a .bar--textura-5
+// width
+const VARIACAO_LARGURA_MIN = 0.5; 
+const VARIACAO_LARGURA_MAX = 1; 
+
+// height
+const VARIACAO_ALTURA_MIN = 1; 
+const VARIACAO_ALTURA_MAX = 1.6; 
+
+function randomBetween(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function criarContornoAleatorio() {
+    const sampleCount = 96;
+    const phase = randomBetween(0, Math.PI * 2);
+    const points = Array.from({ length: sampleCount }, (_, index) => {
+        const angle = (index / sampleCount) * Math.PI * 2;
+        const cosine = Math.cos(angle);
+        const sine = Math.sin(angle);
+        const xBase = Math.sign(cosine) * Math.pow(Math.abs(cosine), 0.42);
+        const yBase = Math.sign(sine) * Math.pow(Math.abs(sine), 0.42);
+        const sideIrregularity =
+            Math.sin(angle * 4 + phase) * 0.032 +
+            Math.sin(angle * 7 + phase * 1.6) * 0.022 +
+            Math.sin(angle * 13 + phase * 0.7) * 0.012 +
+            Math.sin(angle * 23 + phase * 1.2) * 0.006;
+        const longSideWeight = Math.pow(Math.abs(sine), 6);
+
+        return {
+            x: 0.5 + xBase * 0.47,
+            y: 0.5 + yBase * 0.46 + sideIrregularity * longSideWeight
+        };
+    });
+
+    const firstPoint = points[0];
+    const pathCommands = [`M ${firstPoint.x} ${firstPoint.y}`];
+
+    points.forEach((point, index) => {
+        const previous = points[(index - 1 + sampleCount) % sampleCount];
+        const next = points[(index + 1) % sampleCount];
+        const afterNext = points[(index + 2) % sampleCount];
+        const control1 = {
+            x: point.x + (next.x - previous.x) / 6,
+            y: point.y + (next.y - previous.y) / 6
+        };
+        const control2 = {
+            x: next.x - (afterNext.x - point.x) / 6,
+            y: next.y - (afterNext.y - point.y) / 6
+        };
+
+        pathCommands.push(
+            `C ${control1.x} ${control1.y}, ${control2.x} ${control2.y}, ${next.x} ${next.y}`
+        );
+    });
+
+    return pathCommands.join(" ") + " Z";
+}
+
+function aplicarTamanhoETexturaAleatorios(bar) {
+
+    // Tamanho base tal como o CSS o calculou (var(--bar-width) / var(--bar-height))
+    const estiloAtual = getComputedStyle(bar);
+    const larguraBase = parseFloat(estiloAtual.width);
+    const alturaBase = parseFloat(estiloAtual.height);
+
+    // Largura e altura aleatórias, a partir do tamanho base, com intervalos independentes
+    bar.style.width =
+        `${larguraBase * randomBetween(VARIACAO_LARGURA_MIN, VARIACAO_LARGURA_MAX)}px`;
+
+    bar.style.height =
+        `${alturaBase * randomBetween(VARIACAO_ALTURA_MIN, VARIACAO_ALTURA_MAX)}px`;
+
+    // Textura aleatória entre 1 e TOTAL_TEXTURAS
+    const texturaEscolhida = Math.floor(Math.random() * TOTAL_TEXTURAS) + 1;
+    bar.classList.add(`bar--textura-${texturaEscolhida}`);
+}
+
+const clipPathNamespace = "http://www.w3.org/2000/svg";
+const clipPathSvg = document.createElementNS(clipPathNamespace, "svg");
+const clipPathDefs = document.createElementNS(clipPathNamespace, "defs");
+clipPathSvg.setAttribute("aria-hidden", "true");
+clipPathSvg.setAttribute("focusable", "false");
+clipPathSvg.style.position = "absolute";
+clipPathSvg.style.width = "0";
+clipPathSvg.style.height = "0";
+clipPathSvg.appendChild(clipPathDefs);
+document.body.prepend(clipPathSvg);
+
+
+/* ------------ Criação das barras de progressão na história ------------ */
+//total de 10
+for (let i = 0; i < TOTAL_ITEMS; i++) {
+
+    const item = document.getElementById(`item-${i}`);
+
+    if (!item) {
+        console.warn(`Não foi encontrado #item-${i}`);
+        continue;
+    }
+
+    storyItems.push(item);
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+
+    const fill = document.createElement("div");
+    fill.className = "bar__fill";
+
+    const clipPath = document.createElementNS(clipPathNamespace, "clipPath");
+    const outline = document.createElementNS(clipPathNamespace, "path");
+    const clipPathId = `bar-outline-${i}`;
+    clipPath.id = clipPathId;
+    clipPath.setAttribute("clipPathUnits", "objectBoundingBox");
+    outline.setAttribute("d", criarContornoAleatorio());
+    clipPath.appendChild(outline);
+    clipPathDefs.appendChild(clipPath);
+    bar.style.clipPath = `url(#${clipPathId})`;
+
+    bar.appendChild(fill);
+    barsContainer.appendChild(bar);
+
+    // Aplicar tamanho e textura aleatórios a esta barra
+    aplicarTamanhoETexturaAleatorios(bar);
+}
+
+const barEls = document.querySelectorAll(".bar");
+const barFills = document.querySelectorAll(".bar__fill");
+
+
+/* ------------ Fade de transição dos audios ------------ */
+
+function fadeAudio(video, targetVolume, duration = AUDIO_FADE_DURATION) {
+
+    if (!video) return;
+
+    const previousFrame = audioFadeFrames.get(video);
+    if (previousFrame !== undefined) {
+        cancelAnimationFrame(previousFrame);
+    }
+
+    if (duration <= 0) {
+        video.volume = targetVolume;
+        audioFadeFrames.delete(video);
+        return;
+    }
+
+    const startVolume = video.volume;
+    const startTime = performance.now();
+
+    function animateAudio(now) {
+
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        /* Ease in/out suave*/
+        const eased =
+            progress < 0.5
+                ? 2 * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        video.volume =
+            startVolume +
+            (targetVolume - startVolume) * eased;
+
+        if (progress < 1) {
+            audioFadeFrames.set(video, requestAnimationFrame(animateAudio));
+        } else {
+            video.volume = targetVolume;
+            audioFadeFrames.delete(video);
+        }
+    }
+
+    audioFadeFrames.set(video, requestAnimationFrame(animateAudio));
+}
+
+
+/* =========================================================
+   MOSTRAR VÍDEO + CONTROLAR ÁUDIO
+   ========================================================= */
+
+function getModeVideo(videos, mode) {
+    if (mode === "book") return videos.book;
+    if (mode === "movie") return videos.movie;
+    return videos.default;
+}
+
+function waitForVideoEvent(video, eventName, isReady = () => false) {
+    return new Promise((resolve, reject) => {
+        const cleanup = () => {
+            video.removeEventListener(eventName, onReady);
+            video.removeEventListener("error", onError);
+        };
+        const onReady = () => {
+            cleanup();
+            resolve();
+        };
+        const onError = () => {
+            cleanup();
+            reject(new Error(`Falha ao carregar o vídeo: ${video.currentSrc || video.querySelector("source")?.src || "fonte desconhecida"}`));
+        };
+
+        video.addEventListener(eventName, onReady, { once: true });
+        video.addEventListener("error", onError, { once: true });
+        if (isReady()) onReady();
+    });
+}
+
+function ensureVideoReady(video, eventName = "loadeddata") {
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        return Promise.resolve();
+    }
+
+    const ready = waitForVideoEvent(
+        video,
+        eventName,
+        () => video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+    );
+    if (
+        video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA &&
+        video.networkState !== HTMLMediaElement.NETWORK_LOADING
+    ) {
+        video.load();
+    }
+    return ready;
+}
+
+async function syncVideoToMaster(video, masterVideo) {
+    if (video === masterVideo || !Number.isFinite(masterVideo.currentTime)) return;
+
+    const duration = Number.isFinite(video.duration) ? video.duration : masterVideo.currentTime;
+    const targetTime = Math.min(masterVideo.currentTime, Math.max(0, duration - 0.05));
+    if (Math.abs(video.currentTime - targetTime) < 0.05) return;
+
+    const seeked = waitForVideoEvent(video, "seeked");
+    video.currentTime = targetTime;
+    await seeked;
+}
+
+async function seekVideoToEnd(video) {
+    if (!Number.isFinite(video.duration) || video.duration <= 0) {
+        throw new Error("A duração do vídeo não está disponível.");
+    }
+    if (video.currentTime >= video.duration) return;
+
+    const seeked = waitForVideoEvent(
+        video,
+        "seeked",
+        () => !video.seeking && video.currentTime >= video.duration
+    );
+    video.currentTime = video.duration;
+    await seeked;
+}
+
+function nextPaint() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+function isVideoAtEnd(video) {
+    return video.ended || video.currentTime >= video.duration - 0.1;
+}
+
+// Plano B: se o salto direto não funcionar, avança o vídeo em velocidade acelerada até ao fim
+function fastForwardToEnd(video) {
+    return new Promise(resolve => {
+        const previousRate = video.playbackRate;
+        const maxWait = (video.duration - video.currentTime) / 8 * 1000 + 2000;
+        let timeoutId;
+
+        const finish = () => {
+            clearTimeout(timeoutId);
+            video.removeEventListener("ended", finish);
+            video.playbackRate = previousRate;
+            resolve();
+        };
+
+        video.addEventListener("ended", finish, { once: true });
+        timeoutId = setTimeout(finish, maxWait);
+        video.volume = 0;
+        video.playbackRate = 8;
+        video.play().catch(finish);
+    });
+}
+
+// Leva o vídeo até ao fim e só resolve quando o último frame já está no ecrã
+async function advanceVideoToEnd(video) {
+    if (!Number.isFinite(video.duration) || video.duration <= 0) {
+        throw new Error("A duração do vídeo não está disponível.");
+    }
+    if (isVideoAtEnd(video)) return;
+
+    // 1) saltar diretamente para o fim (com limite de espera)
+    const seeked = waitForVideoEvent(video, "seeked").catch(() => {});
+    video.currentTime = video.duration;
+    await Promise.race([seeked, new Promise(resolve => setTimeout(resolve, 1500))]);
+
+    // 2) se o salto não chegou ao fim, avançar de forma acelerada
+    if (!isVideoAtEnd(video)) {
+        await fastForwardToEnd(video);
+    }
+
+    await nextPaint();
+}
+
+async function showModeVideo(mode, fade = true) {
+    const currentItem = storyItems[currentIndex];
+    if (!currentItem) return;
+
+    const videos = getVideos(currentItem);
+    const masterVideo = videos.default;
+    const activeVideo = getModeVideo(videos, mode);
+    if (!activeVideo) {
+        console.error(`Não foi encontrado o vídeo do modo "${mode}" na cena ${currentIndex + 1}.`);
+        return;
+    }
+
+    const switchId = ++modeSwitchId;
+    const previousVideo = getModeVideo(videos, displayedMode);
+
+    try {
+        await ensureVideoReady(activeVideo);
+        await syncVideoToMaster(activeVideo, masterVideo);
+
+        if (switchId !== modeSwitchId) return;
+
+        if (!isPaused) {
+            activeVideo.volume = 0;
+            try {
+                await activeVideo.play();
+            } catch (error) {
+                if (!(isPaused && error.name === "AbortError")) throw error;
+            }
+            if (!isPaused) await syncVideoToMaster(activeVideo, masterVideo);
+        }
+
+        if (switchId !== modeSwitchId) {
+            if (activeVideo !== masterVideo && activeVideo !== getModeVideo(videos, currentMode)) {
+                activeVideo.pause();
+            }
+            return;
+        }
+
+        const allVideos = [videos.default, videos.book, videos.movie].filter(Boolean);
+        activeVideo.style.transition = `opacity ${fade ? VIDEO_FADE_DURATION : 0}ms ease-in-out`;
+        activeVideo.style.zIndex = "2";
+
+        if (fade) {
+            activeVideo.style.opacity = "0";
+            await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+
+        activeVideo.style.opacity = "1";
+        if (fade) {
+            fadeAudio(activeVideo, 1, AUDIO_FADE_DURATION);
+        } else {
+            activeVideo.volume = isPaused ? 0 : 1;
+        }
+
+        allVideos.forEach(video => {
+            if (video === activeVideo) return;
+            video.style.transition = `opacity ${fade ? VIDEO_FADE_DURATION : 0}ms ease-in-out`;
+            video.style.opacity = "0";
+            video.style.zIndex = "1";
+            fadeAudio(video, 0, fade ? AUDIO_FADE_DURATION : 0);
+        });
+
+        if (fade) {
+            await new Promise(resolve => setTimeout(resolve, VIDEO_FADE_DURATION));
+        }
+
+        if (switchId !== modeSwitchId) return;
+
+        allVideos.forEach(video => {
+            if (video !== activeVideo && video !== masterVideo) {
+                video.pause();
+            }
+        });
+        displayedMode = mode;
+    } catch (error) {
+        if (switchId !== modeSwitchId) return;
+        console.error(`Não foi possível mudar para o modo "${mode}":`, error);
+        if (previousVideo) {
+            currentMode = displayedMode;
+            document.documentElement.dataset.storyMode = displayedMode;
+            updateCompassMode(displayedMode);
+            currentItem.classList.toggle("w-pressed", displayedMode === "book");
+            currentItem.classList.toggle("e-pressed", displayedMode === "movie");
+        }
+    }
+}
+
+/* =========================================================
+   PREPARAR O RELÓGIO DA CENA E O VÍDEO SELECIONADO
+   ========================================================= */
+
+async function startAllVideos(item) {
+
+    if (!item) return;
+
+    const videos = getVideos(item);
+    const activeVideo = getModeVideo(videos, currentMode);
+    const requiredVideos = [...new Set([videos.default, activeVideo].filter(Boolean))];
+    const loadId = ++modeSwitchId;
+
+    [videos.default, videos.book, videos.movie].forEach(video => {
+        if (!video) return;
+        video.pause();
+        video.volume = 0;
+        video.style.opacity = video === activeVideo ? "1" : "0";
+        video.style.zIndex = video === activeVideo ? "2" : "1";
+    });
+
+    try {
+        await Promise.all(requiredVideos.map(video => ensureVideoReady(video)));
+        if (loadId !== modeSwitchId) return;
+
+        requiredVideos.forEach(video => {
+            video.currentTime = 0;
+            video.volume = video === activeVideo ? 1 : 0;
+        });
+        displayedMode = currentMode;
+
+        if (!isPaused && !storyEnded) {
+            try {
+                await Promise.all(requiredVideos.map(video => video.play()));
+            } catch (error) {
+                if (!(isPaused && error.name === "AbortError")) throw error;
+            }
+            if (isPaused || storyEnded) {
+                requiredVideos.forEach(video => video.pause());
+            }
+        }
+    } catch (error) {
+        if (loadId === modeSwitchId) {
+            console.error(`Não foi possível preparar a cena ${currentIndex + 1}:`, error);
+        }
+    }
+}
+
+/* PARAR OS VÍDEOS DE UMA BARRA */
+
+function stopAllVideos(item, reset = true) {
+
+    if (!item) return;
+
+    const videos = getVideos(item);
+
+    const allVideos = [
+        videos.default,
+        videos.book,
+        videos.movie
+    ];
+
+    allVideos.forEach(video => {
+
+        if (!video) return;
+
+        video.pause();
+
+        /* Garantir que o áudio fica desligado quando a cena deixa de estar ativa */
+        video.volume = 0;
+
+        if (reset) {
+            try {
+                video.currentTime = 0;
+            } catch (error) {}
+        }
+    });
+}
+
+
+/* DEFINIR O MODO (livro/default/filme) */
+
+function setMode(mode, defaultSource = null) {
+
+    const currentItem = storyItems[currentIndex];
+
+    if (!currentItem) return;
+
+    currentMode = mode;
+    document.documentElement.dataset.storyMode = mode;
+    updateCompassMode(mode, defaultSource);
+
+
+    /* DEFAULT modo*/
+
+    if (mode === "default") {
+
+        currentItem.classList.remove(
+            "w-pressed",
+            "e-pressed"
+        );
+
+        showModeVideo("default", true);
+
+        return;
+    }
+
+
+    /* LIVRO modo */
+
+    if (mode === "book") {
+
+        currentItem.classList.add("w-pressed");
+        currentItem.classList.remove("e-pressed");
+
+        showModeVideo("book", true);
+
+        return;
+    }
+
+
+    /* FILME modo */
+
+    if (mode === "movie") {
+
+        currentItem.classList.add("e-pressed");
+        currentItem.classList.remove("w-pressed");
+
+        showModeVideo("movie", true);
+
+        return;
+    }
+}
+
+
+/* OBTER O VÍDEO PRINCIPAL / MASTER */
+
+function getMasterVideo(item) {
+    if (!item) return null;
+    /* O Default é usado como referência temporal para a barra e para terminar a cena.*/
+    return item.querySelector(".video-default");
+}
+
+
+/* PREPARAR UMA BARRA */
+
+function activateItem(index) {
+
+    cancelAnimationFrame(rafId);
+
+    currentIndex = index;
+
+    // Resetar para default apenas se estivermos a iniciar a história no primeiro tijolo amarelo
+    if (index === 0) {
+        currentMode = "default";
+        updateCompassMode("default");
+    }
+
+    // Assegurar que os vídeos desta cena (e da próxima) são carregados
+    prepareItemVideos(index);
+
+
+    /* ATUALIZAR ESTADO DAS BARRAS */
+
+    storyItems.forEach((item, i) => {
+
+        if (!item) return;
+
+        item.classList.toggle(
+            "active",
+            i === index
+        );
+
+        // Limpar as classes de teclado das cenas inativas
+        if (i !== index) {
+            item.classList.remove(
+                "w-pressed",
+                "e-pressed"
+            );
+        }
+
+        /* OUTRAS BARRAS */
+
+        if (i !== index) {
+
+            stopAllVideos(
+                item,
+                true
+            );
+
+            const videos = getVideos(item);
+
+            [
+                videos.default,
+                videos.book,
+                videos.movie
+            ].forEach(video => {
+
+                if (!video) return;
+
+                video.style.opacity = "0";
+                video.style.zIndex = "1";
+                video.volume = 0;
+            });
+        }
+
+
+        /* BARRAS */
+
+        const bar = barEls[i];
+
+        if (!bar) return;
+
+        /*  CENA ANTERIOR / CONCLUÍDA */
+
+        if (i < index) {
+
+            bar.classList.remove("active");
+            bar.classList.add("completed");
+
+            bar.classList.toggle(
+                "shift-right",
+                i % 2 === 0
+            );
+
+            bar.classList.toggle(
+                "shift-left",
+                i % 2 !== 0
+            );
+
+            barFills[i].style.width = "100%";
+        }
+
+        /* CENA ATUAL */
+
+        else if (i === index) {
+
+            bar.classList.remove("completed");
+            bar.classList.add("active");
+
+            if (i % 2 === 0) {
+
+                bar.classList.add("shift-right");
+                bar.classList.remove("shift-left");
+
+            } else {
+
+                bar.classList.add("shift-left");
+                bar.classList.remove("shift-right");
+            }
+
+            barFills[i].style.transition = "none";
+            barFills[i].style.width = "0%";
+        }
+
+        /* CENA FUTURA */
+
+        else {
+
+            bar.classList.remove(
+                "active",
+                "completed",
+                "shift-left",
+                "shift-right"
+            );
+
+            barFills[i].style.width = "0%";
+        }
+    });
+
+
+    /* CENA ATUAL */
+
+    const currentItem = storyItems[index];
+
+    if (!currentItem) return;
+
+    const videos = getVideos(currentItem);
+
+    startAllVideos(currentItem);
+
+    if (currentMode === "book") {
+        currentItem.classList.add("w-pressed");
+        currentItem.classList.remove("e-pressed");
+    } else if (currentMode === "movie") {
+        currentItem.classList.add("e-pressed");
+        currentItem.classList.remove("w-pressed");
+    } else {
+        currentItem.classList.remove("w-pressed", "e-pressed");
+    }
+
+
+    /* QUANDO O DEFAULT TERMINAR */
+
+    const masterVideo = getMasterVideo(currentItem);
+
+    if (masterVideo) {
+
+        masterVideo.onended = () => {
+            goToNext();
+        };
+    }
+
+
+    /* INICIAR A BARRA */
+
+    updateProgress();
+}
+
+
+/* ATUALIZAR BARRA */
+
+function updateProgress() {
+
+    const currentItem =
+        storyItems[currentIndex];
+
+    if (!currentItem) return;
+
+    const masterVideo =
+        getMasterVideo(currentItem);
+
+    if (
+        masterVideo &&
+        Number.isFinite(masterVideo.duration) &&
+        masterVideo.duration > 0
+    ) {
+
+        const progress =
+            (
+                masterVideo.currentTime /
+                masterVideo.duration
+            ) * 100;
+
+        barFills[currentIndex].style.width =
+            `${Math.min(progress, 100)}%`;
+    }
+
+    rafId =
+        requestAnimationFrame(
+            updateProgress
+        );
+}
+
+
+/* AVANÇAR PARA A PRÓXIMA CENA */
+function goToNext() {
+
+    if (isSkipping) return;
+
+    cancelAnimationFrame(rafId);
+
+    if (barFills[currentIndex]) {
+        barFills[currentIndex].style.width = "100%";
+    }
+
+    const next = currentIndex + 1;
+
+    if (next < storyItems.length) {
+
+        /* NÃO É A ÚLTIMA CENA: parar tudo e avançar normalmente */
+
+        const currentItem = storyItems[currentIndex];
+
+        if (currentItem) {
+
+            const videos = getVideos(currentItem);
+
+            [videos.default, videos.book, videos.movie].forEach(video => {
+                if (!video) return;
+                video.volume = 0;
+            });
+
+            stopAllVideos(currentItem, true); // aqui o reset a 0 está correto
+        }
+
+        activateItem(next);
+
+    } else {
+
+        /* CHEGOU À ÚLTIMA CENA (10ª barra) A história fica parada, com o vídeo no último frame */
+
+        finishStory();
+    }
+}
+
+function finishStory() {
+    // O "Try again" só pode aparecer no fim do vídeo da ÚLTIMA barra
+    if (currentIndex !== storyItems.length - 1) return;
+
+    storyEnded = true;
+    isPaused = true;
+    clearTimeout(hideButtonTimeout);
+
+    const currentItem = storyItems[currentIndex];
+
+    if (currentItem) {
+        const videos = getVideos(currentItem);
+
+        [videos.default, videos.book, videos.movie].forEach(video => {
+            if (!video) return;
+            video.pause();
+            video.volume = 0;
+        });
+    }
+
+    playPauseContainer.style.display = "";
+    btnPlay.classList.add("fade-out");
+    btnPause.classList.add("fade-out");
+    btnTryAgain.classList.remove("fade-out");
+}
+
+
+/* Sai do estado final: esconde o "Try again" e volta ao modo de reprodução */
+function leaveEndedState() {
+    clearTimeout(hideButtonTimeout);
+    storyEnded = false;
+    isPaused = false;
+    btnTryAgain.classList.add("fade-out");
+    updatePlayPauseIcon();
+    hideButtonTimeout = setTimeout(hideActiveButton, ICON_HOLD_AFTER_PLAY);
+}
+
+
+/* =========================================================
+   TECLA N: reiniciar a barra atual OU voltar à anterior
+   - a meio / a acabar a barra  -> reinicia a mesma barra
+   - no início da barra         -> vai para a barra anterior
+   ========================================================= */
+
+function goToPrevious() {
+
+    if (isSkipping) return;
+
+    isSkipping = true;
+
+    cancelAnimationFrame(rafId);
+
+    const currentItem =
+        storyItems[currentIndex];
+
+    /* Decidir o destino: início da barra -> anterior; caso contrário -> reiniciar esta */
+    const masterVideo = getMasterVideo(currentItem);
+    const elapsed = masterVideo ? masterVideo.currentTime : 0;
+    const isAtStart = !storyEnded && elapsed <= RESTART_THRESHOLD_SECONDS;
+    const targetIndex = isAtStart ? Math.max(currentIndex - 1, 0) : currentIndex;
+
+    /* Se a história tinha acabado, sair do estado final (esconde o Try again) */
+    if (storyEnded) leaveEndedState();
+
+
+    /* =====================================================
+       ESCONDER SUAVEMENTE A CENA ATUAL
+       ===================================================== */
+
+    if (currentItem) {
+
+        const videos =
+            getVideos(currentItem);
+
+        const activeVideo =
+            currentMode === "book"
+                ? videos.book
+                : currentMode === "movie"
+                    ? videos.movie
+                    : videos.default;
+
+
+        /* =================================================
+           FADE DE VÍDEO
+           ================================================= */
+
+        if (activeVideo) {
+
+            activeVideo.style.transition =
+                `opacity ${VIDEO_FADE_DURATION}ms ease-in-out`;
+
+            activeVideo.style.opacity =
+                "0";
+
+
+            /* =============================================
+               FADE DE ÁUDIO
+               ============================================= */
+
+            fadeAudio(
+                activeVideo,
+                0,
+                AUDIO_FADE_DURATION
+            );
+        }
+    }
+
+
+    /* =====================================================
+       BARRA
+       ===================================================== */
+
+    if (barFills[currentIndex]) {
+
+        barFills[currentIndex].style.transition =
+            `width ${VIDEO_FADE_DURATION}ms ease-in-out`;
+
+        barFills[currentIndex].style.width =
+            "0%";
+    }
+
+
+    /* =====================================================
+       MUDAR DE CENA
+       ===================================================== */
+
+    setTimeout(() => {
+
+        /*
+         * Garantir que os vídeos da cena anterior
+         * ficam completamente silenciosos.
+         */
+
+        if (currentItem) {
+
+            const videos =
+                getVideos(currentItem);
+
+            [
+                videos.default,
+                videos.book,
+                videos.movie
+            ].forEach(video => {
+
+                if (!video) return;
+
+                video.volume = 0;
+            });
+
+            stopAllVideos(
+                currentItem,
+                true
+            );
+        }
+
+
+        activateItem(targetIndex);
+
+        isSkipping = false;
+
+    }, VIDEO_FADE_DURATION);
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+/*startOverlay.addEventListener(
+    "click",
+    () => {
+
+        if (started) return;
+
+        started = true;
+
+        startOverlay.classList.add(
+            "hidden"
+        );
+
+        activateItem(0);
+    }
+);
+*/
+
+/* =========================================================
+   TECLADO
+   ========================================================= */
+
+function handleStoryControl(key) {
+        if (!hasStartedPlayback) return;
+        if (
+            instructionsPopup &&
+            getComputedStyle(instructionsPopup).display !== "none"
+        ) return;
+
+        const currentItem =
+            storyItems[currentIndex];
+
+        if (!currentItem) return;
+        if (["w", "e"].includes(key)) {
+            selectStoryControl(key);
+        } else if (["n", "s"].includes(key)) {
+            highlightStoryControlTemporarily(key);
+        }
+
+        /* =================================================
+           N = CENA ANTERIOR
+           ================================================= */
+
+        if (key === "n") {
+            highlightCompassKeyTemporarily(key);
+            goToPrevious();
+
+            return;
+        }
+
+
+        /* =========================================================
+   S = CENA SEGUINTE
+   ========================================================= */
+
+if (key === "s") {
+
+    highlightCompassKeyTemporarily(key);
+
+    if (isSkipping) return;
+
+    const nextIndex = currentIndex + 1;
+    const isLastScene = nextIndex >= storyItems.length;
+
+if (isLastScene) {
+        isSkipping = true;
+        cancelAnimationFrame(rafId);
+
+        if (barFills[currentIndex]) {
+            barFills[currentIndex].style.transition = `width ${VIDEO_FADE_DURATION}ms ease-in-out`;
+            barFills[currentIndex].style.width = "100%";
+        }
+
+        const videos = getVideos(currentItem);
+        const activeVideo = getModeVideo(videos, currentMode);
+        const videosToSeek = [...new Set([videos.default, activeVideo].filter(Boolean))];
+
+        // 1. Silenciar o áudio imediatamente
+        videosToSeek.forEach(video => {
+            video.volume = 0;
+            video.pause();
+        });
+
+        // 2. Forçar diretamente o salto para o fim em todos os vídeos ativos da última cena
+        videosToSeek.forEach(video => {
+            if (Number.isFinite(video.duration) && video.duration > 0) {
+                video.currentTime = video.duration - 0.05; // Um bocadinho antes do fim exato para evitar bugs de 'ended'
+            }
+        });
+
+        // 3. Chamar imediatamente o estado final
+        finishStory();
+        isSkipping = false;
+
+        return;
+    }
+
+    isSkipping = true;
+
+    cancelAnimationFrame(rafId);
+
+    if (barFills[currentIndex]) {
+        barFills[currentIndex].style.transition =
+            `width ${VIDEO_FADE_DURATION}ms ease-in-out`;
+        barFills[currentIndex].style.width = "100%";
+    }
+
+    const videos = getVideos(currentItem);
+
+    const activeVideo =
+        currentMode === "book"
+            ? videos.book
+            : currentMode === "movie"
+                ? videos.movie
+                : videos.default;
+
+    /* =====================================================
+       FADE DO VÍDEO + ÁUDIO (cenas normais)
+       ===================================================== */
+
+    if (activeVideo) {
+        activeVideo.style.transition = `opacity ${VIDEO_FADE_DURATION}ms ease-in-out`;
+        activeVideo.style.opacity = "0";
+        fadeAudio(activeVideo, 0, AUDIO_FADE_DURATION);
+    }
+
+    setTimeout(() => {
+
+        [videos.default, videos.book, videos.movie].forEach(video => {
+            if (!video) return;
+            video.volume = 0;
+            video.pause();
+            try {
+                video.currentTime = 0;
+            } catch (error) {
+                // Ignorar
+            }
+        });
+
+        isSkipping = false;
+        activateItem(nextIndex);
+
+    }, VIDEO_FADE_DURATION);
+
+    return;
+}
+        /* =================================================
+           W = LIVRO
+           ================================================= */
+
+        if (key === "w") {
+
+            if (currentMode === "book") {
+
+                /*
+                 * W novamente -> Default
+                 */
+
+                setMode("default", "w");
+
+            } else {
+
+                /*
+                 * W -> Livro
+                 */
+
+                setMode("book");
+            }
+
+            return;
+        }
+
+
+        /* =================================================
+           E = FILME
+           ================================================= */
+
+        if (key === "e") {
+
+            if (currentMode === "movie") {
+
+                /*
+                 * E novamente -> Default
+                 */
+
+                setMode("default", "e");
+
+            } else {
+
+                /*
+                 * E -> Filme
+                 */
+
+                setMode("movie");
+            }
+
+            return;
+        }
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.repeat) return;
+    handleStoryControl(e.key.toLowerCase());
+});
+
+document.querySelectorAll(".story-direction-button").forEach((button) => {
+    button.addEventListener("click", () => {
+        handleStoryControl(button.dataset.storyKey);
+    });
+});
+
+
+/* CARREGAR APENAS OS VÍDEOS DA CENA NECESSÁRIA */
+function prepareItemVideos(index) {
+    const nextItem = storyItems[index + 1];
+    if (nextItem) {
+        const nextDefaultVideo = getVideos(nextItem).default;
+        if (nextDefaultVideo?.readyState === 0) nextDefaultVideo.load();
+    }
+}
+
+const playPauseContainer = document.getElementById("play-pause-container");
+const btnPlay  = document.getElementById("botao-play");
+const btnPause = document.getElementById("botao-pause");
+const btnTryAgain = document.getElementById("botao-try-again");
+
+let hideButtonTimeout = null;
+
+// Mostra o ícone correto consoante o estado atual
+function updatePlayPauseIcon() {
+    if (isPaused) {
+        btnPlay.classList.remove("fade-out");
+        btnPause.classList.add("fade-out");
+    } else {
+        btnPause.classList.remove("fade-out");
+        btnPlay.classList.add("fade-out");
+    }
+}
+
+// Esconde ambos os ícones
+function hideActiveButton() {
+    btnPlay.classList.add("fade-out");
+    btnPause.classList.add("fade-out");
+}
+
+// Revela o botão certo ao clicar no ecrã; se estiver a reproduzir, esconde-o de novo pouco depois
+function revealPlayPauseButton() {
+
+    if (storyEnded) return;
+
+    clearTimeout(hideButtonTimeout);
+    updatePlayPauseIcon();
+
+    if (!isPaused) {
+        hideButtonTimeout = setTimeout(() => {
+            hideActiveButton();
+        }, 2000);
+    }
+}
+
+// Dá efetivamente play/pause. Só é chamado ao clicar num dos botões.
+function togglePlayPause() {
+
+    if (storyEnded) return;
+
+    clearTimeout(hideButtonTimeout);
+
+    isPaused = !isPaused;
+    if (!isPaused) {
+        hasStartedPlayback = true;
+    }
+
+    const currentItem = storyItems[currentIndex];
+    const videos = getVideos(currentItem);
+    if (isPaused) {
+        [videos.default, getModeVideo(videos, currentMode)]
+            .filter((video, index, list) => video && list.indexOf(video) === index)
+            .forEach(video => video.pause());
+    } else {
+        [videos.default, getModeVideo(videos, currentMode)]
+            .filter((video, index, list) => video && list.indexOf(video) === index)
+            .forEach(video => {
+                if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+                video.play().catch(error => {
+                    console.error("Não foi possível retomar a reprodução:", error);
+                });
+            });
+    }
+
+    updatePlayPauseIcon();
+
+    if (!isPaused) {
+        hideButtonTimeout = setTimeout(() => {
+            hideActiveButton();
+        }, ICON_HOLD_AFTER_PLAY);
+    }
+}
+
+function restartStory() {
+    clearTimeout(hideButtonTimeout);
+    storyEnded = false;
+    isPaused = false;
+    hasStartedPlayback = true;
+    isSkipping = false;
+    currentMode = "default";
+    updateCompassMode("default");
+
+    btnTryAgain.classList.add("fade-out");
+    playPauseContainer.style.display = "";
+    updatePlayPauseIcon();
+
+    activateItem(0);
+
+    hideButtonTimeout = setTimeout(() => {
+        hideActiveButton();
+    }, ICON_HOLD_AFTER_PLAY);
+}
+
+[btnPlay, btnPause].forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        togglePlayPause();
+    });
+});
+
+btnTryAgain.addEventListener("click", (e) => {
+    e.stopPropagation();
+    restartStory();
+});
+
+playPauseContainer.addEventListener("click", () => {
+    revealPlayPauseButton();
+});
+
+// Estado inicial: vídeo pausado -> mostra o ícone de play
+updatePlayPauseIcon();
