@@ -919,6 +919,34 @@ body > .nuvens {
     justify-self: end;
 }
 
+/* ------------------ Controlos N, S, E, W (tablet) ------------------ */
+:root {
+    /* Medidas */
+    --story-key-size: 32px;          /* tecla em repouso (todas iguais no modo default) */
+    --story-key-size-on: 42px;       /* tecla selecionada (W/E) ou acionada (N/S) */
+    --story-key-gap: 12px;           /* margem entre teclas */
+    --story-key-radius: 6px;         /* cantos das teclas (0 = quadrado perfeito) */
+    --story-keys-pad-y: 12px;        /* padding top/bottom do container */
+    --story-keys-pad-x: 8px;         /* padding left/right do container (mais justo às teclas) */
+    --story-keys-radius: 16px;       /* cantos do container */
+
+    /* Cores - versão light (default e filme) */
+    --story-keys-bg: rgba(245, 236, 231, 0.4);   /* container: #F5ECE7 a 40% */
+    --story-key-bg: rgba(29, 13, 7, 0.4);        /* tecla: #1D0D07 a 40% */
+    --story-key-fg: #F5ECE7;
+    --story-key-bg-on: #F5ECE7;                  /* tecla acionada */
+    --story-key-fg-on: #1D0D07;
+}
+
+/* Cores - versão dark (livro) */
+:root[data-story-mode="book"] {
+    --story-keys-bg: rgba(29, 13, 7, 0.4);       /* container: #1D0D07 a 40% */
+    --story-key-bg: rgba(245, 236, 231, 0.8);    /* tecla: #F5ECE7 a 80% */
+    --story-key-fg: #1D0D07;
+    --story-key-bg-on: #1D0D07;
+    --story-key-fg-on: #F5ECE7;
+}
+
 .story-direction-controls {
     position: fixed;
     left: 50%;
@@ -926,65 +954,74 @@ body > .nuvens {
     z-index: 60;
     display: none;
     align-items: center;
-    gap: 16px; /* Maior espaçamento entre os botões */
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(245, 236, 231, 0.8); /* Cor do container arredondado: #F5ECE7 com 80% opacidade */
+    gap: var(--story-key-gap);
+    /* altura fixa para o container não "saltar" quando uma tecla cresce */
+    min-height: calc(var(--story-key-size-on) + var(--story-keys-pad-y) * 2);
+    padding: var(--story-keys-pad-y) var(--story-keys-pad-x);
+    border-radius: var(--story-keys-radius);
+    background: var(--story-keys-bg);
     transform: translateX(-50%);
     pointer-events: auto;
     transition: background-color 180ms ease;
 }
 
 .story-direction-button {
+    position: relative;
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
+    width: var(--story-key-size);
+    height: var(--story-key-size);
     padding: 0;
     border: 0;
-    border-radius: 50%; /* Se preferires totalmente redondo, ou podes manter 10px se preferires cantos arredondados */
-    background: rgba(29, 13, 7, 0.4); /* Cor background dos botões: #1D0D07 com 40% opacidade */
-    color: #F5ECE7; /* Cor da tipografia */
+    border-radius: var(--story-key-radius);
+    background: var(--story-key-bg);
+    color: var(--story-key-fg);
     font-family: 'League Spartan', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 300; /* Tipografia Spartan Light */
+    font-size: 0.95rem;
+    font-weight: 300; /* Spartan Light */
     line-height: 1;
+    cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    transition: width 180ms ease, height 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
+    transition: width 180ms ease, height 180ms ease, font-size 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
+/* Área de toque maior do que a tecla visível (≈42px com a tecla em repouso) */
+.story-direction-button::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+}
+
+/* W/E selecionada ou N/S acabada de ser premida: tecla maior */
 .story-direction-button.is-selected,
 .story-direction-button.is-temporarily-active {
-    width: 50px;
-    height: 50px;
+    width: var(--story-key-size-on);
+    height: var(--story-key-size-on);
+    font-size: 1.15rem;
+    font-weight: 600; /* Spartan SemiBold, igual à letra ativa da bússola */
 }
 
-/* Quando a tecla W é acionada (ou modo book / selecionado) */
-:root[data-story-mode="book"] .story-direction-controls {
-    background: rgba(29, 13, 7, 0.4); /* Cor do container arredondado: #1D0D07 com 40% opacidade */
-}
-
-:root[data-story-mode="book"] .story-direction-button {
-    background: rgba(245, 236, 231, 0.8); /* Cor background dos botões: #F5ECE7 com 80% opacidade */
-    color: #1D0D07; /* Cor da tipografia */
-}
-
-/* Mantém o comportamento visual quando ativo/temporário no modo normal */
+/* Feedback de cor ao premir (inverte a tecla) */
 .story-direction-button.is-temporarily-active {
-    background: #F5ECE7;
-    color: #1D0D07;
-    font-weight: 600;
-}
-
-:root[data-story-mode="book"] .story-direction-button.is-temporarily-active {
-    background: #1D0D07;
-    color: #F5ECE7;
-    font-weight: 600;
+    background: var(--story-key-bg-on);
+    color: var(--story-key-fg-on);
 }
 
 .story-direction-button:active {
     transform: scale(1.06);
+}
+
+.story-direction-button:focus-visible {
+    outline: 2px solid var(--story-key-fg-on);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .story-direction-controls,
+    .story-direction-button {
+        transition: none;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 1366px) and (pointer: coarse) {

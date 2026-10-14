@@ -54,7 +54,18 @@ function highlightStoryControlTemporarily(key) {
 }
 
 
+// Mantém as teclas do tablet iguais à bússola:
+// W/E só ficam selecionadas em livro/filme (ou ao voltar ao default com a mesma tecla)
+function syncStoryControlsWithCompass(mode, defaultSource = null) {
+    const key = mode === "book" ? "w"
+        : mode === "movie" ? "e"
+        : (["w", "e"].includes(defaultSource) ? defaultSource : null);
+    selectStoryControl(key);
+}
+
 function updateCompassMode(mode, defaultSource = null) {
+    syncStoryControlsWithCompass(mode, defaultSource);
+
     if (!compassIndicator) return;
 
     compassIndicator.dataset.mode = mode;
