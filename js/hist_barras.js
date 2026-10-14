@@ -57,10 +57,17 @@ function highlightStoryControlTemporarily(key) {
 // Mantém as teclas do tablet iguais à bússola:
 // W/E só ficam selecionadas em livro/filme (ou ao voltar ao default com a mesma tecla)
 function syncStoryControlsWithCompass(mode, defaultSource = null) {
+    const hasDefaultSource = mode === "default" && ["w", "e"].includes(defaultSource);
     const key = mode === "book" ? "w"
         : mode === "movie" ? "e"
-        : (["w", "e"].includes(defaultSource) ? defaultSource : null);
+        : (hasDefaultSource ? defaultSource : null);
+
     selectStoryControl(key);
+
+    // Default vindo de W/E: a tecla fica sublinhada (como na bússola)
+    document.querySelectorAll(".story-direction-button").forEach(button => {
+        button.classList.toggle("is-default-source", hasDefaultSource && button.dataset.storyKey === key);
+    });
 }
 
 function updateCompassMode(mode, defaultSource = null) {
@@ -654,14 +661,15 @@ function getMasterVideo(item) {
 
 /* PREPARAR UMA BARRA */
 
-function activateItem(index) {
+function activateItem(index, { keepMode = false } = {}) {
 
     cancelAnimationFrame(rafId);
 
     currentIndex = index;
 
     // Resetar para default apenas se estivermos a iniciar a história no primeiro tijolo amarelo
-    if (index === 0) {
+    // (keepMode: o N a voltar/reiniciar uma cena mantém o modo livro/filme em que estamos)
+    if (index === 0 && !keepMode) {
         currentMode = "default";
         updateCompassMode("default");
     }
@@ -1050,7 +1058,7 @@ function goToPrevious() {
         }
 
 
-        activateItem(targetIndex);
+        activateItem(targetIndex, { keepMode: true });
 
         isSkipping = false;
 

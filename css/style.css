@@ -922,13 +922,13 @@ body > .nuvens {
 /* ------------------ Controlos N, S, E, W (tablet) ------------------ */
 :root {
     /* Medidas */
-    --story-key-size: 32px;          /* tecla em repouso (todas iguais no modo default) */
-    --story-key-size-on: 42px;       /* tecla selecionada (W/E) ou acionada (N/S) */
-    --story-key-gap: 12px;           /* margem entre teclas */
-    --story-key-radius: 6px;         /* cantos das teclas (0 = quadrado perfeito) */
-    --story-keys-pad-y: 12px;        /* padding top/bottom do container */
-    --story-keys-pad-x: 8px;         /* padding left/right do container (mais justo às teclas) */
-    --story-keys-radius: 16px;       /* cantos do container */
+    --story-key-size: 44px;          /* tecla em repouso (todas iguais no modo default) */
+    --story-key-size-on: 56px;       /* tecla selecionada (W/E) ou acionada (N/S) */
+    --story-key-gap: 16px;           /* margem entre teclas */
+    --story-key-radius: 8px;         /* cantos das teclas (0 = quadrado perfeito) */
+    --story-keys-pad-y: 14px;        /* padding top/bottom do container */
+    --story-keys-pad-x: 26px;        /* padding left/right do container (deixa espaço para os cantos redondos) */
+    --story-keys-radius: 999px;      /* cantos do container: 50% da altura (pílula) */
 
     /* Cores - versão light (default e filme) */
     --story-keys-bg: rgba(245, 236, 231, 0.4);   /* container: #F5ECE7 a 40% */
@@ -950,7 +950,7 @@ body > .nuvens {
 .story-direction-controls {
     position: fixed;
     left: 50%;
-    bottom: max(16px, env(safe-area-inset-bottom));
+    bottom: max(20px, env(safe-area-inset-bottom));
     z-index: 60;
     display: none;
     align-items: center;
@@ -977,7 +977,7 @@ body > .nuvens {
     background: var(--story-key-bg);
     color: var(--story-key-fg);
     font-family: 'League Spartan', sans-serif;
-    font-size: 0.95rem;
+    font-size: 1.2rem;
     font-weight: 300; /* Spartan Light */
     line-height: 1;
     cursor: pointer;
@@ -986,11 +986,11 @@ body > .nuvens {
     transition: width 180ms ease, height 180ms ease, font-size 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-/* Área de toque maior do que a tecla visível (≈42px com a tecla em repouso) */
+/* Área de toque maior do que a tecla visível (≈52px com a tecla em repouso) */
 .story-direction-button::after {
     content: "";
     position: absolute;
-    inset: -5px;
+    inset: -4px;
 }
 
 /* W/E selecionada ou N/S acabada de ser premida: tecla maior */
@@ -998,8 +998,15 @@ body > .nuvens {
 .story-direction-button.is-temporarily-active {
     width: var(--story-key-size-on);
     height: var(--story-key-size-on);
-    font-size: 1.15rem;
+    font-size: 1.45rem;
     font-weight: 600; /* Spartan SemiBold, igual à letra ativa da bússola */
+}
+
+/* Default alcançado a partir de W/E: traço por baixo da letra, como na bússola */
+.story-direction-button.is-default-source {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 6px;
 }
 
 /* Feedback de cor ao premir (inverte a tecla) */
