@@ -150,7 +150,7 @@ canvas.addEventListener('pointercancel', stopTouchDrag);
 const loader = new GLTFLoader();
 
 loader.load(
-    './model/About.glb',
+    './model/about.glb',
 
     (gltf) => {
 
