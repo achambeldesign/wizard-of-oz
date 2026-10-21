@@ -150,7 +150,7 @@ canvas.addEventListener('pointercancel', stopTouchDrag);
 const loader = new GLTFLoader();
 
 loader.load(
-    './model/about.glb',
+    './wizard-of-oz/model/about.glb',
 
     (gltf) => {
 
